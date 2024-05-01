@@ -1,0 +1,387 @@
+{
+  "@title": "Установка значения системной настройки",
+  "@preload": {
+    "$from-context": {
+      "path": "$response.body.data",
+      "data": {
+        "$api-data": {
+          "workflow": "settings",
+          "action": "save",
+          "query": "settings/get",
+          "id": {
+            "$query-params": {
+              "name": "id"
+            }
+          },
+          "options": {
+            "observe": "response"
+          },
+          "variables": {
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "model": "#data",
+  "widget": {
+    "name": "form",
+    "options": {
+      "label": "Установка значения системной настройки"
+    },
+    "kind": "form-popup-with-h1-style"
+  },
+  "value": {
+    "$from-context": {
+      "path": "@preload"
+    }
+  },
+  "properties": {
+    "object": {
+      "type": "object",
+      "widget": {
+        "name": "container"
+      },
+      "properties": {
+        "name": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Системная настройка"
+            },
+            "class": {
+              "group": "form-item p-field p-grid p-fluid",
+              "label": "form-label p-xs-12 mrg-t-0 p-md-4 p-xl-3",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-7"
+            }
+          }
+        },
+        "description": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Описание",
+              "emptyText": "-"
+            },
+            "class": {
+              "group": "form-item p-field p-grid p-fluid",
+              "label": "form-label mrg-t-0 p-xs-12 p-md-4 p-xl-3",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-7"
+            }
+          }
+        },
+        "type": {
+          "type": "string",
+          "widget": "hidden"
+        },
+        "settingsType": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "widget": "hidden"
+            }
+          },
+          "widget": {
+            "name": "fieldset"
+          }
+        },
+        "defaultValue": {
+          "type": "object",
+          "widget": "container",
+          "properties": {
+            "boolean": {
+              "type": "number",
+              "widget": "hidden"
+            },
+            "string": {
+              "type": "string",
+              "widget": "hidden"
+            },
+            "number": {
+              "type": "number",
+              "widget": "hidden"
+            },
+            "date": {
+              "type": "string",
+              "widget": "hidden"
+            },
+            "dateTime": {
+              "type": "string",
+              "widget": "hidden"
+            },
+            "file": {
+              "type": "object",
+              "properties": {
+                "_id": {
+                  "type": "string",
+                  "widget": "hidden"
+                },
+                "name": {
+                  "type": "string",
+                  "widget": "hidden"
+                },
+                "create_date": {
+                  "type": "string",
+                  "widget": "hidden"
+                }
+              },
+              "widget": {
+                "name": "fieldset"
+              }
+            },
+            "object": {
+              "type": "string",
+              "widget": "hidden"
+            }
+          }
+        },
+        "objectType": {
+          "type": "string",
+          "widget": "hidden"
+        },
+        "preview": {
+          "type": "object",
+          "widget": "hidden",
+          "properties": {
+            "defaultValue": {
+              "type": "string",
+              "widget": "hidden"
+            }
+          }
+        },
+        "defaultViewedValue": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "options": {
+              "label": "Значение по умолчанию"
+            },
+            "labelAppend": {
+              "type": "string",
+              "widget": {
+                "name": "html",
+                "options": {
+                  "tooltip": "Если значение системной настройки не установлено, то используется значение по умолчанию",
+                  "tooltipPosition": "bottom",
+                  "appendTo": "body"
+                },
+                "class": {
+                  "group": "d-inline-block p-xs-auto valign-text-bottom mrg-l-xxs"
+                },
+                "kind": "html-mobile_tooltip_event"
+              },
+              "value": "<i class=\"icon-info-sm icon_secondary d-block\"></i>"
+            },
+            "class": {
+              "group": "form-item p-field p-grid p-fluid",
+              "label": "form-label p-xs-12 mrg-t-0 p-md-4 p-xl-3",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-7"
+            }
+          },
+          "properties": {
+            "otherType": {
+              "type": "any",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "visible": {
+                    "$or": {
+                      "operands": [
+                        {
+                          "!==": {
+                            "operand1": {
+                              "$subs": {
+                                "path": "#data.object.type"
+                              }
+                            },
+                            "operand2": "file"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "emptyText": "-",
+                  "viewedValue": {
+                    "$subs": {
+                      "path": "#data.object.preview.defaultValue"
+                    }
+                  }
+                }
+              }
+            },
+            "fileInfo": {
+              "type": "object",
+              "model": false,
+              "properties": {
+                "link": {
+                  "type": "string",
+                  "model": false,
+                  "value": {
+                    "$subs": {
+                      "path": "#data.object.defaultValue.file.name"
+                    }
+                  },
+                  "widget": {
+                    "name": "download-file",
+                    "options": {
+                      "emptyMessage": "-",
+                      "visible": {
+                        "$or": {
+                          "operands": [
+                            {
+                              "===": {
+                                "operand1": {
+                                  "$subs": {
+                                    "path": "#data.object.type"
+                                  }
+                                },
+                                "operand2": "file"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "methods": {
+                      "getFileAsync": {
+                        "$api-file": {
+                          "type": "get",
+                          "workflow": "settings",
+                          "action": "download",
+                          "fileId": {
+                            "$var": {
+                              "path": "#data.object.defaultValue.file._id"
+                            }
+                          },
+                          "options": {
+                            "responseType": "blob"
+                          }
+                        }
+                      }
+                    },
+                    "class": {
+                      "link": "text-break"
+                    }
+                  }
+                }
+              },
+              "widget": {
+                "name": "fieldset"
+              }
+            }
+          }
+        },
+        "value": "$ref:fieldset:settings/value_input@@{\"model\":\"#data.object\",\"label\":\"Значение\"}",
+        "link": {
+          "value": "Установить значение по умолчанию",
+          "type": "string",
+          "model": false,
+          "widget": {
+            "name": "link",
+            "events": {
+              "click": {
+                "$populate": {
+                  "path": "#data.object.value",
+                  "data": {
+                    "$var": {
+                      "path": "#data.object.defaultValue"
+                    }
+                  }
+                }
+              }
+            },
+            "class": {
+              "link": "shaded-link"
+            }
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "form-actions p-field p-grid mrg-t-lg",
+          "value": "p-jc-xs-end p-autolayout"
+        }
+      },
+      "properties": {
+        "save": {
+          "widget": {
+            "name": "submit-button",
+            "options": {
+              "label": "Сохранить",
+              "clientValidation": true,
+              "dataForClientValidation": "/",
+              "showClientValidationErrorsForElement": "form",
+              "showClientValidationErrorMessage": true,
+              "clientValidationErrorMessageSummary": "Ошибка",
+              "clientValidationErrorMessageDetail": "Одно или несколько полей заполнены некорректно",
+              "workflowAction": "settings.set-value",
+              "workflowObjectId": {
+                "$query-params": {
+                  "name": "id"
+                }
+              },
+              "dataForSubmit": {
+                "$exclude": {
+                  "data": {
+                    "$filter-empty": {
+                      "data": {
+                        "$var": {
+                          "path": "#data.object"
+                        }
+                      },
+                      "mode": "clear"
+                    }
+                  },
+                  "exclude": [
+                    "settingsType"
+                  ]
+                }
+              },
+              "showSuccessMessage": true,
+              "successMessageSummary": "Установка значения системной настройки",
+              "successMessageDetail": "Новое значение успешно сохранено",
+              "urlInCaseOfSuccess": "/cabinet/settings/list",
+              "showServerValidationErrorMessage": true,
+              "serverValidationErrorMessageSummary": "Установка значения системной настройки",
+              "serverValidationErrorMessageDetail": "Форма содержит ошибки",
+              "showOtherErrorMessageSummary": true,
+              "otherErrorMessageSummary": "Установка значения системной настройки",
+              "otherErrorMessageDetail": "Непредвиденная ошибка",
+              "reloadTable": true,
+              "closePopup": true
+            },
+            "class": {
+              "value": "mrg-r-sm"
+            }
+          }
+        },
+        "cancel": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Отмена"
+            },
+            "events": {
+              "click": {
+                "$close-popup": null
+              }
+            },
+            "kind": "button-btn-outline-last-style"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+query ($id: [MongoID!]) {
+  items: eventGet(_id: $id) {
+    id: _id
+    name
+  }
+}

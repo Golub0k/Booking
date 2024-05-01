@@ -1,0 +1,45 @@
+{
+  "version": 2,
+  "objectType": "event-log",
+  "context": "system-journal/context",
+  "description": "Жизненный цикл журнала событий",
+  "rbac": {
+    "visible": true,
+    "title": "Журнал событий"
+  },
+  "actions": {
+    "globalActions": {
+      "list": {
+        "title": "Журнал событий",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Просмотреть \"Журнал событий\""
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "system-journal/list",
+            "mode": "form",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "system-journal/list",
+            "user/get_for_dropdown",
+            "organization/list_names"
+          ]
+        }
+      }
+    },
+    "initialActions": {},
+    "statesActions": {}
+  },
+  "states": {
+    "new": {
+      "title": "Новое",
+      "description": "Новое событие",
+      "finish": true
+    }
+  }
+}

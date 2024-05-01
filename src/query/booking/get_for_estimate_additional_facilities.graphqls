@@ -1,0 +1,33 @@
+# @title: Получить список экземпляров объекта "Бронь помещений" для сметы
+
+query ($eventId: String) {
+  items: bookingGet(
+    filter: {
+      AND: [
+        { _operators: { state: { nin: ["deleted", "in_group"] } } }
+        { eventId: $eventId }
+      ]
+    }
+  ) {
+    id_additionalFacilities: _id
+    eventId
+    additionalFacilities(filter: { _operators: { state: { ne: "deleted" } } }) {
+      quantity
+      unitPrice
+      unitPriceWithDiscountOrMarkup
+      totalPrice
+      totalPriceWithDiscountOrMarkup
+      bookingComment
+      bookingPeriod
+      additionalService {
+        name
+      }
+      equipment {
+        name
+      }
+      furniture {
+        name
+      }
+    }
+  }
+}

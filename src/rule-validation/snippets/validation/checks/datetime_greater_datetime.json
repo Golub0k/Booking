@@ -1,0 +1,41 @@
+{
+  "meta": {
+    "title": "Правило проверки datetime_greater_datetime"
+  },
+  "schema": {
+    "$if": {
+      "condition": {
+        "$not-empty": {
+          "data": {
+            "$var": {
+              "path": "."
+            }
+          }
+        }
+      },
+      "then": {
+        ">": {
+          "operand1": {
+            "$date-from": {
+              "data": {
+                "$var": {
+                  "path": "."
+                }
+              }
+            }
+          },
+          "operand2": {
+            "$date-from": {
+              "data": {
+                "$var": {
+                  "path": "@@model"
+                }
+              }
+            }
+          }
+        }
+      },
+      "else": true
+    }
+  }
+}

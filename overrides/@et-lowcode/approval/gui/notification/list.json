@@ -1,0 +1,1071 @@
+{
+  "@title": "Реестр входящих уведомлений",
+  "type": "object",
+  "widget": {
+    "name": "container"
+  },
+  "properties": {
+    "breadcrumbs": {
+      "type": "object",
+      "widget": {
+        "name": "breadcrumb",
+        "mobileItems": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          }
+        ],
+        "items": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          },
+          {
+            "label": "Входящие уведомления"
+          }
+        ],
+        "kind": "breadcrumb-breadcrumbs-container-style"
+      }
+    },
+    "header": {
+      "type": "string",
+      "widget": {
+        "name": "container",
+        "options": {
+          "label": "Входящие уведомления"
+        },
+        "class": {
+          "label": "h1 mrg-b-lg"
+        }
+      }
+    },
+    "search_with_mobile_filters": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "mrg-b-md search-with-filters",
+          "value": "p-autolayout"
+        }
+      },
+      "properties": {
+        "search": {
+          "model": "#search",
+          "type": "string",
+          "widget": {
+            "name": "input-group-button",
+            "options": {
+              "placeholder": "Тема",
+              "actionButtonIconMobile": "icon-search",
+              "actionButtonLabel": "Найти",
+              "enableClearButton": false
+            },
+            "events": {
+              "actionButtonClick": {
+                "$if": {
+                  "condition": {
+                    "$validate": {
+                      "path": "/"
+                    }
+                  },
+                  "then": {
+                    "$grid": {
+                      "action": "lazyLoad",
+                      "path": "#data",
+                      "filters": {
+                        "$assign-object": {
+                          "object": {
+                            "$var": {
+                              "path": "#desktop-filter"
+                            }
+                          },
+                          "data": {
+                            "$var": {
+                              "path": "#search"
+                            }
+                          },
+                          "path": "search"
+                        }
+                      }
+                    }
+                  },
+                  "else": {}
+                }
+              },
+              "keypress-13": {
+                "$if": {
+                  "condition": {
+                    "$validate": {
+                      "path": "/"
+                    }
+                  },
+                  "then": {
+                    "$grid": {
+                      "action": "lazyLoad",
+                      "path": "#data",
+                      "filters": {
+                        "$assign-object": {
+                          "object": {
+                            "$var": {
+                              "path": "#desktop-filter"
+                            }
+                          },
+                          "data": {
+                            "$var": {
+                              "path": "#search"
+                            }
+                          },
+                          "path": "search"
+                        }
+                      }
+                    }
+                  },
+                  "else": {}
+                }
+              }
+            },
+            "class": {
+              "group": "form-item form-item_last height-fit-content flex-1 d-xl-flex",
+              "value": "form-item-element"
+            }
+          }
+        },
+        "filters-button-mobile": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "icon": "icon-filters",
+              "visible": {
+                "$is-between": {
+                  "value": {
+                    "$to-pixel": {
+                      "value": {
+                        "$get-window-breakpoint": {
+                          "subscriptionMode": true
+                        }
+                      }
+                    }
+                  },
+                  "upper_value": {
+                    "$to-pixel": {
+                      "value": "xl"
+                    }
+                  }
+                }
+              }
+            },
+            "events": {
+              "click": {
+                "$element-option": {
+                  "option": "visible",
+                  "path": "#modalMobileSearch",
+                  "value": true
+                }
+              }
+            },
+            "class": {
+              "group": "mrg-l-xs",
+              "value": "button_icon button_icon-shaded p-fluid w-48"
+            }
+          }
+        }
+      }
+    },
+    "table": {
+      "value": {
+        "$api-table-workflow-data": {
+          "model": "#data",
+          "query": "notification/list",
+          "variables": {
+            "$graphql-event-variables": {
+              "data": {
+                "$element-event": {
+                  "event": "lazyLoad"
+                }
+              }
+            }
+          },
+          "errors": {
+            "default": {
+              "$message": {
+                "severity": "error",
+                "summary": "Ошибка",
+                "detail": "При загрузке данных произошла ошибка"
+              }
+            }
+          }
+        }
+      },
+      "type": "array",
+      "model": "#data",
+      "widget": {
+        "name": "table-lazy",
+        "paginatorLeft": {
+          "type": "string",
+          "widget": "info",
+          "value": {
+            "$grid": {
+              "action": "rows-per-page",
+              "path": "#data"
+            }
+          }
+        },
+        "options": {
+          "emptyMessage": "Не добавлено информации для отображения",
+          "selectionMode": {
+            "$if": {
+              "condition": {
+                "$active-user-has-permission": {
+                  "permission": "notification.delete-multiple"
+                }
+              },
+              "then": "multiple",
+              "else": null
+            }
+          },
+          "selectionKey": "_id",
+          "selectionField": "selected",
+          "lazy": true,
+          "paginator": true,
+          "first": 0,
+          "rows": 10,
+          "rowsPerPageOptions": [
+            10,
+            20,
+            50
+          ],
+          "routerOptions": [
+            "first",
+            "rows"
+          ],
+          "initialFilters": {
+            "$var": {
+              "path": "#desktop-filter"
+            }
+          },
+          "sortField": "createDateTime",
+          "sortOrder": -1
+        },
+        "class": {
+          "group": "p-xxl-9 p-xs-12"
+        },
+        "subscriptions": {
+          "reload-table": {
+            "$element-event": {
+              "event": "reload",
+              "value": true
+            }
+          },
+          "delete-notification": {
+            "subscriber": "notification-list",
+            "action": {
+              "$element-option": {
+                "path": "#data",
+                "option": "selection",
+                "value": {
+                  "$array-filter": {
+                    "array": {
+                      "$element-option": {
+                        "path": "#data",
+                        "option": "selection"
+                      }
+                    },
+                    "filter": {
+                      "!==": {
+                        "operand1": {
+                          "$from-context": {
+                            "path": "$data"
+                          }
+                        },
+                        "operand2": {
+                          "$from-context": {
+                            "path": "$event.data"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "events": {
+          "lazyLoad": {
+            "$element-option": {
+              "path": "#data",
+              "option": "loading",
+              "value": true
+            }
+          }
+        }
+      },
+      "items": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            }
+          },
+          "state": {
+            "type": "string",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            }
+          },
+          "subject": {
+            "type": "string",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            }
+          },
+          "subjectMessage": {
+            "type": "object",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "label": "Тема",
+                "sortable": "subject"
+              }
+            },
+            "properties": {
+              "text": {
+                "type": "string",
+                "model": false,
+                "widget": {
+                  "name": "html",
+                  "options": {
+                    "visible": {
+                      "$not": {
+                        "data": "$ref:operation-frontend:notification/list/can-view-notification"
+                      }
+                    }
+                  },
+                  "class": {
+                    "value": {
+                      "$if": {
+                        "condition": {
+                          "===": {
+                            "operand1": {
+                              "$subs": {
+                                "path": "#data[].state"
+                              }
+                            },
+                            "operand2": "new"
+                          }
+                        },
+                        "then": "fw-700",
+                        "else": "fw-400"
+                      }
+                    }
+                  }
+                },
+                "value": {
+                  "$subs": {
+                    "path": "#data[].subject"
+                  }
+                }
+              },
+              "link": {
+                "type": "string",
+                "model": false,
+                "widget": {
+                  "name": "link",
+                  "options": {
+                    "visible": {
+                      "$active-user-has-permission": {
+                        "permission": {
+                          "$replace": {
+                            "template": "notification.view.{{state}}",
+                            "data": {
+                              "state": {
+                                "$subs": {
+                                  "path": "#data[].state"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "viewedValue": {
+                      "$subs": {
+                        "path": "#data[].subject"
+                      }
+                    },
+                    "routerLink": "/cabinet/notification/view",
+                    "queryParams": {
+                      "id": {
+                        "$subs": {
+                          "path": "#data[]._id"
+                        }
+                      }
+                    }
+                  },
+                  "class": {
+                    "link": {
+                      "$if": {
+                        "condition": {
+                          "===": {
+                            "operand1": {
+                              "$subs": {
+                                "path": "#data[].state"
+                              }
+                            },
+                            "operand2": "new"
+                          }
+                        },
+                        "then": "fw-700",
+                        "else": "fw-400"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selected": {
+            "type": "string",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            }
+          },
+          "createDateTime": {
+            "type": "string",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "label": "Дата получения",
+                "sortable": true,
+                "formatter": "datetime:\"DD.MM.YYYY HH:mm\""
+              },
+              "class": {
+                "value": {
+                  "$if": {
+                    "condition": {
+                      "===": {
+                        "operand1": {
+                          "$subs": {
+                            "path": "#data[].state"
+                          }
+                        },
+                        "operand2": "new"
+                      }
+                    },
+                    "then": "fw-700",
+                    "else": "fw-400"
+                  }
+                }
+              }
+            }
+          },
+          "actions_column": {
+            "type": "object",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "label": "Действия"
+              },
+              "class": {
+                "cell": "column_actions"
+              }
+            },
+            "properties": {
+              "actions": {
+                "type": "array",
+                "model": "actions",
+                "widget": {
+                  "name": "actions-button",
+                  "items": {
+                    "$subs": {
+                      "path": "#data[].actions"
+                    }
+                  }
+                },
+                "items": {
+                  "type": "action",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "widget": "hidden"
+                    },
+                    "title": {
+                      "type": "string",
+                      "widget": "hidden"
+                    },
+                    "icon": {
+                      "type": "string",
+                      "widget": "hidden"
+                    },
+                    "url": {
+                      "type": "string",
+                      "widget": "hidden"
+                    },
+                    "routerLink": {
+                      "type": "string",
+                      "widget": "hidden"
+                    },
+                    "popup": {
+                      "type": "string",
+                      "widget": "hidden"
+                    },
+                    "hidden": {
+                      "type": "string",
+                      "widget": "hidden"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "desktop-filter": {
+      "type": "object",
+      "model": "#desktop-filter",
+      "widget": {
+        "name": "container",
+        "options": {
+          "visible": {
+            "$is-between": {
+              "value": {
+                "$to-pixel": {
+                  "value": {
+                    "$get-window-breakpoint": {
+                      "subscriptionMode": true
+                    }
+                  }
+                }
+              },
+              "lower_value": {
+                "$to-pixel": {
+                  "value": "xxl"
+                }
+              }
+            }
+          }
+        },
+        "class": {
+          "group": "p-xxl-3 filters-block d-xxl-flex d-none",
+          "value": "filters-block_wrapper d-block"
+        }
+      },
+      "properties": {
+        "header": {
+          "model": false,
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "value": "p-autolayout p-jc-between p-ai-center"
+            }
+          },
+          "properties": {
+            "label": {
+              "model": false,
+              "type": "string",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "viewedValue": "Фильтр"
+                },
+                "class": {
+                  "value": "h4"
+                }
+              }
+            }
+          }
+        },
+        "content": {
+          "model": false,
+          "type": "object",
+          "widget": {
+            "name": "container"
+          },
+          "properties": {
+            "received": {
+              "model": false,
+              "type": "object",
+              "widget": {
+                "name": "container",
+                "options": {
+                  "label": "Дата получения"
+                },
+                "class": {
+                  "group": "form-item pdd-b-0 p-col-12",
+                  "label": "form-label form-label_top",
+                  "value": "form-item-element search-form-input"
+                }
+              },
+              "properties": {
+                "dateFrom": {
+                  "type": "datetime",
+                  "widget": {
+                    "name": "calendar",
+                    "options": {
+                      "dataType": "string"
+                    },
+                    "class": {
+                      "group": "form-item-element calendar-range_start p-xs-12 mrg-b-sm"
+                    },
+                    "kind": "calendar-active-user-timezone-offset"
+                  }
+                },
+                "dateTo": {
+                  "type": "datetime",
+                  "widget": {
+                    "name": "calendar",
+                    "options": {
+                      "dataType": "string"
+                    },
+                    "class": {
+                      "group": "form-item-element calendar-range_end p-xs-12"
+                    },
+                    "kind": "calendar-active-user-timezone-offset"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "buttons": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "value": "p-autolayout row p-jc-center"
+            }
+          },
+          "properties": {
+            "search-button": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Применить"
+                },
+                "class": {
+                  "value": "button_narrow button_outline button_clear"
+                },
+                "events": {
+                  "click": {
+                    "$if": {
+                      "condition": {
+                        "$validate": {
+                          "path": "/"
+                        }
+                      },
+                      "then": {
+                        "$waterfall": {
+                          "arrayFunctions": [
+                            {
+                              "$populate": {
+                                "path": "#mobile-filter",
+                                "data": {
+                                  "$var": {
+                                    "path": "#desktop-filter"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "$grid": {
+                                "action": "lazyLoad",
+                                "path": "#data",
+                                "filters": {
+                                  "$assign-object": {
+                                    "object": {
+                                      "$var": {
+                                        "path": "#desktop-filter"
+                                      }
+                                    },
+                                    "data": {
+                                      "$var": {
+                                        "path": "#search"
+                                      }
+                                    },
+                                    "path": "search"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "else": {}
+                    }
+                  }
+                }
+              }
+            },
+            "clear-button": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Сбросить"
+                },
+                "class": {
+                  "value": "button_link"
+                },
+                "events": {
+                  "click": [
+                    {
+                      "$populate": {
+                        "path": "#desktop-filter",
+                        "data": {}
+                      }
+                    },
+                    {
+                      "$populate": {
+                        "path": "#mobile-filter",
+                        "data": {}
+                      }
+                    },
+                    {
+                      "$grid": {
+                        "action": "lazyLoad",
+                        "path": "#data",
+                        "filters": {
+                          "$assign-object": {
+                            "object": {
+                              "$var": {
+                                "path": "#desktop-filter"
+                              }
+                            },
+                            "data": {
+                              "$var": {
+                                "path": "#search"
+                              }
+                            },
+                            "path": "search"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "mobile-filter": {
+      "type": "object",
+      "model": "#modalMobileSearch",
+      "widget": {
+        "name": "dialog",
+        "options": {
+          "visible": false,
+          "closable": true
+        },
+        "class": {
+          "dialog": "no-radius filters-block-mobile",
+          "panel": "dialog-fixed-width"
+        }
+      },
+      "properties": {
+        "content": {
+          "type": "object",
+          "model": "#mobile-filter",
+          "bindRouter": false,
+          "widget": {
+            "name": "container",
+            "class": {
+              "group": "height-fit-content",
+              "value": "filters-block_wrapper"
+            }
+          },
+          "properties": {
+            "header": {
+              "model": false,
+              "type": "object",
+              "widget": {
+                "name": "container",
+                "class": {
+                  "value": "p-autolayout p-jc-between p-ai-center"
+                }
+              },
+              "properties": {
+                "label": {
+                  "model": false,
+                  "type": "string",
+                  "widget": {
+                    "name": "info",
+                    "options": {
+                      "viewedValue": "Фильтры"
+                    },
+                    "class": {
+                      "value": "h3 mrg-b-lg"
+                    }
+                  }
+                }
+              }
+            },
+            "content": {
+              "model": false,
+              "type": "object",
+              "widget": {
+                "name": "container"
+              },
+              "properties": {
+                "received": {
+                  "model": false,
+                  "type": "object",
+                  "widget": {
+                    "name": "container",
+                    "options": {
+                      "label": "Дата получения"
+                    },
+                    "class": {
+                      "group": "form-item pdd-b-0 p-col-12",
+                      "label": "form-label form-label_top",
+                      "value": "form-item-element search-form-input"
+                    }
+                  },
+                  "properties": {
+                    "dateFrom": {
+                      "type": "datetime",
+                      "widget": {
+                        "name": "calendar",
+                        "options": {
+                          "dataType": "string"
+                        },
+                        "class": {
+                          "group": "form-item-element calendar-range_start p-xs-12 mrg-b-sm"
+                        },
+                        "kind": "calendar-active-user-timezone-offset"
+                      }
+                    },
+                    "dateTo": {
+                      "type": "datetime",
+                      "widget": {
+                        "name": "calendar",
+                        "options": {
+                          "dataType": "string"
+                        },
+                        "class": {
+                          "group": "form-item-element calendar-range_end p-xs-12"
+                        },
+                        "kind": "calendar-active-user-timezone-offset"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "buttons": {
+              "type": "object",
+              "widget": {
+                "name": "container",
+                "class": {
+                  "value": "p-autolayout row p-jc-center"
+                }
+              },
+              "properties": {
+                "search-button": {
+                  "widget": {
+                    "name": "button",
+                    "options": {
+                      "label": "Применить"
+                    },
+                    "events": {
+                      "click": {
+                        "$if": {
+                          "condition": {
+                            "$validate": {
+                              "path": "/"
+                            }
+                          },
+                          "then": {
+                            "$waterfall": {
+                              "arrayFunctions": [
+                                {
+                                  "$populate": {
+                                    "path": "#desktop-filter",
+                                    "data": {
+                                      "$var": {
+                                        "path": "#mobile-filter"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "$element-option": {
+                                    "option": "visible",
+                                    "path": "#modalMobileSearch",
+                                    "value": false
+                                  }
+                                },
+                                {
+                                  "$grid": {
+                                    "action": "lazyLoad",
+                                    "path": "#data",
+                                    "filters": {
+                                      "$assign-object": {
+                                        "object": {
+                                          "$var": {
+                                            "path": "#mobile-filter"
+                                          }
+                                        },
+                                        "data": {
+                                          "$var": {
+                                            "path": "#search"
+                                          }
+                                        },
+                                        "path": "search"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          "else": {}
+                        }
+                      }
+                    }
+                  }
+                },
+                "clear-button": {
+                  "widget": {
+                    "name": "button",
+                    "options": {
+                      "label": "Сбросить"
+                    },
+                    "class": {
+                      "value": "button_link"
+                    },
+                    "events": {
+                      "click": [
+                        {
+                          "$populate": {
+                            "path": "#mobile-filter",
+                            "data": {}
+                          }
+                        },
+                        {
+                          "$populate": {
+                            "path": "#desktop-filter",
+                            "data": {}
+                          }
+                        },
+                        {
+                          "$grid": {
+                            "action": "lazyLoad",
+                            "path": "#data",
+                            "filters": {
+                              "$assign-object": {
+                                "object": {
+                                  "$var": {
+                                    "path": "#mobile-filter"
+                                  }
+                                },
+                                "data": {
+                                  "$var": {
+                                    "path": "#search"
+                                  }
+                                },
+                                "path": "search"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "$element-option": {
+                            "option": "visible",
+                            "path": "#modalMobileSearch",
+                            "value": false
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "delete": {
+      "widget": {
+        "name": "button",
+        "options": {
+          "label": "Удалить выбранные",
+          "visible": {
+            "$and": {
+              "operands": [
+                {
+                  "$active-user-has-permission": {
+                    "permission": "notification.delete-multiple"
+                  }
+                },
+                {
+                  ">": {
+                    "operand1": {
+                      "$length": {
+                        "data": {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$element-option": {
+                                    "path": "#data",
+                                    "option": "selection$"
+                                  }
+                                }
+                              }
+                            },
+                            "then": {
+                              "$element-option": {
+                                "path": "#data",
+                                "option": "selection$"
+                              }
+                            },
+                            "else": ""
+                          }
+                        }
+                      }
+                    },
+                    "operand2": 0
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "events": {
+          "click": {
+            "$open-popup": {
+              "workflow": "notification",
+              "action": "delete-multiple",
+              "params": {
+                "id": {
+                  "$element-option": {
+                    "path": "#data",
+                    "option": "selection"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

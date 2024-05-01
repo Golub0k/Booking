@@ -1,0 +1,5 @@
+mutation ($data: CreateOneStopListNoteInput!) {
+  stopListNote: stopListNoteCreateOne(record: $data) {
+    _id
+  }
+}

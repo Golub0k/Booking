@@ -1,0 +1,14 @@
+# @title: Получить наименование помещения
+
+query ($id: MongoID!) {
+  object: roomGet(filter: { _id: $id }) {
+    _id
+    name
+    number
+    type
+    roomType {
+      name
+    }
+    floor
+  }
+}

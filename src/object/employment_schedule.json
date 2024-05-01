@@ -1,0 +1,43 @@
+{
+  "type": "aggregation",
+  "options": {
+    "mode": "many",
+    "extends": "booking"
+  },
+  "properties": {
+    "_id": {
+      "type": "string",
+      "fieldDescription": "Идентификатор брони"
+    },
+    "eventId": {
+      "type": "string",
+      "fieldDescription": "Идентификатор мероприятия"
+    },
+    "roomId": {
+      "type": "string",
+      "fieldDescription": "Идентификатор помещения, в котором проводится мероприятие"
+    },
+    "start": {
+      "type": "datetime",
+      "fieldDescription": "Дата и время начала мероприятия"
+    },
+    "end": {
+      "type": "datetime",
+      "fieldDescription": "Дата и время окончания мероприятия"
+    },
+    "stage": {
+      "type": "string",
+      "fieldDescription": "Этап мероприятия"
+    },
+    "booked": {
+      "type": "boolean",
+      "fieldDescription": "Признак для указания предварительной брони мероприятия"
+    },
+    "partners": [
+      {
+        "type": "string",
+        "fieldDescription": "Идентификатор контрагента"
+      }
+    ]
+  }
+}

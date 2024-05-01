@@ -1,0 +1,10 @@
+query ($creator: String, $eventId: MongoID) {
+  items: eventGet(
+    filter: {
+      AND: [{ _id: $eventId }, { state: "new" }, { createdBy: $creator }]
+    }
+  ) {
+    id: _id
+    name
+  }
+}

@@ -1,0 +1,56 @@
+# @title: Получить экземпляр объекта "Бронь оснащения" в статусе Заполнено
+
+query ($eventId: MongoID) {
+  noDiscountOrMarkupServices: additionalFacilitiesGet(
+    filter: {
+      AND: [
+        { _filterRef: { eventId: { _id: $eventId } } }
+        { discountOrMarkupFlag: no }
+        { state: "filled" }
+        { _operators: { bookingId: { exists: false } } }
+      ]
+    }
+  ) {
+    type
+    serviceId
+    equipmentId
+    furnitureId
+    bookingComment
+    quantity
+    unitPrice
+    totalPrice
+  }
+
+  withDiscountOrMarkupServices: additionalFacilitiesGet(
+    filter: {
+      AND: [
+        { _filterRef: { eventId: { _id: $eventId } } }
+        { _operators: { discountOrMarkupFlag: { in: [discount, markup] } } }
+        { state: "filled" }
+        { _operators: { bookingId: { exists: false } } }
+      ]
+    }
+  ) {
+    type
+    serviceId
+    equipmentId
+    furnitureId
+    bookingComment
+    quantity
+    unitPrice
+    totalPrice
+  }
+
+  withDiscountOrMarkupFacilities: additionalFacilitiesGet(
+    filter: {
+      AND: [
+        { _filterRef: { eventId: { _id: $eventId } } }
+        { _operators: { discountOrMarkupFlag: { in: [discount, markup] } } }
+        { state: "filled" }
+        { _operators: { bookingId: { exists: true } } }
+      ]
+    }
+  ) {
+    id: _id
+  }
+}

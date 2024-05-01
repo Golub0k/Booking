@@ -1,0 +1,2844 @@
+{
+  "version": 2,
+  "objectType": "request",
+  "context": "request/context",
+  "description": "Жизненный цикл заявки",
+  "rbac": {
+    "visible": true,
+    "title": "Заявки"
+  },
+  "actions": {
+    "initialActions": {
+      "add": {
+        "title": "Добавить",
+        "grants": {
+          "rbac": {
+            "enabled": false,
+            "visible": false,
+            "title": "Добавить заявку"
+          }
+        },
+        "views": {},
+        "functions": [
+          {
+            "$workflow-object-create": {
+              "objectType": "request",
+              "query": "request/add",
+              "variables": {
+                "data": {
+                  "$from-context": {
+                    "path": "data"
+                  }
+                }
+              },
+              "responsePath": "request"
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "new"
+        }
+      }
+    },
+    "globalActions": {
+      "list": {
+        "title": "Просмотреть реестр заявок",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Просмотреть реестр заявок"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "request/list",
+            "mode": "form",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "request/list",
+            "user/get_for_dropdown"
+          ]
+        }
+      }
+    },
+    "statesActions": {
+      "view_task": {
+        "title": "Просмотреть",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "permissionCode": "approval_process.view"
+          },
+          "includeInActionsList": {
+            "availableForViews": "notForAny"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "request/view_task",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "request/get_preview"
+          ]
+        }
+      },
+      "view_new": {
+        "title": "Просмотреть",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "permissionCode": "request.view",
+            "title": "Просмотреть заявку"
+          },
+          "includeInActionsList": {
+            "availableForViews": "onlyFor",
+            "views": [
+              "request/list"
+            ]
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "request/view_new",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "default/approval_process/get_id_process",
+            "default/approval_process/tasks_in_process_for_object",
+            "default/approval_process/get_approval_process_history"
+          ]
+        },
+        "topics": [
+          {
+            "routingKey": "workflow.approval_task.resolve",
+            "broadcastBy": "objectId",
+            "filterValueKey": "content.objectId",
+            "data": {
+              "$from-context": {
+                "path": "$wsEvent"
+              }
+            }
+          }
+        ]
+      },
+      "view": {
+        "title": "Просмотреть",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Просмотреть заявку"
+          },
+          "includeInActionsList": {
+            "availableForViews": "onlyFor",
+            "views": [
+              "request/list"
+            ]
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "request/view",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "default/approval_process/get_id_process",
+            "default/approval_process/tasks_in_process_for_object",
+            "default/approval_process/get_approval_process_history"
+          ]
+        }
+      },
+      "view_new_for_booking": {
+        "title": "Просмотреть",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "permissionCode": "request.view",
+            "title": "Просмотреть заявку на изменение брони помещения"
+          },
+          "includeInActionsList": {
+            "availableForViews": "onlyFor",
+            "views": [
+              "request/list"
+            ]
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "request/view_new_for_booking",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "default/approval_process/get_id_process",
+            "default/approval_process/tasks_in_process_for_object",
+            "default/approval_process/get_approval_process_history"
+          ]
+        },
+        "topics": [
+          {
+            "routingKey": "workflow.approval_task.resolve",
+            "broadcastBy": "objectId",
+            "filterValueKey": "content.objectId",
+            "data": {
+              "$from-context": {
+                "path": "$wsEvent"
+              }
+            }
+          }
+        ]
+      },
+      "view_for_booking": {
+        "title": "Просмотреть",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "permissionCode": "request.view",
+            "title": "Просмотреть заявку на изменение брони помещения"
+          },
+          "includeInActionsList": {
+            "availableForViews": "onlyFor",
+            "views": [
+              "request/list"
+            ]
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "request/view_for_booking",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "default/approval_process/get_id_process",
+            "default/approval_process/tasks_in_process_for_object",
+            "default/approval_process/get_approval_process_history"
+          ]
+        }
+      },
+      "view_new_for_additional_facilities": {
+        "title": "Просмотреть",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "permissionCode": "request.view",
+            "title": "Просмотреть заявку на изменение брони оснащения"
+          },
+          "includeInActionsList": {
+            "availableForViews": "onlyFor",
+            "views": [
+              "request/list"
+            ]
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "request/view_new_for_additional_facilities",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "default/approval_process/get_id_process",
+            "default/approval_process/tasks_in_process_for_object",
+            "default/approval_process/get_approval_process_history"
+          ]
+        },
+        "topics": [
+          {
+            "routingKey": "workflow.approval_task.resolve",
+            "broadcastBy": "objectId",
+            "filterValueKey": "content.objectId",
+            "data": {
+              "$from-context": {
+                "path": "$wsEvent"
+              }
+            }
+          }
+        ]
+      },
+      "view_for_additional_facilities": {
+        "title": "Просмотреть",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "permissionCode": "request.view",
+            "title": "Просмотреть заявку на изменение брони оснащения"
+          },
+          "includeInActionsList": {
+            "availableForViews": "onlyFor",
+            "views": [
+              "request/list"
+            ]
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "request/view_for_additional_facilities",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "default/approval_process/get_id_process",
+            "default/approval_process/tasks_in_process_for_object",
+            "default/approval_process/get_approval_process_history"
+          ]
+        }
+      },
+      "submit_for_approval": {
+        "title": "Запустить процесс согласования",
+        "description": "Перевести объект в статус Согласование",
+        "results": {
+          "unconditional": "on_approve"
+        },
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "title": "Запустить процесс согласования",
+            "permissionCode": "approval_process.add"
+          },
+          "includeInActionsList": {
+            "availableForViews": "notForAny"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "default/approval_process/edit",
+            "layout": "cabinet",
+            "mode": "form"
+          }
+        },
+        "functions": [
+          {
+            "$workflow-run": {
+              "action": "edit",
+              "workflowName": "approval_process",
+              "objectId": {
+                "$from-context": {
+                  "path": "data.processId"
+                }
+              },
+              "data": {
+                "$from-context": {
+                  "path": "data.process"
+                }
+              }
+            }
+          },
+          {
+            "$workflow-run": {
+              "action": "to_new",
+              "workflowName": "approval_process",
+              "objectId": {
+                "$from-context": {
+                  "path": "data.processId"
+                }
+              }
+            }
+          },
+          {
+            "$workflow-run": {
+              "workflowName": "approval_process_history",
+              "action": "create",
+              "data": {
+                "approvalProcessId": {
+                  "$from-context": {
+                    "path": "data.processId"
+                  }
+                },
+                "decisionTime": {
+                  "$datetime-now": {}
+                },
+                "typeProcess": "startProcess",
+                "createdBy": {
+                  "$active-user": {
+                    "field": "_id"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "cancel_for_approval": {
+        "title": "Прервать процесс согласования",
+        "description": "Вернуть заявку на одиночное согласование",
+        "results": {
+          "unconditional": "new"
+        },
+        "grants": {
+          "rbac": {
+            "enabled": false
+          },
+          "system": true
+        }
+      },
+      "accept": {
+        "title": "Согласовать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Согласовать заявку"
+          },
+          "includeInActionsList": {
+            "availableForViews": "onlyFor",
+            "views": [
+              "request/view_new",
+              "request/view_new_for_booking",
+              "request/view_new_for_additional_facilities"
+            ]
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "request/accept",
+            "layout": "cabinet",
+            "mode": "popup"
+          }
+        },
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "request/get",
+              "variables": {
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "items.0",
+              "resultPath": "$request"
+            }
+          },
+          {
+            "$if": {
+              "condition": {
+                "===": {
+                  "operand1": {
+                    "$from-context": {
+                      "path": "$request.type"
+                    }
+                  },
+                  "operand2": "cancel"
+                }
+              },
+              "then": {
+                "$waterfall": {
+                  "arrayFunctions": [
+                    {
+                      "$api-data-query": {
+                        "query": "event/update",
+                        "variables": {
+                          "id": {
+                            "$from-context": {
+                              "path": "$request.eventId"
+                            }
+                          },
+                          "data": {
+                            "cancelReason": {
+                              "$from-context": {
+                                "path": "$request.cancelReason"
+                              }
+                            }
+                          }
+                        },
+                        "responsePath": "object"
+                      }
+                    },
+                    {
+                      "$workflow-run": {
+                        "workflowName": "event",
+                        "action": "to_canceled",
+                        "objectId": {
+                          "$from-context": {
+                            "path": "$request.eventId"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "$api-data-query": {
+                        "query": "event/get_request",
+                        "variables": {
+                          "id": {
+                            "$from-context": {
+                              "path": "$request.eventId"
+                            }
+                          }
+                        },
+                        "responsePath": "items.0.requests",
+                        "resultPath": "$request_for_event"
+                      }
+                    },
+                    {
+                      "$workflow-run-from-collection": {
+                        "workflowName": "request",
+                        "action": "reject",
+                        "collection": {
+                          "$from-context": {
+                            "path": "$request_for_event"
+                          }
+                        },
+                        "objectIdPath": "_id"
+                      }
+                    },
+                    {
+                      "$api-data-query": {
+                        "query": "request/update",
+                        "variables": {
+                          "id": {
+                            "$from-context": {
+                              "path": "objectId"
+                            }
+                          },
+                          "data": {
+                            "agreementDate": {
+                              "$datetime-now": {}
+                            }
+                          }
+                        },
+                        "responsePath": "object"
+                      }
+                    }
+                  ]
+                }
+              },
+              "else": {
+                "$if": {
+                  "condition": {
+                    "$or": {
+                      "operands": [
+                        {
+                          "===": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "$request.type"
+                              }
+                            },
+                            "operand2": "edit_event"
+                          }
+                        },
+                        {
+                          "===": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "$request.type"
+                              }
+                            },
+                            "operand2": "edit_cost"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "then": {
+                    "$waterfall": {
+                      "arrayFunctions": [
+                        {
+                          "$api-data-query": {
+                            "query": "event/update_by_id",
+                            "variables": {
+                              "id": {
+                                "$from-context": {
+                                  "path": "$request.eventId"
+                                }
+                              },
+                              "data": {
+                                "$from-context": {
+                                  "path": "$request.eventNew"
+                                }
+                              }
+                            },
+                            "responsePath": "object"
+                          }
+                        },
+                        {
+                          "$api-data-query": {
+                            "query": "request/update",
+                            "variables": {
+                              "id": {
+                                "$from-context": {
+                                  "path": "objectId"
+                                }
+                              },
+                              "data": {
+                                "agreementDate": {
+                                  "$datetime-now": {}
+                                }
+                              }
+                            },
+                            "responsePath": "object"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "else": {
+                    "$if": {
+                      "condition": {
+                        "$or": {
+                          "operands": [
+                            {
+                              "===": {
+                                "operand1": {
+                                  "$from-context": {
+                                    "path": "$request.type"
+                                  }
+                                },
+                                "operand2": "edit_booking"
+                              }
+                            },
+                            {
+                              "===": {
+                                "operand1": {
+                                  "$from-context": {
+                                    "path": "$request.type"
+                                  }
+                                },
+                                "operand2": "edit_booking_cost"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "then": {
+                        "$waterfall": {
+                          "arrayFunctions": [
+                            {
+                              "$assign-context": {
+                                "path": "$bookingRequestDataOld",
+                                "data": {
+                                  "$api-data-query": {
+                                    "query": "booking_request_data/add",
+                                    "variables": {
+                                      "data": {
+                                        "$assign-object": {
+                                          "object": {
+                                            "$api-data-query": {
+                                              "query": "booking/get_for_old_request_data",
+                                              "variables": {
+                                                "id": {
+                                                  "$from-context": {
+                                                    "path": "$request.bookingId"
+                                                  }
+                                                }
+                                              },
+                                              "responsePath": "object"
+                                            }
+                                          },
+                                          "data": {
+                                            "requestDataType": "old"
+                                          },
+                                          "path": ""
+                                        }
+                                      }
+                                    },
+                                    "responsePath": "object"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "$api-data-query": {
+                                "query": "booking/update",
+                                "variables": {
+                                  "id": {
+                                    "$from-context": {
+                                      "path": "$request.bookingId"
+                                    }
+                                  },
+                                  "data": {
+                                    "$if": {
+                                      "condition": {
+                                        "===": {
+                                          "operand1": {
+                                            "$from-context": {
+                                              "path": "$request.type"
+                                            }
+                                          },
+                                          "operand2": "edit_booking"
+                                        }
+                                      },
+                                      "then": {
+                                        "$from-context": {
+                                          "path": "$request.bookingNew"
+                                        }
+                                      },
+                                      "else": {
+                                        "discountOrMarkupFlag": {
+                                          "$from-context": {
+                                            "path": "$request.bookingNew.discountOrMarkupFlag"
+                                          }
+                                        },
+                                        "allPriceWithDiscountOrMarkup": {
+                                          "$from-context": {
+                                            "path": "$request.bookingNew.allPriceWithDiscountOrMarkup"
+                                          }
+                                        },
+                                        "discountOrMarkup": {
+                                          "$from-context": {
+                                            "path": "$request.bookingNew.discountOrMarkup"
+                                          }
+                                        },
+                                        "allPriceMeterWithDiscountOrMarkup": {
+                                          "$from-context": {
+                                            "path": "$request.bookingNew.allPriceMeterWithDiscountOrMarkup"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "responsePath": "object"
+                              }
+                            },
+                            {
+                              "$api-data-query": {
+                                "query": "request/update",
+                                "variables": {
+                                  "id": {
+                                    "$from-context": {
+                                      "path": "objectId"
+                                    }
+                                  },
+                                  "data": {
+                                    "agreementDate": {
+                                      "$datetime-now": {}
+                                    },
+                                    "oldDataBookingId": {
+                                      "$from-context": {
+                                        "path": "$bookingRequestDataOld.id"
+                                      }
+                                    }
+                                  }
+                                },
+                                "responsePath": "object"
+                              }
+                            },
+                            {
+                              "$api-data-query": {
+                                "query": "request/get_for_event_update",
+                                "variables": {
+                                  "id": {
+                                    "$from-context": {
+                                      "path": "objectId"
+                                    }
+                                  }
+                                },
+                                "responsePath": "items.0",
+                                "resultPath": "$cost"
+                              }
+                            },
+                            {
+                              "$api-data-query": {
+                                "query": "event/update",
+                                "variables": {
+                                  "id": {
+                                    "$from-context": {
+                                      "path": "$cost.bookingMain.eventId"
+                                    }
+                                  },
+                                  "data": {
+                                    "totalEventCost": {
+                                      "$math-round": {
+                                        "value": {
+                                          "$sum": {
+                                            "terms": [
+                                              {
+                                                "$from-context": {
+                                                  "path": "$cost.bookingMain.event.totalEventCost"
+                                                }
+                                              },
+                                              {
+                                                "$add": {
+                                                  "multipliers": [
+                                                    {
+                                                      "$if": {
+                                                        "condition": {
+                                                          "!==": {
+                                                            "operand1": {
+                                                              "$from-context": {
+                                                                "path": "$cost.bookingOld.discountOrMarkupFlag"
+                                                              }
+                                                            },
+                                                            "operand2": "no"
+                                                          }
+                                                        },
+                                                        "then": {
+                                                          "$from-context": {
+                                                            "path": "$cost.bookingOld.allPriceWithDiscountOrMarkup"
+                                                          }
+                                                        },
+                                                        "else": {
+                                                          "$from-context": {
+                                                            "path": "$cost.bookingOld.allPrice"
+                                                          }
+                                                        }
+                                                      }
+                                                    },
+                                                    -1
+                                                  ]
+                                                }
+                                              },
+                                              {
+                                                "$if": {
+                                                  "condition": {
+                                                    "!==": {
+                                                      "operand1": {
+                                                        "$from-context": {
+                                                          "path": "$cost.bookingMain.discountOrMarkupFlag"
+                                                        }
+                                                      },
+                                                      "operand2": "no"
+                                                    }
+                                                  },
+                                                  "then": {
+                                                    "$from-context": {
+                                                      "path": "$cost.bookingMain.allPriceWithDiscountOrMarkup"
+                                                    }
+                                                  },
+                                                  "else": {
+                                                    "$from-context": {
+                                                      "path": "$cost.bookingMain.allPrice"
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "exp": -2
+                                      }
+                                    },
+                                    "totalEventCostWithDiscountOrMarkup": {
+                                      "$math-round": {
+                                        "value": {
+                                          "$add": {
+                                            "multipliers": [
+                                              {
+                                                "$math-round": {
+                                                  "value": {
+                                                    "$sum": {
+                                                      "terms": [
+                                                        {
+                                                          "$from-context": {
+                                                            "path": "$cost.bookingMain.event.totalEventCost"
+                                                          }
+                                                        },
+                                                        {
+                                                          "$add": {
+                                                            "multipliers": [
+                                                              {
+                                                                "$if": {
+                                                                  "condition": {
+                                                                    "!==": {
+                                                                      "operand1": {
+                                                                        "$from-context": {
+                                                                          "path": "$cost.bookingOld.discountOrMarkupFlag"
+                                                                        }
+                                                                      },
+                                                                      "operand2": "no"
+                                                                    }
+                                                                  },
+                                                                  "then": {
+                                                                    "$from-context": {
+                                                                      "path": "$cost.bookingOld.allPriceWithDiscountOrMarkup"
+                                                                    }
+                                                                  },
+                                                                  "else": {
+                                                                    "$from-context": {
+                                                                      "path": "$cost.bookingOld.allPrice"
+                                                                    }
+                                                                  }
+                                                                }
+                                                              },
+                                                              -1
+                                                            ]
+                                                          }
+                                                        },
+                                                        {
+                                                          "$if": {
+                                                            "condition": {
+                                                              "!==": {
+                                                                "operand1": {
+                                                                  "$from-context": {
+                                                                    "path": "$cost.bookingMain.discountOrMarkupFlag"
+                                                                  }
+                                                                },
+                                                                "operand2": "no"
+                                                              }
+                                                            },
+                                                            "then": {
+                                                              "$from-context": {
+                                                                "path": "$cost.bookingMain.allPriceWithDiscountOrMarkup"
+                                                              }
+                                                            },
+                                                            "else": {
+                                                              "$from-context": {
+                                                                "path": "$cost.bookingMain.allPrice"
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      ]
+                                                    }
+                                                  },
+                                                  "exp": -2
+                                                }
+                                              },
+                                              {
+                                                "$switch": {
+                                                  "condition": {
+                                                    "$from-context": {
+                                                      "path": "$cost.bookingMain.event.discountOrMarkupFlag"
+                                                    }
+                                                  },
+                                                  "cases": [
+                                                    {
+                                                      "value": "discount",
+                                                      "action": {
+                                                        "$subtract": {
+                                                          "operand1": 1,
+                                                          "operand2": {
+                                                            "$division": {
+                                                              "operand1": {
+                                                                "$from-context": {
+                                                                  "path": "$cost.bookingMain.event.discountOrMarkup"
+                                                                }
+                                                              },
+                                                              "operand2": 100
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    },
+                                                    {
+                                                      "value": "markup",
+                                                      "action": {
+                                                        "$sum": {
+                                                          "terms": [
+                                                            1,
+                                                            {
+                                                              "$division": {
+                                                                "operand1": {
+                                                                  "$from-context": {
+                                                                    "path": "$cost.bookingMain.event.discountOrMarkup"
+                                                                  }
+                                                                },
+                                                                "operand2": 100
+                                                              }
+                                                            }
+                                                          ]
+                                                        }
+                                                      }
+                                                    },
+                                                    {
+                                                      "value": "no",
+                                                      "action": 1
+                                                    }
+                                                  ]
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "exp": -2
+                                      }
+                                    }
+                                  }
+                                },
+                                "responsePath": "object"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "else": {
+                        "$waterfall": {
+                          "arrayFunctions": [
+                            {
+                              "$assign-context": {
+                                "path": "$facilitiesRequestDataOld",
+                                "data": {
+                                  "$api-data-query": {
+                                    "query": "additional_facilities_request_data/add",
+                                    "variables": {
+                                      "data": {
+                                        "$assign-object": {
+                                          "object": {
+                                            "$api-data-query": {
+                                              "query": "additional_facilities/get_for_old_request_data",
+                                              "variables": {
+                                                "id": {
+                                                  "$from-context": {
+                                                    "path": "$request.facilitiesId"
+                                                  }
+                                                }
+                                              },
+                                              "responsePath": "object"
+                                            }
+                                          },
+                                          "data": {
+                                            "requestDataType": "old"
+                                          },
+                                          "path": ""
+                                        }
+                                      }
+                                    },
+                                    "responsePath": "object"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "$api-data-query": {
+                                "query": "additional_facilities/update",
+                                "variables": {
+                                  "id": {
+                                    "$from-context": {
+                                      "path": "$request.facilitiesId"
+                                    }
+                                  },
+                                  "data": {
+                                    "$if": {
+                                      "condition": {
+                                        "===": {
+                                          "operand1": {
+                                            "$from-context": {
+                                              "path": "$request.type"
+                                            }
+                                          },
+                                          "operand2": "edit_facilities"
+                                        }
+                                      },
+                                      "then": {
+                                        "$from-context": {
+                                          "path": "$request.additionalFacilitiesNew"
+                                        }
+                                      },
+                                      "else": {
+                                        "discountOrMarkupFlag": {
+                                          "$from-context": {
+                                            "path": "$request.additionalFacilitiesNew.discountOrMarkupFlag"
+                                          }
+                                        },
+                                        "discountOrMarkup": {
+                                          "$from-context": {
+                                            "path": "$request.additionalFacilitiesNew.discountOrMarkup"
+                                          }
+                                        },
+                                        "unitPriceWithDiscountOrMarkup": {
+                                          "$from-context": {
+                                            "path": "$request.additionalFacilitiesNew.unitPriceWithDiscountOrMarkup"
+                                          }
+                                        },
+                                        "totalPriceWithDiscountOrMarkup": {
+                                          "$from-context": {
+                                            "path": "$request.additionalFacilitiesNew.totalPriceWithDiscountOrMarkup"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "responsePath": "object"
+                              }
+                            },
+                            {
+                              "$api-data-query": {
+                                "query": "request/update",
+                                "variables": {
+                                  "id": {
+                                    "$from-context": {
+                                      "path": "objectId"
+                                    }
+                                  },
+                                  "data": {
+                                    "agreementDate": {
+                                      "$datetime-now": {}
+                                    },
+                                    "oldDataFacilitiesId": {
+                                      "$from-context": {
+                                        "path": "$facilitiesRequestDataOld.id"
+                                      }
+                                    }
+                                  }
+                                },
+                                "responsePath": "object"
+                              }
+                            },
+                            {
+                              "$api-data-query": {
+                                "query": "request/get_for_event_update",
+                                "variables": {
+                                  "id": {
+                                    "$from-context": {
+                                      "path": "objectId"
+                                    }
+                                  }
+                                },
+                                "responsePath": "items.0",
+                                "resultPath": "$cost"
+                              }
+                            },
+                            {
+                              "$api-data-query": {
+                                "query": "event/update",
+                                "variables": {
+                                  "id": {
+                                    "$from-context": {
+                                      "path": "$cost.additionalFacilitiesMain.eventId"
+                                    }
+                                  },
+                                  "data": {
+                                    "totalEventCost": {
+                                      "$math-round": {
+                                        "value": {
+                                          "$sum": {
+                                            "terms": [
+                                              {
+                                                "$from-context": {
+                                                  "path": "$cost.additionalFacilitiesMain.event.totalEventCost"
+                                                }
+                                              },
+                                              {
+                                                "$add": {
+                                                  "multipliers": [
+                                                    {
+                                                      "$if": {
+                                                        "condition": {
+                                                          "!==": {
+                                                            "operand1": {
+                                                              "$from-context": {
+                                                                "path": "$cost.additionalFacilitiesOld.discountOrMarkupFlag"
+                                                              }
+                                                            },
+                                                            "operand2": "no"
+                                                          }
+                                                        },
+                                                        "then": {
+                                                          "$from-context": {
+                                                            "path": "$cost.additionalFacilitiesOld.totalPriceWithDiscountOrMarkup"
+                                                          }
+                                                        },
+                                                        "else": {
+                                                          "$from-context": {
+                                                            "path": "$cost.additionalFacilitiesOld.totalPrice"
+                                                          }
+                                                        }
+                                                      }
+                                                    },
+                                                    -1
+                                                  ]
+                                                }
+                                              },
+                                              {
+                                                "$if": {
+                                                  "condition": {
+                                                    "!==": {
+                                                      "operand1": {
+                                                        "$from-context": {
+                                                          "path": "$cost.additionalFacilitiesMain.discountOrMarkupFlag"
+                                                        }
+                                                      },
+                                                      "operand2": "no"
+                                                    }
+                                                  },
+                                                  "then": {
+                                                    "$from-context": {
+                                                      "path": "$cost.additionalFacilitiesMain.totalPriceWithDiscountOrMarkup"
+                                                    }
+                                                  },
+                                                  "else": {
+                                                    "$from-context": {
+                                                      "path": "$cost.additionalFacilitiesMain.totalPrice"
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "exp": -2
+                                      }
+                                    },
+                                    "totalEventCostWithDiscountOrMarkup": {
+                                      "$math-round": {
+                                        "value": {
+                                          "$add": {
+                                            "multipliers": [
+                                              {
+                                                "$math-round": {
+                                                  "value": {
+                                                    "$sum": {
+                                                      "terms": [
+                                                        {
+                                                          "$from-context": {
+                                                            "path": "$cost.additionalFacilitiesMain.event.totalEventCost"
+                                                          }
+                                                        },
+                                                        {
+                                                          "$add": {
+                                                            "multipliers": [
+                                                              {
+                                                                "$if": {
+                                                                  "condition": {
+                                                                    "!==": {
+                                                                      "operand1": {
+                                                                        "$from-context": {
+                                                                          "path": "$cost.additionalFacilitiesOld.discountOrMarkupFlag"
+                                                                        }
+                                                                      },
+                                                                      "operand2": "no"
+                                                                    }
+                                                                  },
+                                                                  "then": {
+                                                                    "$from-context": {
+                                                                      "path": "$cost.additionalFacilitiesOld.totalPriceWithDiscountOrMarkup"
+                                                                    }
+                                                                  },
+                                                                  "else": {
+                                                                    "$from-context": {
+                                                                      "path": "$cost.additionalFacilitiesOld.totalPrice"
+                                                                    }
+                                                                  }
+                                                                }
+                                                              },
+                                                              -1
+                                                            ]
+                                                          }
+                                                        },
+                                                        {
+                                                          "$if": {
+                                                            "condition": {
+                                                              "!==": {
+                                                                "operand1": {
+                                                                  "$from-context": {
+                                                                    "path": "$cost.additionalFacilitiesMain.discountOrMarkupFlag"
+                                                                  }
+                                                                },
+                                                                "operand2": "no"
+                                                              }
+                                                            },
+                                                            "then": {
+                                                              "$from-context": {
+                                                                "path": "$cost.additionalFacilitiesMain.totalPriceWithDiscountOrMarkup"
+                                                              }
+                                                            },
+                                                            "else": {
+                                                              "$from-context": {
+                                                                "path": "$cost.additionalFacilitiesMain.totalPrice"
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      ]
+                                                    }
+                                                  },
+                                                  "exp": -2
+                                                }
+                                              },
+                                              {
+                                                "$switch": {
+                                                  "condition": {
+                                                    "$from-context": {
+                                                      "path": "$cost.additionalFacilitiesMain.event.discountOrMarkupFlag"
+                                                    }
+                                                  },
+                                                  "cases": [
+                                                    {
+                                                      "value": "discount",
+                                                      "action": {
+                                                        "$subtract": {
+                                                          "operand1": 1,
+                                                          "operand2": {
+                                                            "$division": {
+                                                              "operand1": {
+                                                                "$from-context": {
+                                                                  "path": "$cost.additionalFacilitiesMain.event.discountOrMarkup"
+                                                                }
+                                                              },
+                                                              "operand2": 100
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    },
+                                                    {
+                                                      "value": "markup",
+                                                      "action": {
+                                                        "$sum": {
+                                                          "terms": [
+                                                            1,
+                                                            {
+                                                              "$division": {
+                                                                "operand1": {
+                                                                  "$from-context": {
+                                                                    "path": "$cost.additionalFacilitiesMain.event.discountOrMarkup"
+                                                                  }
+                                                                },
+                                                                "operand2": 100
+                                                              }
+                                                            }
+                                                          ]
+                                                        }
+                                                      }
+                                                    },
+                                                    {
+                                                      "value": "no",
+                                                      "action": 1
+                                                    }
+                                                  ]
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "exp": -2
+                                      }
+                                    }
+                                  }
+                                },
+                                "responsePath": "object"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "accepted"
+        }
+      },
+      "reject": {
+        "title": "Отклонить",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Отклонить заявку"
+          },
+          "includeInActionsList": {
+            "availableForViews": "onlyFor",
+            "views": [
+              "request/view_new",
+              "request/view_new_for_booking",
+              "request/view_new_for_additional_facilities"
+            ]
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "request/reject",
+            "layout": "cabinet",
+            "mode": "popup"
+          }
+        },
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "request/get",
+              "variables": {
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "items.0",
+              "resultPath": "$request"
+            }
+          },
+          {
+            "$if": {
+              "condition": {
+                "$or": {
+                  "operands": [
+                    {
+                      "===": {
+                        "operand1": {
+                          "$from-context": {
+                            "path": "$request.type"
+                          }
+                        },
+                        "operand2": "edit_booking"
+                      }
+                    },
+                    {
+                      "===": {
+                        "operand1": {
+                          "$from-context": {
+                            "path": "$request.type"
+                          }
+                        },
+                        "operand2": "edit_booking_cost"
+                      }
+                    }
+                  ]
+                }
+              },
+              "then": {
+                "$waterfall": {
+                  "arrayFunctions": [
+                    {
+                      "$assign-context": {
+                        "path": "$bookingRequestDataOld",
+                        "data": {
+                          "$api-data-query": {
+                            "query": "booking_request_data/add",
+                            "variables": {
+                              "data": {
+                                "$assign-object": {
+                                  "object": {
+                                    "$api-data-query": {
+                                      "query": "booking/get_for_old_request_data",
+                                      "variables": {
+                                        "id": {
+                                          "$from-context": {
+                                            "path": "$request.bookingId"
+                                          }
+                                        }
+                                      },
+                                      "responsePath": "object"
+                                    }
+                                  },
+                                  "data": {
+                                    "requestDataType": "old"
+                                  },
+                                  "path": ""
+                                }
+                              }
+                            },
+                            "responsePath": "object"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "$api-data-query": {
+                        "query": "request/update",
+                        "variables": {
+                          "id": {
+                            "$from-context": {
+                              "path": "objectId"
+                            }
+                          },
+                          "data": {
+                            "rejectReason": {
+                              "$from-context": {
+                                "path": "data.reason"
+                              }
+                            },
+                            "agreementDate": {
+                              "$datetime-now": {}
+                            },
+                            "oldDataBookingId": {
+                              "$from-context": {
+                                "path": "$bookingRequestDataOld.id"
+                              }
+                            }
+                          }
+                        },
+                        "responsePath": "object"
+                      }
+                    }
+                  ]
+                }
+              },
+              "else": {
+                "$if": {
+                  "condition": {
+                    "$or": {
+                      "operands": [
+                        {
+                          "===": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "$request.type"
+                              }
+                            },
+                            "operand2": "cancel"
+                          }
+                        },
+                        {
+                          "===": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "$request.type"
+                              }
+                            },
+                            "operand2": "edit_event"
+                          }
+                        },
+                        {
+                          "===": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "$request.type"
+                              }
+                            },
+                            "operand2": "edit_cost"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "then": {
+                    "$api-data-query": {
+                      "query": "request/update",
+                      "variables": {
+                        "id": {
+                          "$from-context": {
+                            "path": "objectId"
+                          }
+                        },
+                        "data": {
+                          "rejectReason": {
+                            "$from-context": {
+                              "path": "data.reason"
+                            }
+                          },
+                          "agreementDate": {
+                            "$datetime-now": {}
+                          }
+                        }
+                      },
+                      "responsePath": "object"
+                    }
+                  },
+                  "else": {
+                    "$waterfall": {
+                      "arrayFunctions": [
+                        {
+                          "$assign-context": {
+                            "path": "$facilitiesRequestDataOld",
+                            "data": {
+                              "$api-data-query": {
+                                "query": "additional_facilities_request_data/add",
+                                "variables": {
+                                  "data": {
+                                    "$assign-object": {
+                                      "object": {
+                                        "$api-data-query": {
+                                          "query": "additional_facilities/get_for_old_request_data",
+                                          "variables": {
+                                            "id": {
+                                              "$from-context": {
+                                                "path": "$request.facilitiesId"
+                                              }
+                                            }
+                                          },
+                                          "responsePath": "object"
+                                        }
+                                      },
+                                      "data": {
+                                        "requestDataType": "old"
+                                      },
+                                      "path": ""
+                                    }
+                                  }
+                                },
+                                "responsePath": "object"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "$api-data-query": {
+                            "query": "request/update",
+                            "variables": {
+                              "id": {
+                                "$from-context": {
+                                  "path": "objectId"
+                                }
+                              },
+                              "data": {
+                                "rejectReason": {
+                                  "$from-context": {
+                                    "path": "data.reason"
+                                  }
+                                },
+                                "agreementDate": {
+                                  "$datetime-now": {}
+                                },
+                                "oldDataFacilitiesId": {
+                                  "$from-context": {
+                                    "path": "$facilitiesRequestDataOld.id"
+                                  }
+                                }
+                              }
+                            },
+                            "responsePath": "object"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "rejected"
+        }
+      },
+      "to_rejected": {
+        "title": "Перевести в статус \"Отклонена\"",
+        "grants": {
+          "rbac": {
+            "enabled": false,
+            "title": "Перевести в статус \"Отклонена\""
+          },
+          "system": true
+        },
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "request/get",
+              "variables": {
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "items.0",
+              "resultPath": "$request"
+            }
+          },
+          {
+            "$if": {
+              "condition": {
+                "$or": {
+                  "operands": [
+                    {
+                      "===": {
+                        "operand1": {
+                          "$from-context": {
+                            "path": "$request.type"
+                          }
+                        },
+                        "operand2": "edit_booking"
+                      }
+                    },
+                    {
+                      "===": {
+                        "operand1": {
+                          "$from-context": {
+                            "path": "$request.type"
+                          }
+                        },
+                        "operand2": "edit_booking_cost"
+                      }
+                    }
+                  ]
+                }
+              },
+              "then": {
+                "$waterfall": {
+                  "arrayFunctions": [
+                    {
+                      "$assign-context": {
+                        "path": "$bookingRequestDataOld",
+                        "data": {
+                          "$api-data-query": {
+                            "query": "booking_request_data/add",
+                            "variables": {
+                              "data": {
+                                "$assign-object": {
+                                  "object": {
+                                    "$api-data-query": {
+                                      "query": "booking/get_for_old_request_data",
+                                      "variables": {
+                                        "id": {
+                                          "$from-context": {
+                                            "path": "$request.bookingId"
+                                          }
+                                        }
+                                      },
+                                      "responsePath": "object"
+                                    }
+                                  },
+                                  "data": {
+                                    "requestDataType": "old"
+                                  },
+                                  "path": ""
+                                }
+                              }
+                            },
+                            "responsePath": "object"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "$api-data-query": {
+                        "query": "request/update",
+                        "variables": {
+                          "id": {
+                            "$from-context": {
+                              "path": "objectId"
+                            }
+                          },
+                          "data": {
+                            "rejectReason": "Мероприятие отменено",
+                            "agreementDate": {
+                              "$datetime-now": {}
+                            },
+                            "oldDataBookingId": {
+                              "$from-context": {
+                                "path": "$bookingRequestDataOld.id"
+                              }
+                            }
+                          }
+                        },
+                        "responsePath": "object"
+                      }
+                    }
+                  ]
+                }
+              },
+              "else": {
+                "$if": {
+                  "condition": {
+                    "$or": {
+                      "operands": [
+                        {
+                          "===": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "$request.type"
+                              }
+                            },
+                            "operand2": "cancel"
+                          }
+                        },
+                        {
+                          "===": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "$request.type"
+                              }
+                            },
+                            "operand2": "edit_event"
+                          }
+                        },
+                        {
+                          "===": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "$request.type"
+                              }
+                            },
+                            "operand2": "edit_cost"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "then": {
+                    "$api-data-query": {
+                      "query": "request/update",
+                      "variables": {
+                        "id": {
+                          "$from-context": {
+                            "path": "objectId"
+                          }
+                        },
+                        "data": {
+                          "rejectReason": "Мероприятие отменено",
+                          "agreementDate": {
+                            "$datetime-now": {}
+                          }
+                        }
+                      },
+                      "responsePath": "object"
+                    }
+                  },
+                  "else": {
+                    "$waterfall": {
+                      "arrayFunctions": [
+                        {
+                          "$assign-context": {
+                            "path": "$facilitiesRequestDataOld",
+                            "data": {
+                              "$api-data-query": {
+                                "query": "additional_facilities_request_data/add",
+                                "variables": {
+                                  "data": {
+                                    "$assign-object": {
+                                      "object": {
+                                        "$api-data-query": {
+                                          "query": "additional_facilities/get_for_old_request_data",
+                                          "variables": {
+                                            "id": {
+                                              "$from-context": {
+                                                "path": "$request.facilitiesId"
+                                              }
+                                            }
+                                          },
+                                          "responsePath": "object"
+                                        }
+                                      },
+                                      "data": {
+                                        "requestDataType": "old"
+                                      },
+                                      "path": ""
+                                    }
+                                  }
+                                },
+                                "responsePath": "object"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "$api-data-query": {
+                            "query": "request/update",
+                            "variables": {
+                              "id": {
+                                "$from-context": {
+                                  "path": "objectId"
+                                }
+                              },
+                              "data": {
+                                "rejectReason": "Мероприятие отменено",
+                                "agreementDate": {
+                                  "$datetime-now": {}
+                                },
+                                "oldDataFacilitiesId": {
+                                  "$from-context": {
+                                    "path": "$facilitiesRequestDataOld.id"
+                                  }
+                                }
+                              }
+                            },
+                            "responsePath": "object"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "rejected"
+        }
+      },
+      "to_accepted": {
+        "title": "Перевести в статус \"Согласована\"",
+        "grants": {
+          "rbac": {
+            "enabled": false,
+            "title": "Перевести в статус \"Согласована\""
+          },
+          "system": true
+        },
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "request/get",
+              "variables": {
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "items.0",
+              "resultPath": "$request"
+            }
+          },
+          {
+            "$if": {
+              "condition": {
+                "===": {
+                  "operand1": {
+                    "$from-context": {
+                      "path": "$request.type"
+                    }
+                  },
+                  "operand2": "cancel"
+                }
+              },
+              "then": {
+                "$waterfall": {
+                  "arrayFunctions": [
+                    {
+                      "$api-data-query": {
+                        "query": "event/update",
+                        "variables": {
+                          "id": {
+                            "$from-context": {
+                              "path": "$request.eventId"
+                            }
+                          },
+                          "data": {
+                            "cancelReason": {
+                              "$from-context": {
+                                "path": "$request.cancelReason"
+                              }
+                            }
+                          }
+                        },
+                        "responsePath": "object"
+                      }
+                    },
+                    {
+                      "$workflow-run": {
+                        "workflowName": "event",
+                        "action": "to_canceled",
+                        "objectId": {
+                          "$from-context": {
+                            "path": "$request.eventId"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "$api-data-query": {
+                        "query": "event/get_request",
+                        "variables": {
+                          "id": {
+                            "$from-context": {
+                              "path": "$request.eventId"
+                            }
+                          }
+                        },
+                        "responsePath": "items.0.requests",
+                        "resultPath": "$request_for_event"
+                      }
+                    },
+                    {
+                      "$workflow-run-from-collection": {
+                        "workflowName": "request",
+                        "action": "reject",
+                        "collection": {
+                          "$from-context": {
+                            "path": "$request_for_event"
+                          }
+                        },
+                        "objectIdPath": "_id"
+                      }
+                    },
+                    {
+                      "$api-data-query": {
+                        "query": "request/update",
+                        "variables": {
+                          "id": {
+                            "$from-context": {
+                              "path": "objectId"
+                            }
+                          },
+                          "data": {
+                            "agreementDate": {
+                              "$datetime-now": {}
+                            }
+                          }
+                        },
+                        "responsePath": "object"
+                      }
+                    }
+                  ]
+                }
+              },
+              "else": {
+                "$if": {
+                  "condition": {
+                    "$or": {
+                      "operands": [
+                        {
+                          "===": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "$request.type"
+                              }
+                            },
+                            "operand2": "edit_event"
+                          }
+                        },
+                        {
+                          "===": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "$request.type"
+                              }
+                            },
+                            "operand2": "edit_cost"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "then": {
+                    "$waterfall": {
+                      "arrayFunctions": [
+                        {
+                          "$api-data-query": {
+                            "query": "event/update_by_id",
+                            "variables": {
+                              "id": {
+                                "$from-context": {
+                                  "path": "$request.eventId"
+                                }
+                              },
+                              "data": {
+                                "$from-context": {
+                                  "path": "$request.eventNew"
+                                }
+                              }
+                            },
+                            "responsePath": "object"
+                          }
+                        },
+                        {
+                          "$api-data-query": {
+                            "query": "request/update",
+                            "variables": {
+                              "id": {
+                                "$from-context": {
+                                  "path": "objectId"
+                                }
+                              },
+                              "data": {
+                                "agreementDate": {
+                                  "$datetime-now": {}
+                                }
+                              }
+                            },
+                            "responsePath": "object"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "else": {
+                    "$if": {
+                      "condition": {
+                        "$or": {
+                          "operands": [
+                            {
+                              "===": {
+                                "operand1": {
+                                  "$from-context": {
+                                    "path": "$request.type"
+                                  }
+                                },
+                                "operand2": "edit_booking"
+                              }
+                            },
+                            {
+                              "===": {
+                                "operand1": {
+                                  "$from-context": {
+                                    "path": "$request.type"
+                                  }
+                                },
+                                "operand2": "edit_booking_cost"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "then": {
+                        "$waterfall": {
+                          "arrayFunctions": [
+                            {
+                              "$assign-context": {
+                                "path": "$bookingRequestDataOld",
+                                "data": {
+                                  "$api-data-query": {
+                                    "query": "booking_request_data/add",
+                                    "variables": {
+                                      "data": {
+                                        "$assign-object": {
+                                          "object": {
+                                            "$api-data-query": {
+                                              "query": "booking/get_for_old_request_data",
+                                              "variables": {
+                                                "id": {
+                                                  "$from-context": {
+                                                    "path": "$request.bookingId"
+                                                  }
+                                                }
+                                              },
+                                              "responsePath": "object"
+                                            }
+                                          },
+                                          "data": {
+                                            "requestDataType": "old"
+                                          },
+                                          "path": ""
+                                        }
+                                      }
+                                    },
+                                    "responsePath": "object"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "$api-data-query": {
+                                "query": "booking/update",
+                                "variables": {
+                                  "id": {
+                                    "$from-context": {
+                                      "path": "$request.bookingId"
+                                    }
+                                  },
+                                  "data": {
+                                    "$if": {
+                                      "condition": {
+                                        "===": {
+                                          "operand1": {
+                                            "$from-context": {
+                                              "path": "$request.type"
+                                            }
+                                          },
+                                          "operand2": "edit_booking"
+                                        }
+                                      },
+                                      "then": {
+                                        "$from-context": {
+                                          "path": "$request.bookingNew"
+                                        }
+                                      },
+                                      "else": {
+                                        "discountOrMarkupFlag": {
+                                          "$from-context": {
+                                            "path": "$request.bookingNew.discountOrMarkupFlag"
+                                          }
+                                        },
+                                        "allPriceWithDiscountOrMarkup": {
+                                          "$from-context": {
+                                            "path": "$request.bookingNew.allPriceWithDiscountOrMarkup"
+                                          }
+                                        },
+                                        "discountOrMarkup": {
+                                          "$from-context": {
+                                            "path": "$request.bookingNew.discountOrMarkup"
+                                          }
+                                        },
+                                        "allPriceMeterWithDiscountOrMarkup": {
+                                          "$from-context": {
+                                            "path": "$request.bookingNew.allPriceMeterWithDiscountOrMarkup"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "responsePath": "object"
+                              }
+                            },
+                            {
+                              "$api-data-query": {
+                                "query": "request/update",
+                                "variables": {
+                                  "id": {
+                                    "$from-context": {
+                                      "path": "objectId"
+                                    }
+                                  },
+                                  "data": {
+                                    "agreementDate": {
+                                      "$datetime-now": {}
+                                    },
+                                    "oldDataBookingId": {
+                                      "$from-context": {
+                                        "path": "$bookingRequestDataOld.id"
+                                      }
+                                    }
+                                  }
+                                },
+                                "responsePath": "object"
+                              }
+                            },
+                            {
+                              "$api-data-query": {
+                                "query": "request/get_for_event_update",
+                                "variables": {
+                                  "id": {
+                                    "$from-context": {
+                                      "path": "objectId"
+                                    }
+                                  }
+                                },
+                                "responsePath": "items.0",
+                                "resultPath": "$cost"
+                              }
+                            },
+                            {
+                              "$api-data-query": {
+                                "query": "event/update",
+                                "variables": {
+                                  "id": {
+                                    "$from-context": {
+                                      "path": "$cost.bookingMain.eventId"
+                                    }
+                                  },
+                                  "data": {
+                                    "totalEventCost": {
+                                      "$math-round": {
+                                        "value": {
+                                          "$sum": {
+                                            "terms": [
+                                              {
+                                                "$from-context": {
+                                                  "path": "$cost.bookingMain.event.totalEventCost"
+                                                }
+                                              },
+                                              {
+                                                "$add": {
+                                                  "multipliers": [
+                                                    {
+                                                      "$if": {
+                                                        "condition": {
+                                                          "!==": {
+                                                            "operand1": {
+                                                              "$from-context": {
+                                                                "path": "$cost.bookingOld.discountOrMarkupFlag"
+                                                              }
+                                                            },
+                                                            "operand2": "no"
+                                                          }
+                                                        },
+                                                        "then": {
+                                                          "$from-context": {
+                                                            "path": "$cost.bookingOld.allPriceWithDiscountOrMarkup"
+                                                          }
+                                                        },
+                                                        "else": {
+                                                          "$from-context": {
+                                                            "path": "$cost.bookingOld.allPrice"
+                                                          }
+                                                        }
+                                                      }
+                                                    },
+                                                    -1
+                                                  ]
+                                                }
+                                              },
+                                              {
+                                                "$if": {
+                                                  "condition": {
+                                                    "!==": {
+                                                      "operand1": {
+                                                        "$from-context": {
+                                                          "path": "$cost.bookingMain.discountOrMarkupFlag"
+                                                        }
+                                                      },
+                                                      "operand2": "no"
+                                                    }
+                                                  },
+                                                  "then": {
+                                                    "$from-context": {
+                                                      "path": "$cost.bookingMain.allPriceWithDiscountOrMarkup"
+                                                    }
+                                                  },
+                                                  "else": {
+                                                    "$from-context": {
+                                                      "path": "$cost.bookingMain.allPrice"
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "exp": -2
+                                      }
+                                    },
+                                    "totalEventCostWithDiscountOrMarkup": {
+                                      "$math-round": {
+                                        "value": {
+                                          "$add": {
+                                            "multipliers": [
+                                              {
+                                                "$math-round": {
+                                                  "value": {
+                                                    "$sum": {
+                                                      "terms": [
+                                                        {
+                                                          "$from-context": {
+                                                            "path": "$cost.bookingMain.event.totalEventCost"
+                                                          }
+                                                        },
+                                                        {
+                                                          "$add": {
+                                                            "multipliers": [
+                                                              {
+                                                                "$if": {
+                                                                  "condition": {
+                                                                    "!==": {
+                                                                      "operand1": {
+                                                                        "$from-context": {
+                                                                          "path": "$cost.bookingOld.discountOrMarkupFlag"
+                                                                        }
+                                                                      },
+                                                                      "operand2": "no"
+                                                                    }
+                                                                  },
+                                                                  "then": {
+                                                                    "$from-context": {
+                                                                      "path": "$cost.bookingOld.allPriceWithDiscountOrMarkup"
+                                                                    }
+                                                                  },
+                                                                  "else": {
+                                                                    "$from-context": {
+                                                                      "path": "$cost.bookingOld.allPrice"
+                                                                    }
+                                                                  }
+                                                                }
+                                                              },
+                                                              -1
+                                                            ]
+                                                          }
+                                                        },
+                                                        {
+                                                          "$if": {
+                                                            "condition": {
+                                                              "!==": {
+                                                                "operand1": {
+                                                                  "$from-context": {
+                                                                    "path": "$cost.bookingMain.discountOrMarkupFlag"
+                                                                  }
+                                                                },
+                                                                "operand2": "no"
+                                                              }
+                                                            },
+                                                            "then": {
+                                                              "$from-context": {
+                                                                "path": "$cost.bookingMain.allPriceWithDiscountOrMarkup"
+                                                              }
+                                                            },
+                                                            "else": {
+                                                              "$from-context": {
+                                                                "path": "$cost.bookingMain.allPrice"
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      ]
+                                                    }
+                                                  },
+                                                  "exp": -2
+                                                }
+                                              },
+                                              {
+                                                "$switch": {
+                                                  "condition": {
+                                                    "$from-context": {
+                                                      "path": "$cost.bookingMain.event.discountOrMarkupFlag"
+                                                    }
+                                                  },
+                                                  "cases": [
+                                                    {
+                                                      "value": "discount",
+                                                      "action": {
+                                                        "$subtract": {
+                                                          "operand1": 1,
+                                                          "operand2": {
+                                                            "$division": {
+                                                              "operand1": {
+                                                                "$from-context": {
+                                                                  "path": "$cost.bookingMain.event.discountOrMarkup"
+                                                                }
+                                                              },
+                                                              "operand2": 100
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    },
+                                                    {
+                                                      "value": "markup",
+                                                      "action": {
+                                                        "$sum": {
+                                                          "terms": [
+                                                            1,
+                                                            {
+                                                              "$division": {
+                                                                "operand1": {
+                                                                  "$from-context": {
+                                                                    "path": "$cost.bookingMain.event.discountOrMarkup"
+                                                                  }
+                                                                },
+                                                                "operand2": 100
+                                                              }
+                                                            }
+                                                          ]
+                                                        }
+                                                      }
+                                                    },
+                                                    {
+                                                      "value": "no",
+                                                      "action": 1
+                                                    }
+                                                  ]
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "exp": -2
+                                      }
+                                    }
+                                  }
+                                },
+                                "responsePath": "object"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "else": {
+                        "$waterfall": {
+                          "arrayFunctions": [
+                            {
+                              "$assign-context": {
+                                "path": "$facilitiesRequestDataOld",
+                                "data": {
+                                  "$api-data-query": {
+                                    "query": "additional_facilities_request_data/add",
+                                    "variables": {
+                                      "data": {
+                                        "$assign-object": {
+                                          "object": {
+                                            "$api-data-query": {
+                                              "query": "additional_facilities/get_for_old_request_data",
+                                              "variables": {
+                                                "id": {
+                                                  "$from-context": {
+                                                    "path": "$request.facilitiesId"
+                                                  }
+                                                }
+                                              },
+                                              "responsePath": "object"
+                                            }
+                                          },
+                                          "data": {
+                                            "requestDataType": "old"
+                                          },
+                                          "path": ""
+                                        }
+                                      }
+                                    },
+                                    "responsePath": "object"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "$api-data-query": {
+                                "query": "additional_facilities/update",
+                                "variables": {
+                                  "id": {
+                                    "$from-context": {
+                                      "path": "$request.facilitiesId"
+                                    }
+                                  },
+                                  "data": {
+                                    "$if": {
+                                      "condition": {
+                                        "===": {
+                                          "operand1": {
+                                            "$from-context": {
+                                              "path": "$request.type"
+                                            }
+                                          },
+                                          "operand2": "edit_facilities"
+                                        }
+                                      },
+                                      "then": {
+                                        "$from-context": {
+                                          "path": "$request.additionalFacilitiesNew"
+                                        }
+                                      },
+                                      "else": {
+                                        "discountOrMarkupFlag": {
+                                          "$from-context": {
+                                            "path": "$request.additionalFacilitiesNew.discountOrMarkupFlag"
+                                          }
+                                        },
+                                        "discountOrMarkup": {
+                                          "$from-context": {
+                                            "path": "$request.additionalFacilitiesNew.discountOrMarkup"
+                                          }
+                                        },
+                                        "unitPriceWithDiscountOrMarkup": {
+                                          "$from-context": {
+                                            "path": "$request.additionalFacilitiesNew.unitPriceWithDiscountOrMarkup"
+                                          }
+                                        },
+                                        "totalPriceWithDiscountOrMarkup": {
+                                          "$from-context": {
+                                            "path": "$request.additionalFacilitiesNew.totalPriceWithDiscountOrMarkup"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "responsePath": "object"
+                              }
+                            },
+                            {
+                              "$api-data-query": {
+                                "query": "request/update",
+                                "variables": {
+                                  "id": {
+                                    "$from-context": {
+                                      "path": "objectId"
+                                    }
+                                  },
+                                  "data": {
+                                    "agreementDate": {
+                                      "$datetime-now": {}
+                                    },
+                                    "oldDataFacilitiesId": {
+                                      "$from-context": {
+                                        "path": "$facilitiesRequestDataOld.id"
+                                      }
+                                    }
+                                  }
+                                },
+                                "responsePath": "object"
+                              }
+                            },
+                            {
+                              "$api-data-query": {
+                                "query": "request/get_for_event_update",
+                                "variables": {
+                                  "id": {
+                                    "$from-context": {
+                                      "path": "objectId"
+                                    }
+                                  }
+                                },
+                                "responsePath": "items.0",
+                                "resultPath": "$cost"
+                              }
+                            },
+                            {
+                              "$api-data-query": {
+                                "query": "event/update",
+                                "variables": {
+                                  "id": {
+                                    "$from-context": {
+                                      "path": "$cost.additionalFacilitiesMain.eventId"
+                                    }
+                                  },
+                                  "data": {
+                                    "totalEventCost": {
+                                      "$math-round": {
+                                        "value": {
+                                          "$sum": {
+                                            "terms": [
+                                              {
+                                                "$from-context": {
+                                                  "path": "$cost.additionalFacilitiesMain.event.totalEventCost"
+                                                }
+                                              },
+                                              {
+                                                "$add": {
+                                                  "multipliers": [
+                                                    {
+                                                      "$if": {
+                                                        "condition": {
+                                                          "!==": {
+                                                            "operand1": {
+                                                              "$from-context": {
+                                                                "path": "$cost.additionalFacilitiesOld.discountOrMarkupFlag"
+                                                              }
+                                                            },
+                                                            "operand2": "no"
+                                                          }
+                                                        },
+                                                        "then": {
+                                                          "$from-context": {
+                                                            "path": "$cost.additionalFacilitiesOld.totalPriceWithDiscountOrMarkup"
+                                                          }
+                                                        },
+                                                        "else": {
+                                                          "$from-context": {
+                                                            "path": "$cost.additionalFacilitiesOld.totalPrice"
+                                                          }
+                                                        }
+                                                      }
+                                                    },
+                                                    -1
+                                                  ]
+                                                }
+                                              },
+                                              {
+                                                "$if": {
+                                                  "condition": {
+                                                    "!==": {
+                                                      "operand1": {
+                                                        "$from-context": {
+                                                          "path": "$cost.additionalFacilitiesMain.discountOrMarkupFlag"
+                                                        }
+                                                      },
+                                                      "operand2": "no"
+                                                    }
+                                                  },
+                                                  "then": {
+                                                    "$from-context": {
+                                                      "path": "$cost.additionalFacilitiesMain.totalPriceWithDiscountOrMarkup"
+                                                    }
+                                                  },
+                                                  "else": {
+                                                    "$from-context": {
+                                                      "path": "$cost.additionalFacilitiesMain.totalPrice"
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "exp": -2
+                                      }
+                                    },
+                                    "totalEventCostWithDiscountOrMarkup": {
+                                      "$math-round": {
+                                        "value": {
+                                          "$add": {
+                                            "multipliers": [
+                                              {
+                                                "$math-round": {
+                                                  "value": {
+                                                    "$sum": {
+                                                      "terms": [
+                                                        {
+                                                          "$from-context": {
+                                                            "path": "$cost.additionalFacilitiesMain.event.totalEventCost"
+                                                          }
+                                                        },
+                                                        {
+                                                          "$add": {
+                                                            "multipliers": [
+                                                              {
+                                                                "$if": {
+                                                                  "condition": {
+                                                                    "!==": {
+                                                                      "operand1": {
+                                                                        "$from-context": {
+                                                                          "path": "$cost.additionalFacilitiesOld.discountOrMarkupFlag"
+                                                                        }
+                                                                      },
+                                                                      "operand2": "no"
+                                                                    }
+                                                                  },
+                                                                  "then": {
+                                                                    "$from-context": {
+                                                                      "path": "$cost.additionalFacilitiesOld.totalPriceWithDiscountOrMarkup"
+                                                                    }
+                                                                  },
+                                                                  "else": {
+                                                                    "$from-context": {
+                                                                      "path": "$cost.additionalFacilitiesOld.totalPrice"
+                                                                    }
+                                                                  }
+                                                                }
+                                                              },
+                                                              -1
+                                                            ]
+                                                          }
+                                                        },
+                                                        {
+                                                          "$if": {
+                                                            "condition": {
+                                                              "!==": {
+                                                                "operand1": {
+                                                                  "$from-context": {
+                                                                    "path": "$cost.additionalFacilitiesMain.discountOrMarkupFlag"
+                                                                  }
+                                                                },
+                                                                "operand2": "no"
+                                                              }
+                                                            },
+                                                            "then": {
+                                                              "$from-context": {
+                                                                "path": "$cost.additionalFacilitiesMain.totalPriceWithDiscountOrMarkup"
+                                                              }
+                                                            },
+                                                            "else": {
+                                                              "$from-context": {
+                                                                "path": "$cost.additionalFacilitiesMain.totalPrice"
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      ]
+                                                    }
+                                                  },
+                                                  "exp": -2
+                                                }
+                                              },
+                                              {
+                                                "$switch": {
+                                                  "condition": {
+                                                    "$from-context": {
+                                                      "path": "$cost.additionalFacilitiesMain.event.discountOrMarkupFlag"
+                                                    }
+                                                  },
+                                                  "cases": [
+                                                    {
+                                                      "value": "discount",
+                                                      "action": {
+                                                        "$subtract": {
+                                                          "operand1": 1,
+                                                          "operand2": {
+                                                            "$division": {
+                                                              "operand1": {
+                                                                "$from-context": {
+                                                                  "path": "$cost.additionalFacilitiesMain.event.discountOrMarkup"
+                                                                }
+                                                              },
+                                                              "operand2": 100
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    },
+                                                    {
+                                                      "value": "markup",
+                                                      "action": {
+                                                        "$sum": {
+                                                          "terms": [
+                                                            1,
+                                                            {
+                                                              "$division": {
+                                                                "operand1": {
+                                                                  "$from-context": {
+                                                                    "path": "$cost.additionalFacilitiesMain.event.discountOrMarkup"
+                                                                  }
+                                                                },
+                                                                "operand2": 100
+                                                              }
+                                                            }
+                                                          ]
+                                                        }
+                                                      }
+                                                    },
+                                                    {
+                                                      "value": "no",
+                                                      "action": 1
+                                                    }
+                                                  ]
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "exp": -2
+                                      }
+                                    }
+                                  }
+                                },
+                                "responsePath": "object"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "accepted"
+        }
+      },
+      "delete": {
+        "title": "Удалить",
+        "grants": {
+          "system": true,
+          "rbac": {
+            "enabled": false
+          }
+        },
+        "views": {},
+        "results": {
+          "unconditional": "deleted"
+        }
+      }
+    }
+  },
+  "states": {
+    "new": {
+      "title": "На согласовании",
+      "description": "Заявка находится в процессе согласования",
+      "statesActions": [
+        "view_new",
+        "view_new_for_booking",
+        "view_new_for_additional_facilities",
+        "accept",
+        "reject",
+        "to_rejected",
+        "delete",
+        "submit_for_approval",
+        "view_task"
+      ]
+    },
+    "on_approve": {
+      "title": "На совместном согласовании",
+      "description": "Заявка находится в процессе совместного согласования",
+      "statesActions": [
+        "view_new",
+        "view_new_for_booking",
+        "view_new_for_additional_facilities",
+        "to_rejected",
+        "delete",
+        "cancel_for_approval",
+        "to_accepted",
+        "view_task"
+      ]
+    },
+    "accepted": {
+      "title": "Согласована",
+      "description": "Заявка согласована",
+      "statesActions": [
+        "view",
+        "view_for_booking",
+        "view_for_additional_facilities",
+        "delete",
+        "view_task"
+      ]
+    },
+    "rejected": {
+      "title": "Отклонена",
+      "description": "Заявка отклонена",
+      "statesActions": [
+        "view",
+        "view_for_booking",
+        "view_for_additional_facilities",
+        "delete",
+        "view_task"
+      ]
+    },
+    "deleted": {
+      "title": "Удалено",
+      "description": "Удаленное состояние заявки",
+      "displaySettingsInLists": {
+        "hidden": true
+      },
+      "finish": true
+    }
+  }
+}

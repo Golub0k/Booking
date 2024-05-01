@@ -1,0 +1,199 @@
+{
+  "@title": "Редактирование экземпляра типа услуг",
+  "@preload": {
+    "$from-context": {
+      "path": "$response.body.data.items.0",
+      "data": {
+        "$api-data": {
+          "id": {
+            "$query-params": {
+              "name": "id"
+            }
+          },
+          "options": {
+            "observe": "response"
+          },
+          "variables": {
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            }
+          },
+          "query": "services_type/get"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "model": "#data",
+  "widget": {
+    "name": "form"
+  },
+  "properties": {
+    "header": {
+      "type": "string",
+      "widget": {
+        "name": "info",
+        "options": {
+          "label": "Редактирование типа услуг"
+        },
+        "class": {
+          "label": "h1 mrg-b-lg"
+        }
+      }
+    },
+    "name": {
+      "type": "string",
+      "value": {
+        "$from-context": {
+          "path": "@preload.name"
+        }
+      },
+      "widget": {
+        "name": "input",
+        "options": {
+          "label": "Наименование типа услуг"
+        },
+        "class": {
+          "group": "p-field p-grid p-fluid mrg-b-lg",
+          "label": "form-label form-label_required form-label_top p-col-12",
+          "value": "form-item-element p-col-12"
+        }
+      },
+      "validation": [
+        {
+          "type": "schema",
+          "params": {
+            "rule": {
+              "$not-empty": {
+                "data": {
+                  "$var": {
+                    "path": "."
+                  }
+                }
+              }
+            },
+            "message": "Поле обязательно для заполнения"
+          },
+          "events": [
+            "onBackend",
+            "onUpdate"
+          ]
+        },
+        {
+          "type": "schema",
+          "params": {
+            "rule": {
+              "===": {
+                "operand1": 0,
+                "operand2": {
+                  "$fetch-object": {
+                    "path": "data.count",
+                    "data": {
+                      "$api-data": {
+                        "query": "services_type/name_exists",
+                        "variables": {
+                          "name": {
+                            "$var": {
+                              "path": "."
+                            }
+                          },
+                          "except": {
+                            "$query-params": {
+                              "name": "id"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "message": "Данное наименование уже используется для другого типа услуг"
+          },
+          "events": [
+            "onBackend"
+          ]
+        }
+      ]
+    },
+    "actions": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "form-actions p-field p-grid mrg-t-lg",
+          "value": "p-jc-xs-end p-autolayout"
+        }
+      },
+      "properties": {
+        "save": {
+          "widget": {
+            "name": "submit-button",
+            "options": {
+              "label": "Сохранить",
+              "clientValidation": true,
+              "dataForClientValidation": "/",
+              "showClientValidationErrorsForElement": "form",
+              "showClientValidationErrorMessage": true,
+              "clientValidationErrorMessageSummary": "Ошибка",
+              "clientValidationErrorMessageDetail": "Одно или несколько полей заполнены некорректно",
+              "workflowAction": "services_type.edit",
+              "workflowObjectId": {
+                "$query-params": {
+                  "name": "id"
+                }
+              },
+              "dataForSubmit": {
+                "$filter-empty": {
+                  "data": {
+                    "$var": {
+                      "path": "#data"
+                    }
+                  },
+                  "mode": "clear"
+                }
+              },
+              "showSuccessMessage": true,
+              "successMessageSummary": "Редактирование типа услуг",
+              "successMessageDetail": "Тип услуг успешно изменен",
+              "urlInCaseOfSuccess": "/cabinet/services_type/list",
+              "showServerValidationErrorMessage": true,
+              "serverValidationErrorMessageSummary": "Редактирование типа услуг",
+              "serverValidationErrorMessageDetail": "Форма содержит ошибки",
+              "showOtherErrorMessageSummary": true,
+              "otherErrorMessageSummary": "Редактирование типа услуг",
+              "otherErrorMessageDetail": "Непредвиденная ошибка",
+              "reloadTable": true,
+              "closePopup": true
+            },
+            "class": {
+              "value": "mrg-r-sm"
+            }
+          }
+        },
+        "cancel": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Отмена"
+            },
+            "events": {
+              "click": {
+                "$go": {
+                  "workflow": "services_type",
+                  "action": "list"
+                }
+              }
+            },
+            "class": {
+              "value": "button_outline mrg-r-0 mrg-b-0"
+            }
+          }
+        }
+      }
+    }
+  }
+}

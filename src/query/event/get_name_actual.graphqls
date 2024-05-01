@@ -1,0 +1,18 @@
+query ($id: [MongoID!]) {
+  items: eventGet(
+    _id: $id
+    filter: {
+      AND: [
+        { _operators: { actual: { ne: false } } }
+        {
+          _operators: {
+            state: { nin: ["new", "draft", "canceled", "deleted"] }
+          }
+        }
+      ]
+    }
+  ) {
+    id: _id
+    name
+  }
+}

@@ -1,0 +1,7 @@
+# @title: Создать экземпляры объекта "Тип помещения"
+
+mutation ($data: [CreateRoomTypeInput!]!) {
+  object: roomTypeCreate(records: $data) {
+    id: recordIds
+  }
+}

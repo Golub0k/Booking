@@ -1,0 +1,7 @@
+# @title: Обновить данные экземпляров объекта "Мебель"
+
+mutation ($id: [MongoID!], $data: UpdateFurnitureInput!) {
+  object: furnitureUpdate(_id: $id, record: $data) {
+    numAffected
+  }
+}

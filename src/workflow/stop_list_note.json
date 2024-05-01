@@ -1,0 +1,255 @@
+{
+  "version": 2,
+  "objectType": "stop_list_note",
+  "context": "stop_list_note/context",
+  "description": "Жизненный цикл записи стоп-листа",
+  "rbac": {
+    "visible": true,
+    "title": "Записи стоп-листа"
+  },
+  "actions": {
+    "initialActions": {
+      "add_from_room": {
+        "title": "Добавить",
+        "grants": {
+          "system": true,
+          "rbac": {
+            "enabled": false
+          }
+        },
+        "functions": [
+          {
+            "$assign-context": {
+              "path": "data.number",
+              "data": {
+                "$sum": {
+                  "terms": [
+                    1,
+                    {
+                      "$api-data-query": {
+                        "query": "stop_list_note/count",
+                        "responsePath": "count"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "$workflow-object-create": {
+              "objectType": "stop_list_note",
+              "query": "stop_list_note/add",
+              "variables": {
+                "data": {
+                  "$from-context": {
+                    "path": "data"
+                  }
+                }
+              },
+              "responsePath": "stopListNote"
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "active"
+        }
+      },
+      "add": {
+        "title": "Добавить",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Добавить запись стоп-листа"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "stop_list_note/add",
+            "layout": "cabinet",
+            "mode": "popup"
+          },
+          "availableQueriesInViews": [
+            "room/get_for_dropdown",
+            "booking/get_to_check"
+          ]
+        },
+        "functions": [
+          {
+            "$assign-context": {
+              "path": "data.number",
+              "data": {
+                "$sum": {
+                  "terms": [
+                    1,
+                    {
+                      "$api-data-query": {
+                        "query": "stop_list_note/count",
+                        "responsePath": "count"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "$workflow-object-create": {
+              "objectType": "stop_list_note",
+              "query": "stop_list_note/add",
+              "variables": {
+                "data": {
+                  "$from-context": {
+                    "path": "data"
+                  }
+                }
+              },
+              "responsePath": "stopListNote"
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "active"
+        }
+      }
+    },
+    "globalActions": {
+      "list": {
+        "title": "Просмотреть стоп-лист",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Просмотреть реестр записей стоп-листа"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "stop_list_note/list",
+            "mode": "form",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "stop_list_note/list",
+            "room/get_for_dropdown"
+          ]
+        }
+      }
+    },
+    "statesActions": {
+      "view": {
+        "title": "Просмотреть",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Просмотреть запись стоп-листа"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "stop_list_note/view",
+            "layout": "cabinet",
+            "mode": "popup"
+          },
+          "availableQueriesInViews": [
+            "stop_list_note/get"
+          ]
+        }
+      },
+      "edit": {
+        "title": "Редактировать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Редактировать запись стоп-листа"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "stop_list_note/edit",
+            "layout": "cabinet",
+            "mode": "popup"
+          },
+          "availableQueriesInViews": [
+            "stop_list_note/get",
+            "room/get_for_dropdown",
+            "booking/get_to_check"
+          ]
+        },
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "stop_list_note/update",
+              "variables": {
+                "$assign-object": {
+                  "path": "data",
+                  "data": {
+                    "$from-context": {
+                      "path": "data"
+                    }
+                  },
+                  "object": {
+                    "id": {
+                      "$from-context": {
+                        "path": "objectId"
+                      }
+                    }
+                  }
+                }
+              },
+              "responsePath": "object"
+            }
+          }
+        ]
+      },
+      "delete": {
+        "title": "Удалить",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Удалить запись стоп-листа"
+          },
+          "includeInActionsList": {
+            "availableForViews": "onlyFor",
+            "views": [
+              "stop_list_note/list"
+            ]
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "stop_list_note/delete",
+            "layout": "cabinet",
+            "mode": "popup"
+          }
+        },
+        "results": {
+          "unconditional": "deleted"
+        }
+      }
+    }
+  },
+  "states": {
+    "active": {
+      "title": "Активно",
+      "description": "Активное состояние помещения",
+      "statesActions": [
+        "view",
+        "edit",
+        "delete"
+      ]
+    },
+    "deleted": {
+      "title": "Удалено",
+      "description": "Удаленное состояние помещения",
+      "displaySettingsInLists": {
+        "hidden": true
+      },
+      "finish": true
+    }
+  }
+}

@@ -1,0 +1,498 @@
+{
+  "@title": "Редактирование мебели",
+  "@preload": {
+    "$from-context": {
+      "path": "$response.body.data.items.0",
+      "data": {
+        "$api-data": {
+          "id": {
+            "$query-params": {
+              "name": "id"
+            }
+          },
+          "options": {
+            "observe": "response"
+          },
+          "variables": {
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            }
+          },
+          "query": "furniture/get"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "model": "#data",
+  "widget": {
+    "name": "container"
+  },
+  "properties": {
+    "header": {
+      "type": "string",
+      "model": false,
+      "widget": {
+        "name": "info",
+        "options": {
+          "label": "Редактирование мебели"
+        },
+        "class": {
+          "group": "popup",
+          "label": "h1 mrg-b-lg"
+        }
+      }
+    },
+    "object": {
+      "type": "object",
+      "value": {
+        "$from-context": {
+          "path": "@preload"
+        }
+      },
+      "widget": {
+        "name": "container"
+      },
+      "properties": {
+        "name": {
+          "type": "string",
+          "widget": {
+            "name": "input",
+            "options": {
+              "label": "Наименование мебели"
+            },
+            "class": {
+              "group": "p-field p-grid p-fluid mrg-b-lg",
+              "label": "form-label form-label_required form-label_top p-col-12",
+              "value": "form-item-element p-col-12"
+            }
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$not-empty": {
+                    "data": {
+                      "$var": {
+                        "path": "."
+                      }
+                    }
+                  }
+                },
+                "message": "Поле обязательно для заполнения"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            }
+          ]
+        },
+        "owner": {
+          "type": "string",
+          "widget": {
+            "name": "dropdown",
+            "options": {
+              "label": "Собственник",
+              "placeholder": "Выбрать",
+              "optionLabel": "name",
+              "filter": true,
+              "showClear": true,
+              "dataKey": "id",
+              "valueKey": "id",
+              "valueOptions": {
+                "$from-context": {
+                  "path": "$response.body.data.items",
+                  "data": {
+                    "$api-data": {
+                      "query": "owner_code/get_for_select",
+                      "id": {
+                        "$query-params": {
+                          "name": "id"
+                        }
+                      },
+                      "options": {
+                        "observe": "response"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "class": {
+              "group": "p-field p-grid p-fluid mrg-b-lg",
+              "label": "form-label form-label_required form-label_top p-col-12",
+              "value": "form-item-element p-col-12"
+            }
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$not-empty": {
+                    "data": {
+                      "$var": {
+                        "path": "."
+                      }
+                    }
+                  }
+                },
+                "message": "Поле обязательно для заполнения"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            }
+          ]
+        },
+        "nomenclatureNumber": {
+          "type": "string",
+          "widget": {
+            "name": "input",
+            "options": {
+              "label": "Номенклатурный номер"
+            },
+            "class": {
+              "group": "p-field p-grid p-fluid mrg-b-lg",
+              "label": "form-label form-label_required form-label_top p-col-12",
+              "value": "form-item-element p-col-12"
+            }
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$not-empty": {
+                    "data": {
+                      "$var": {
+                        "path": "."
+                      }
+                    }
+                  }
+                },
+                "message": "Поле обязательно для заполнения"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            }
+          ]
+        },
+        "unitPrice": {
+          "type": "number",
+          "widget": {
+            "name": "input",
+            "options": {
+              "label": "Цена за единицу (руб.)",
+              "inputmask": {
+                "alias": "decimal",
+                "integerDigits": 15,
+                "groupSeparator": " ",
+                "autoGroup": true,
+                "rightAlign": false,
+                "allowMinus": false,
+                "digits": 2,
+                "radixPoint": ","
+              }
+            },
+            "class": {
+              "group": "p-field p-grid p-fluid mrg-b-lg",
+              "label": "form-label form-label_required form-label_top p-col-12",
+              "value": "form-item-element p-col-12"
+            }
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$not-empty": {
+                    "data": {
+                      "$var": {
+                        "path": "."
+                      }
+                    }
+                  }
+                },
+                "message": "Поле обязательно для заполнения"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            },
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$if": {
+                    "condition": {
+                      "$empty": {
+                        "data": {
+                          "$var": {
+                            "path": "."
+                          }
+                        }
+                      }
+                    },
+                    "then": true,
+                    "else": {
+                      ">": {
+                        "operand1": {
+                          "$var": {
+                            "path": "."
+                          }
+                        },
+                        "operand2": 0
+                      }
+                    }
+                  }
+                },
+                "message": "Должно быть указано положительное число"
+              },
+              "events": [
+                "onUpdate",
+                "onBackend"
+              ]
+            }
+          ]
+        },
+        "availableQuantity": {
+          "type": "number",
+          "widget": {
+            "name": "input",
+            "options": {
+              "label": "Доступное количество (ед.)",
+              "visible": {
+                "===": {
+                  "operand1": {
+                    "$subs": {
+                      "path": "#data.object.owner"
+                    }
+                  },
+                  "operand2": "6482cf0f77320bfd758ee52d"
+                }
+              },
+              "inputmask": {
+                "alias": "decimal",
+                "integerDigits": 12,
+                "groupSeparator": " ",
+                "autoGroup": true,
+                "rightAlign": false,
+                "allowMinus": false,
+                "digits": 0
+              }
+            },
+            "class": {
+              "group": "p-field p-grid p-fluid mrg-b-lg",
+              "label": "form-label form-label_required form-label_top p-col-12",
+              "value": "form-item-element p-col-12"
+            }
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$if": {
+                    "condition": {
+                      "$and": {
+                        "operands": [
+                          {
+                            "===": {
+                              "operand1": {
+                                "$var": {
+                                  "path": "#data.object.owner"
+                                }
+                              },
+                              "operand2": "6482cf0f77320bfd758ee52d"
+                            }
+                          },
+                          {
+                            "$empty": {
+                              "data": {
+                                "$var": {
+                                  "path": "."
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "then": false,
+                    "else": true
+                  }
+                },
+                "message": "Поле обязательно для заполнения"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            },
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$if": {
+                    "condition": {
+                      "$and": {
+                        "operands": [
+                          {
+                            "===": {
+                              "operand1": {
+                                "$var": {
+                                  "path": "#data.object.owner"
+                                }
+                              },
+                              "operand2": "6482cf0f77320bfd758ee52d"
+                            }
+                          },
+                          {
+                            "<=": {
+                              "operand1": {
+                                "$var": {
+                                  "path": "."
+                                }
+                              },
+                              "operand2": 0
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "then": false,
+                    "else": true
+                  }
+                },
+                "message": "Должно быть указано целое положительное число"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            }
+          ]
+        },
+        "comment": {
+          "type": "string",
+          "widget": {
+            "name": "input",
+            "options": {
+              "label": "Примечание"
+            },
+            "class": {
+              "group": "p-field p-grid p-fluid mrg-b-lg",
+              "label": "form-label p-xs-12 p-md-4 p-xl-3",
+              "value": "form-item-element p-col-12"
+            }
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "form-actions p-field p-grid mrg-t-lg",
+          "value": "p-jc-xs-end p-autolayout"
+        }
+      },
+      "properties": {
+        "add": {
+          "widget": {
+            "name": "submit-button",
+            "options": {
+              "label": "Сохранить",
+              "clientValidation": true,
+              "dataForClientValidation": "/",
+              "showClientValidationErrorsForElement": "form",
+              "showClientValidationErrorMessage": true,
+              "clientValidationErrorMessageSummary": "Ошибка",
+              "clientValidationErrorMessageDetail": "Одно или несколько полей заполнены некорректно",
+              "workflowAction": "furniture.edit",
+              "workflowObjectId": {
+                "$query-params": {
+                  "name": "id"
+                }
+              },
+              "dataForSubmit": {
+                "$if": {
+                  "condition": {
+                    "===": {
+                      "operand1": {
+                        "$var": {
+                          "path": "#data.object.owner"
+                        }
+                      },
+                      "operand2": "6482cfa777320b3c0b8ee52f"
+                    }
+                  },
+                  "then": {
+                    "$assign-object": {
+                      "path": "availableQuantity",
+                      "data": null,
+                      "object": {
+                        "$var": {
+                          "path": "#data.object"
+                        }
+                      }
+                    }
+                  },
+                  "else": {
+                    "$var": {
+                      "path": "#data.object"
+                    }
+                  }
+                }
+              },
+              "showSuccessMessage": true,
+              "successMessageSummary": "Редактирование мебели",
+              "successMessageDetail": "Мебель успешно изменена",
+              "urlInCaseOfSuccess": "/cabinet/furniture/list",
+              "showServerValidationErrorMessage": true,
+              "serverValidationErrorMessageSummary": "Редактирование мебели",
+              "serverValidationErrorMessageDetail": "Форма содержит ошибки",
+              "showOtherErrorMessageSummary": true,
+              "otherErrorMessageSummary": "Редактирование мебели",
+              "otherErrorMessageDetail": "Непредвиденная ошибка",
+              "reloadTable": true,
+              "closePopup": true
+            },
+            "class": {
+              "value": "mrg-r-sm"
+            }
+          }
+        },
+        "cancel": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Отмена"
+            },
+            "events": {
+              "click": {
+                "$go": {
+                  "workflow": "furniture",
+                  "action": "list"
+                }
+              }
+            },
+            "class": {
+              "value": "button_outline mrg-r-0 mrg-b-0"
+            }
+          }
+        }
+      }
+    }
+  }
+}

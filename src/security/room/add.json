@@ -1,0 +1,14 @@
+{
+  "backend-validation": {
+    "enabled": true,
+    "options": {
+      "schema": "room/add",
+      "data": {
+        "$post-params": {
+          "name": null
+        }
+      },
+      "path": "#data.room"
+    }
+  }
+}

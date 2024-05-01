@@ -1,0 +1,24 @@
+query ($start: DateTime!, $end: DateTime!, $events: [String]!, $partners: [String]!, $partnersSelect: String!) {
+  items: EmploymentSchedule(
+    collection: "Booking"
+    aggregation: {
+      query: "booking/employment_schedule"
+      params: {
+        startParam: $start
+        endParam: $end
+        eventsParam: $events
+        partnersParam: $partners
+        partnersSelectParam: $partnersSelect
+      }
+    }
+  ) {
+    id: _id
+    eventId
+    roomId
+    stage
+    booked
+    start
+    end
+    partners
+  }
+}

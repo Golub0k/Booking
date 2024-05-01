@@ -1,0 +1,15 @@
+query {
+  pagination: eventPagination(
+    filter: {
+      AND: [
+        { _operators: { actual: { ne: false } } }
+        { _operators: { state: { nin: ["draft", "new"] } } }
+      ]
+    }
+  ) {
+    count
+    items {
+      id: _id
+    }
+  }
+}

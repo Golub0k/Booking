@@ -1,0 +1,601 @@
+{
+  "meta": {
+    "title": "Меню для Личного кабинета",
+    "description": "Меню для Личного кабинета"
+  },
+  "schema": {
+    "user-index": {
+      "type": "string",
+      "widget": {
+        "name": "menu-item",
+        "options": {
+          "icon": "menu-icon icon-home",
+          "label": "Рабочий стол",
+          "workflowAction": "user.index",
+          "visible": false
+        }
+      }
+    },
+    "group-0": {
+      "type": "object",
+      "widget": {
+        "name": "menu-item",
+        "options": {
+          "icon": "menu-icon icon-users",
+          "label": "Моя организация",
+          "type": "group",
+          "visible": false
+        }
+      },
+      "properties": {
+        "organization-profile": {
+          "type": "string",
+          "widget": {
+            "name": "menu-item",
+            "options": {
+              "label": "Профиль организации",
+              "workflowAction": "organization.profile",
+              "rbac": true,
+              "permissions": "organization.profile"
+            }
+          }
+        },
+        "user-list-my-employees": {
+          "type": "string",
+          "widget": {
+            "name": "menu-item",
+            "options": {
+              "label": "Пользователи",
+              "workflowAction": "user.list-my-employees",
+              "rbac": true,
+              "permissions": "user.list-my-employees"
+            }
+          }
+        }
+      }
+    },
+    "group-1": {
+      "type": "object",
+      "widget": {
+        "name": "menu-item",
+        "options": {
+          "icon": "menu-icon icon-events",
+          "label": "Мероприятия",
+          "type": "group"
+        }
+      },
+      "properties": {
+        "event-list": {
+          "type": "string",
+          "widget": {
+            "name": "menu-item",
+            "options": {
+              "label": "Реестр мероприятий",
+              "workflowAction": "event.list",
+              "rbac": true,
+              "permissions": "event.list",
+              "visible": {
+                "$active-user-has-permission": {
+                  "permission": "event.list"
+                }
+              }
+            }
+          }
+        },
+        "event_group-list": {
+          "type": "string",
+          "widget": {
+            "name": "menu-item",
+            "options": {
+              "label": "Группы мероприятий",
+              "workflowAction": "event_group.list",
+              "rbac": true,
+              "permissions": "event_group.list",
+              "visible": {
+                "$active-user-has-permission": {
+                  "permission": "event_group.list"
+                }
+              }
+            }
+          }
+        },
+        "event-calendar": {
+          "type": "string",
+          "widget": {
+            "name": "menu-item",
+            "options": {
+              "label": "Календарь мероприятий",
+              "workflowAction": "event.calendar",
+              "rbac": true,
+              "permissions": "event.calendar",
+              "visible": {
+                "$active-user-has-permission": {
+                  "permission": "event.calendar"
+                }
+              }
+            }
+          }
+        },
+        "event-list-employment-schedule": {
+          "type": "string",
+          "widget": {
+            "name": "menu-item",
+            "options": {
+              "label": "График занятости",
+              "workflowAction": "event.list-employment-schedule",
+              "rbac": true,
+              "permissions": "event.list-employment-schedule",
+              "visible": {
+                "$active-user-has-permission": {
+                  "permission": "event.list-employment-schedule"
+                }
+              }
+            }
+          }
+        },
+        "request-list": {
+          "type": "string",
+          "widget": {
+            "name": "menu-item",
+            "options": {
+              "label": "Заявки",
+              "workflowAction": "request.list",
+              "rbac": true,
+              "permissions": "request.list",
+              "visible": {
+                "$active-user-has-permission": {
+                  "permission": "request.list"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "group-2": {
+      "type": "object",
+      "widget": {
+        "name": "menu-item",
+        "options": {
+          "icon": "menu-icon icon-organization",
+          "label": "Помещения",
+          "type": "group"
+        }
+      },
+      "properties": {
+        "room-list": {
+          "type": "string",
+          "widget": {
+            "name": "menu-item",
+            "options": {
+              "label": "Реестр помещений",
+              "workflowAction": "room.list",
+              "rbac": true,
+              "permissions": "room.list",
+              "visible": {
+                "$active-user-has-permission": {
+                  "permission": "room.list"
+                }
+              }
+            }
+          }
+        },
+        "stop_list_note-list": {
+          "type": "string",
+          "widget": {
+            "name": "menu-item",
+            "options": {
+              "label": "Стоп-лист",
+              "workflowAction": "stop_list_note.list",
+              "rbac": true,
+              "permissions": "stop_list_note.list",
+              "visible": {
+                "$active-user-has-permission": {
+                  "permission": "stop_list_note.list"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "notification-list": {
+      "type": "string",
+      "widget": {
+        "name": "menu-item",
+        "options": {
+          "icon": "menu-icon icon-notifications",
+          "label": "Уведомления",
+          "workflowAction": "notification.list",
+          "rbac": true,
+          "permissions": "notification.list",
+          "visible": false
+        }
+      }
+    },
+    "partner-list": {
+      "type": "string",
+      "widget": {
+        "name": "menu-item",
+        "options": {
+          "icon": "menu-icon icon-my-contracts",
+          "label": "Контрагенты",
+          "workflowAction": "partner.list",
+          "routerLink": "/cabinet/partner/list",
+          "rbac": true,
+          "permissions": "partner.list",
+          "visible": {
+            "$active-user-has-permission": {
+              "permission": "partner.list"
+            }
+          }
+        }
+      }
+    },
+    "group-3": {
+      "type": "object",
+      "widget": {
+        "name": "menu-item",
+        "options": {
+          "icon": "menu-icon icon-directories",
+          "label": "Справочники",
+          "type": "group"
+        }
+      },
+      "properties": {
+        "room_type-list": {
+          "type": "string",
+          "widget": {
+            "name": "menu-item",
+            "options": {
+              "label": "Типы помещений",
+              "workflowAction": "room_type.list",
+              "rbac": true,
+              "permissions": "room_type.list",
+              "visible": {
+                "$active-user-has-permission": {
+                  "permission": "room_type.list"
+                }
+              }
+            }
+          }
+        },
+        "nsi_oksm-list": {
+          "type": "string",
+          "widget": {
+            "name": "menu-item",
+            "options": {
+              "label": "Страны",
+              "workflowAction": "nsi_oksm.list",
+              "rbac": true,
+              "permissions": "nsi_oksm.list",
+              "visible": {
+                "$active-user-has-permission": {
+                  "permission": "nsi_oksm.list"
+                }
+              }
+            }
+          }
+        },
+        "services_type-list": {
+          "type": "string",
+          "widget": {
+            "name": "menu-item",
+            "options": {
+              "label": "Типы услуг",
+              "workflowAction": "services_type.list",
+              "rbac": true,
+              "permissions": "services_type.list",
+              "visible": {
+                "$active-user-has-permission": {
+                  "permission": "services_type.list"
+                }
+              }
+            }
+          }
+        },
+        "additional_service-list": {
+          "type": "string",
+          "widget": {
+            "name": "menu-item",
+            "options": {
+              "label": "Дополнительные услуги",
+              "workflowAction": "additional_service.list",
+              "rbac": true,
+              "permissions": "additional_service.list",
+              "visible": {
+                "$active-user-has-permission": {
+                  "permission": "additional_service.list"
+                }
+              }
+            }
+          }
+        },
+        "equipment-list": {
+          "type": "string",
+          "widget": {
+            "name": "menu-item",
+            "options": {
+              "label": "Оборудование",
+              "workflowAction": "equipment.list",
+              "rbac": true,
+              "permissions": "equipment.list",
+              "visible": {
+                "$active-user-has-permission": {
+                  "permission": "equipment.list"
+                }
+              }
+            }
+          }
+        },
+        "furniture-list": {
+          "type": "string",
+          "widget": {
+            "name": "menu-item",
+            "options": {
+              "label": "Мебель",
+              "workflowAction": "furniture.list",
+              "rbac": true,
+              "permissions": "furniture.list",
+              "visible": {
+                "$active-user-has-permission": {
+                  "permission": "furniture.list"
+                }
+              }
+            }
+          }
+        },
+        "event_type-list": {
+          "type": "string",
+          "widget": {
+            "name": "menu-item",
+            "options": {
+              "label": "Виды мероприятий",
+              "workflowAction": "event_type.list",
+              "rbac": true,
+              "permissions": "event_type.list",
+              "visible": {
+                "$active-user-has-permission": {
+                  "permission": "event_type.list"
+                }
+              }
+            }
+          }
+        },
+        "industry-list": {
+          "type": "string",
+          "widget": {
+            "name": "menu-item",
+            "options": {
+              "label": "Отрасли",
+              "workflowAction": "industry.list",
+              "rbac": true,
+              "permissions": "industry.list",
+              "visible": {
+                "$active-user-has-permission": {
+                  "permission": "industry.list"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "report-list": {
+      "type": "string",
+      "widget": {
+        "name": "menu-item",
+        "options": {
+          "icon": "menu-icon icon-report",
+          "label": "Отчеты",
+          "workflowAction": "report.list",
+          "routerLink": "/cabinet/report/list",
+          "rbac": true,
+          "permissions": "report.list",
+          "visible": {
+            "$active-user-has-permission": {
+              "permission": "report.list"
+            }
+          }
+        }
+      }
+    },
+    "approval-task-list": {
+      "type": "string",
+      "widget": {
+        "name": "menu-item",
+        "options": {
+          "icon": "icon-contracts",
+          "label": "Мои задачи",
+          "workflowAction": "approval_task.list",
+          "routerLink": "/cabinet/approval_task/list",
+          "rbac": true,
+          "permissions": "approval_task.list",
+          "visible": {
+            "$active-user-has-permission": {
+              "permission": "approval_task.list"
+            }
+          }
+        }
+      }
+    },
+    "separator-0": {
+      "type": "string",
+      "widget": {
+        "name": "menu-item",
+        "options": {
+          "type": "separator"
+        }
+      }
+    },
+    "system-journal-list": {
+      "type": "string",
+      "widget": {
+        "name": "menu-item",
+        "options": {
+          "icon": "menu-icon icon-clock-menu",
+          "label": "Журнал событий",
+          "workflowAction": "system-journal.list",
+          "rbac": true,
+          "permissions": "system-journal.list",
+          "visible": {
+            "$active-user-has-permission": {
+              "permission": "system-journal.list"
+            }
+          }
+        }
+      }
+    },
+    "group-4": {
+      "type": "object",
+      "widget": {
+        "name": "menu-item",
+        "options": {
+          "type": "group",
+          "icon": "menu-icon icon-organization",
+          "label": "Организации и пользователи",
+          "visible": false
+        }
+      },
+      "properties": {
+        "organization-list": {
+          "type": "string",
+          "widget": {
+            "name": "menu-item",
+            "options": {
+              "label": "Организации",
+              "workflowAction": "organization.list",
+              "rbac": true,
+              "permissions": "organization.list",
+              "visible": {
+                "$active-user-has-permission": {
+                  "permission": "organization.list"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "group-5": {
+      "type": "object",
+      "widget": {
+        "name": "menu-item",
+        "options": {
+          "icon": "menu-icon icon-settings",
+          "label": "Администрирование",
+          "type": "group"
+        }
+      },
+      "properties": {
+        "user-list": {
+          "type": "string",
+          "widget": {
+            "name": "menu-item",
+            "options": {
+              "label": "Пользователи",
+              "workflowAction": "user.list",
+              "rbac": true,
+              "permissions": "user.list",
+              "visible": {
+                "$active-user-has-permission": {
+                  "permission": "user.list"
+                }
+              }
+            }
+          }
+        },
+        "user-role-list": {
+          "type": "string",
+          "widget": {
+            "name": "menu-item",
+            "options": {
+              "label": "Роли пользователей",
+              "workflowAction": "user-role.list",
+              "rbac": true,
+              "permissions": "user-role.list",
+              "visible": {
+                "$active-user-has-permission": {
+                  "permission": "user-role.list"
+                }
+              }
+            }
+          }
+        },
+        "settings-list": {
+          "type": "string",
+          "widget": {
+            "name": "menu-item",
+            "options": {
+              "label": "Системные настройки",
+              "workflowAction": "settings.list",
+              "rbac": true,
+              "permissions": "settings.list",
+              "visible": {
+                "$active-user-has-permission": {
+                  "permission": "settings.list"
+                }
+              }
+            }
+          }
+        },
+        "notification-list-sent": {
+          "type": "string",
+          "widget": {
+            "name": "menu-item",
+            "options": {
+              "label": "Исходящие уведомления",
+              "workflowAction": "notification.list-sent",
+              "rbac": true,
+              "permissions": "notification.list-sent",
+              "visible": false
+            }
+          }
+        },
+        "settings-list-configurator": {
+          "type": "string",
+          "widget": {
+            "name": "menu-item",
+            "options": {
+              "label": "Системные настройки (админка)",
+              "workflowAction": "settings.list-configurator",
+              "rbac": true,
+              "permissions": "settings.list-configurator",
+              "visible": {
+                "$active-user-has-permission": {
+                  "permission": "settings.list-configurator"
+                }
+              }
+            }
+          }
+        },
+        "approval_template-list": {
+          "type": "string",
+          "widget": {
+            "name": "menu-item",
+            "options": {
+              "label": "Шаблоны согласований",
+              "workflowAction": "approval_template.list",
+              "rbac": true,
+              "permissions": "approval_template.list",
+              "visible": {
+                "$active-user-has-permission": {
+                  "permission": "approval_template.list"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "separator-1": {
+      "type": "string",
+      "widget": {
+        "name": "menu-item",
+        "options": {
+          "type": "separator"
+        }
+      }
+    }
+  }
+}

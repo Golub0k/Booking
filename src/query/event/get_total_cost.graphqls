@@ -1,0 +1,48 @@
+# @title: Получить брони помещения и брони оснащения для текущего мероприятия
+
+query ($eventId: String) {
+  bookingsNoDiscountOrMarkup: bookingGet(
+    filter: {
+      AND: [
+        { state: "filled" }
+        { eventId: $eventId }
+        { discountOrMarkupFlag: no }
+      ]
+    }
+  ) {
+    allPrice
+  }
+  bookingsWithDiscountOrMarkup: bookingGet(
+    filter: {
+      AND: [
+        { state: "filled" }
+        { eventId: $eventId }
+        { _operators: { discountOrMarkupFlag: { in: [discount, markup] } } }
+      ]
+    }
+  ) {
+    allPriceWithDiscountOrMarkup
+  }
+  facilitiesNoDiscountOrMarkup: additionalFacilitiesGet(
+    filter: {
+      AND: [
+        { state: "filled" }
+        { eventId: $eventId }
+        { discountOrMarkupFlag: no }
+      ]
+    }
+  ) {
+    totalPrice
+  }
+  facilitiesWithDiscountOrMarkup: additionalFacilitiesGet(
+    filter: {
+      AND: [
+        { state: "filled" }
+        { eventId: $eventId }
+        { _operators: { discountOrMarkupFlag: { in: [discount, markup] } } }
+      ]
+    }
+  ) {
+    totalPriceWithDiscountOrMarkup
+  }
+}

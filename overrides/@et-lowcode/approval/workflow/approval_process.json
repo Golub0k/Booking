@@ -1,0 +1,759 @@
+{
+  "version": 2,
+  "objectType": "approval_process",
+  "context": "default/approval_process/context",
+  "description": "Жизненный цикл процесса согласования",
+  "rbac": {
+    "visible": true,
+    "title": "Процесс согласования"
+  },
+  "actions": {
+    "initialActions": {
+      "add": {
+        "title": "Запустить процесс согласования",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "title": "Запустить процесс согласования"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "default/approval_template/select",
+            "mode": "form",
+            "layout": "popup"
+          },
+          "availableQueriesInViews": [
+            "default/approval_template/get-for-select"
+          ]
+        },
+        "functions": [
+          {
+            "$workflow-run-from-collection": {
+              "action": "delete",
+              "workflowName": "approval_process",
+              "collection": {
+                "$api-data-query": {
+                  "query": "default/approval_process/get_for_delete_draft",
+                  "variables": {
+                    "objectId": {
+                      "$from-context": {
+                        "path": "data.objectId"
+                      }
+                    }
+                  },
+                  "responsePath": "items"
+                }
+              },
+              "objectIdPath": "id"
+            }
+          },
+          {
+            "$assign-context": {
+              "data": {
+                "$api-data-query": {
+                  "query": "default/approval_template/get_for_copy",
+                  "variables": {
+                    "id": {
+                      "$from-context": {
+                        "path": "data.templateId"
+                      }
+                    }
+                  },
+                  "responsePath": "items.0"
+                }
+              },
+              "path": "$template"
+            }
+          },
+          {
+            "$assign-context": {
+              "data": {
+                "$from-context": {
+                  "path": "$template.stages"
+                }
+              },
+              "path": "$stages"
+            }
+          },
+          {
+            "$workflow-object-create": {
+              "variables": {
+                "data": {
+                  "$assign-object": {
+                    "data": {
+                      "objectId": {
+                        "$from-context": {
+                          "path": "data.objectId"
+                        }
+                      },
+                      "objectType": {
+                        "$from-context": {
+                          "path": "data.objectType"
+                        }
+                      },
+                      "templateId": {
+                        "$from-context": {
+                          "path": "data.templateId"
+                        }
+                      },
+                      "creator": {
+                        "$active-user": {
+                          "field": "_id"
+                        }
+                      }
+                    },
+                    "object": {
+                      "$exclude": {
+                        "data": {
+                          "$from-context": {
+                            "path": "$template"
+                          }
+                        },
+                        "exclude": [
+                          "stages"
+                        ]
+                      }
+                    },
+                    "path": ""
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$workflow-run-from-collection": {
+              "workflowName": "approval_stage",
+              "action": "add_from_template",
+              "collection": {
+                "$array-map": {
+                  "array": {
+                    "$from-context": {
+                      "path": "$stages"
+                    }
+                  },
+                  "map": {
+                    "$assign-object": {
+                      "object": {
+                        "$from-context": {
+                          "path": "$data"
+                        }
+                      },
+                      "data": {
+                        "$from-context": {
+                          "path": "objectId"
+                        }
+                      },
+                      "path": "process"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "draft"
+        }
+      }
+    },
+    "globalActions": {
+      "view_history": {
+        "title": "Доступ к истории согласований",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Доступ к истории согласований"
+          }
+        },
+        "views": {}
+      }
+    },
+    "statesActions": {
+      "view": {
+        "title": "Просмотреть",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Просмотреть процесс согласования"
+          }
+        },
+        "views": {}
+      },
+      "delete": {
+        "title": "Удалить",
+        "grants": {
+          "rbac": {
+            "enabled": false,
+            "title": "Удалить процесс согласования"
+          },
+          "system": true
+        },
+        "functions": [
+          {
+            "$workflow-run-from-collection": {
+              "action": "delete",
+              "workflowName": "approval_stage",
+              "collection": {
+                "$api-data-query": {
+                  "query": "default/approval_stage/get_for_delete",
+                  "variables": {
+                    "processId": {
+                      "$from-context": {
+                        "path": "objectId"
+                      }
+                    }
+                  },
+                  "responsePath": "items"
+                }
+              },
+              "objectIdPath": "id"
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "deleted"
+        }
+      },
+      "edit": {
+        "title": "Редактировать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Редактировать процесс согласования"
+          },
+          "includeInActionsList": {
+            "availableForViews": "forAll"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "default/approval_process/edit",
+            "mode": "form",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "default/approval_process/get",
+            "default/approval_process/get_for_edit",
+            "default/process_object_type/get-for-select",
+            "default/user/get-for-select"
+          ]
+        },
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "default/approval_process/update",
+              "variables": {
+                "data": {
+                  "$exclude": {
+                    "data": {
+                      "$from-context": {
+                        "path": "data"
+                      }
+                    },
+                    "exclude": [
+                      "stages"
+                    ]
+                  }
+                },
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "object"
+            }
+          }
+        ]
+      },
+      "to_new": {
+        "title": "Запустить процесс согласования",
+        "grants": {
+          "rbac": {
+            "enabled": false
+          },
+          "system": true
+        },
+        "functions": [
+          {
+            "$workflow-run": {
+              "workflowName": "approval_stage",
+              "action": "to_in_process",
+              "objectId": {
+                "$api-data-query": {
+                  "query": "default/approval_stage/get_from_number",
+                  "variables": {
+                    "processId": {
+                      "$from-context": {
+                        "path": "objectId"
+                      }
+                    },
+                    "number": 1
+                  },
+                  "responsePath": "items.0.id"
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "new"
+        }
+      },
+      "cancel": {
+        "title": "Прервать процесс",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Прервать процесс"
+          },
+          "includeInActionsList": {
+            "availableForViews": "forAll"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "default/approval_process/cancel",
+            "mode": "popup",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": []
+        },
+        "functions": [
+          {
+            "$assign-context": {
+              "data": {
+                "$api-data-query": {
+                  "query": "default/approval_process/get_object_info",
+                  "variables": {
+                    "id": {
+                      "$from-context": {
+                        "path": "objectId"
+                      }
+                    }
+                  },
+                  "responsePath": "items.0"
+                }
+              },
+              "path": "$object"
+            }
+          },
+          {
+            "$workflow-run": {
+              "workflowName": {
+                "$from-context": {
+                  "path": "$object.objectType"
+                }
+              },
+              "action": "cancel_for_approval",
+              "objectId": {
+                "$from-context": {
+                  "path": "$object.objectId"
+                }
+              }
+            }
+          },
+          {
+            "$workflow-run-from-collection": {
+              "action": "to_canceled",
+              "workflowName": "approval_stage",
+              "collection": {
+                "$api-data-query": {
+                  "query": "default/approval_stage/get_for_cancel",
+                  "variables": {
+                    "processId": {
+                      "$from-context": {
+                        "path": "objectId"
+                      }
+                    }
+                  },
+                  "responsePath": "items"
+                }
+              },
+              "objectIdPath": "id"
+            }
+          },
+          {
+            "$workflow-run": {
+              "workflowName": "approval_process_history",
+              "action": "create",
+              "data": {
+                "approvalProcessId": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                },
+                "decisionTime": {
+                  "$datetime-now": {}
+                },
+                "typeProcess": "stopProcess",
+                "comment": "Процесс согласования завершен. Процесс прерван",
+                "createdBy": {
+                  "$active-user": {
+                    "field": "_id"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "canceled"
+        }
+      },
+      "to_successfully": {
+        "title": "Успешно завершить процесс",
+        "grants": {
+          "rbac": {
+            "enabled": false
+          },
+          "system": true
+        },
+        "functions": [
+          {
+            "$assign-context": {
+              "data": {
+                "$api-data-query": {
+                  "query": "default/approval_process/get_object_info",
+                  "variables": {
+                    "id": {
+                      "$from-context": {
+                        "path": "objectId"
+                      }
+                    }
+                  },
+                  "responsePath": "items.0"
+                }
+              },
+              "path": "$object"
+            }
+          },
+          {
+            "$workflow-run": {
+              "workflowName": {
+                "$from-context": {
+                  "path": "$object.objectType"
+                }
+              },
+              "action": "to_accepted",
+              "objectId": {
+                "$from-context": {
+                  "path": "$object.objectId"
+                }
+              }
+            }
+          },
+          {
+            "$workflow-run": {
+              "workflowName": "approval_process_history",
+              "action": "create",
+              "data": {
+                "approvalProcessId": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                },
+                "decisionTime": {
+                  "$datetime-now": {}
+                },
+                "typeProcess": "endProcess",
+                "comment": "Процесс согласования успешно завершен",
+                "createdBy": {
+                  "$active-user": {
+                    "field": "_id"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "default/approval_process/get_for_notification",
+              "variables": {
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "items.0",
+              "resultPath": "$task"
+            }
+          },
+          {
+            "$notification-send": {
+              "template": "message-to-user-about-successful-completion-of-approval-process",
+              "params": {
+                "userId": {
+                  "$from-context": {
+                    "path": "$task.creatorId.id"
+                  }
+                },
+                "objectType": {
+                  "$switch": {
+                    "condition": {
+                      "$from-context": {
+                        "path": "$task.objectType"
+                      }
+                    },
+                    "default": "",
+                    "cases": [
+                      {
+                        "value": "news",
+                        "action": "новости"
+                      }
+                    ]
+                  }
+                },
+                "processName": {
+                  "$from-context": {
+                    "path": "$task.name"
+                  }
+                },
+                "nameMiddleName": {
+                  "$replace": {
+                    "template": "{{0}} {{1}}",
+                    "data": [
+                      {
+                        "$from-context": {
+                          "path": "$task.creatorId.firstName"
+                        }
+                      },
+                      {
+                        "$from-context": {
+                          "path": "$task.creatorId.middleName"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "link": {
+                  "$replace": {
+                    "template": "%$ref:settings:SystemDomain%/cabinet/{{object}}/view?id={{id}}",
+                    "data": {
+                      "object": {
+                        "$from-context": {
+                          "path": "$task.objectType"
+                        }
+                      },
+                      "id": {
+                        "$from-context": {
+                          "path": "$task.objectId"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "completed_successfully"
+        }
+      },
+      "to_unsuccessfully": {
+        "title": "Неуспешно завершить процесс",
+        "grants": {
+          "rbac": {
+            "enabled": false
+          },
+          "system": true
+        },
+        "functions": [
+          {
+            "$assign-context": {
+              "data": {
+                "$api-data-query": {
+                  "query": "default/approval_process/get_object_info",
+                  "variables": {
+                    "id": {
+                      "$from-context": {
+                        "path": "objectId"
+                      }
+                    }
+                  },
+                  "responsePath": "items.0"
+                }
+              },
+              "path": "$object"
+            }
+          },
+          {
+            "$workflow-run": {
+              "workflowName": {
+                "$from-context": {
+                  "path": "$object.objectType"
+                }
+              },
+              "action": "to_rejected",
+              "objectId": {
+                "$from-context": {
+                  "path": "$object.objectId"
+                }
+              }
+            }
+          },
+          {
+            "$workflow-run": {
+              "workflowName": "approval_process_history",
+              "action": "create",
+              "data": {
+                "approvalProcessId": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                },
+                "decisionTime": {
+                  "$datetime-now": {}
+                },
+                "typeProcess": "endProcess",
+                "comment": "Процесс согласования завершен. В согласовании отказано",
+                "createdBy": {
+                  "$active-user": {
+                    "field": "_id"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "default/approval_process/get_for_notification",
+              "variables": {
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "items.0",
+              "resultPath": "$task"
+            }
+          },
+          {
+            "$notification-send": {
+              "template": "message-to-user-about-unsuccessful-completion-of-approval-process",
+              "params": {
+                "userId": {
+                  "$from-context": {
+                    "path": "$task.creatorId.id"
+                  }
+                },
+                "objectType": {
+                  "$switch": {
+                    "condition": {
+                      "$from-context": {
+                        "path": "$task.objectType"
+                      }
+                    },
+                    "default": "",
+                    "cases": [
+                      {
+                        "value": "news",
+                        "action": "новости"
+                      }
+                    ]
+                  }
+                },
+                "nameMiddleName": {
+                  "$replace": {
+                    "template": "{{0}} {{1}}",
+                    "data": [
+                      {
+                        "$from-context": {
+                          "path": "$task.creatorId.firstName"
+                        }
+                      },
+                      {
+                        "$from-context": {
+                          "path": "$task.creatorId.middleName"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "link": {
+                  "$replace": {
+                    "template": "%$ref:settings:SystemDomain%/cabinet/{{object}}/view?id={{id}}",
+                    "data": {
+                      "object": {
+                        "$from-context": {
+                          "path": "$task.objectType"
+                        }
+                      },
+                      "id": {
+                        "$from-context": {
+                          "path": "$task.objectId"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "completed_unsuccessfully"
+        }
+      }
+    }
+  },
+  "states": {
+    "draft": {
+      "title": "Черновик",
+      "description": "Процесс создан, но еще не запущен",
+      "statesActions": [
+        "view",
+        "to_new",
+        "edit",
+        "delete"
+      ]
+    },
+    "new": {
+      "title": "Новый",
+      "description": "Процесс запущен",
+      "statesActions": [
+        "view",
+        "delete",
+        "cancel",
+        "to_successfully",
+        "to_unsuccessfully"
+      ]
+    },
+    "completed_successfully": {
+      "title": "Завершен успешно",
+      "description": "Процесс завершен успешно",
+      "statesActions": [
+        "view"
+      ]
+    },
+    "completed_unsuccessfully": {
+      "title": "Завершен не успешно",
+      "description": "Процесс завершен не успешно",
+      "statesActions": [
+        "view"
+      ]
+    },
+    "deleted": {
+      "title": "Удален",
+      "description": "Процесс удален",
+      "statesActions": [],
+      "finish": true
+    },
+    "canceled": {
+      "title": "Прерван",
+      "description": "Процесс прерван",
+      "statesActions": [
+        "view"
+      ],
+      "finish": true
+    }
+  }
+}

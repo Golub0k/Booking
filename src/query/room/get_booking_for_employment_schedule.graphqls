@@ -1,0 +1,21 @@
+query {
+  items: roomGet(filter: { _operators: { state: { ne: "deleted" } } }) {
+    roomId: _id
+    bookings {
+      eventId
+      installationDates {
+        startTime
+        endTime
+      }
+      eventDates {
+        startTime
+        endTime
+      }
+      deinstallationDates {
+        startTime
+        endTime
+      }
+      state
+    }
+  }
+}

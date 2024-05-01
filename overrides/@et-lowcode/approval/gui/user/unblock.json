@@ -1,0 +1,233 @@
+{
+  "@title": "Подтверждение разблокировки пользователя",
+  "@preload": {
+    "$from-context": {
+      "path": "$response.body.data.user",
+      "data": {
+        "$api-data": {
+          "query": "user/get_for_unblock",
+          "id": {
+            "$query-params": {
+              "name": "id"
+            }
+          },
+          "options": {
+            "observe": "response"
+          },
+          "variables": {
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "widget": "container",
+  "model": "/",
+  "properties": {
+    "user": {
+      "type": "object",
+      "model": "#user",
+      "widget": "hidden",
+      "value": {
+        "$json-model": {
+          "data": {
+            "$from-context": {
+              "path": "@preload"
+            }
+          }
+        }
+      },
+      "properties": {
+        "_id": {
+          "type": "string",
+          "widget": "hidden",
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": true,
+                "message": "Организация, к которой относится пользователь, заблокирована. Пользователь не может быть разблокирован."
+              },
+              "events": [
+                "onBackend"
+              ]
+            }
+          ]
+        },
+        "email": {
+          "type": "string",
+          "widget": "hidden",
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": true,
+                "message": "Пользователь с таким адресом электронной почты уже зарегистрирован в Системе. Пользователь не разблокирован."
+              },
+              "events": [
+                "onBackend"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "form": {
+      "type": "object",
+      "widget": {
+        "name": "form",
+        "options": {
+          "label": "Подтверждение разблокировки"
+        },
+        "kind": "form-popup-with-h1-style"
+      },
+      "properties": {
+        "text": {
+          "type": "string",
+          "model": false,
+          "widget": {
+            "name": "html",
+            "class": {
+              "value": "mrg-b-lg"
+            }
+          },
+          "value": {
+            "$replace": {
+              "template": "<p>Вы действительно хотите разблокировать пользователя {{fullName}}?</p>",
+              "data": {
+                "$from-context": {
+                  "path": "@preload"
+                }
+              }
+            }
+          }
+        },
+        "actions": {
+          "type": "object",
+          "model": false,
+          "widget": {
+            "name": "container",
+            "class": {
+              "group": "form-actions p-field p-grid mrg-t-lg",
+              "value": "p-jc-xs-end p-autolayout"
+            }
+          },
+          "properties": {
+            "save": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Разблокировать"
+                },
+                "events": {
+                  "click": [
+                    "$ref:operation-frontend:snippets/element/_loading/onclick-loading-enable",
+                    {
+                      "$http-code": {
+                        "200": [
+                          {
+                            "$event-bus-publish": {
+                              "type": "reload-table"
+                            }
+                          },
+                          {
+                            "$close-popup": null
+                          },
+                          {
+                            "$message": {
+                              "severity": "success",
+                              "summary": "Разблокирование пользователя",
+                              "detail": "Пользователь успешно разблокирован"
+                            }
+                          }
+                        ],
+                        "422": [
+                          {
+                            "$close-popup": null
+                          },
+                          {
+                            "$message": {
+                              "severity": "error",
+                              "summary": "Разблокирование пользователя",
+                              "detail": {
+                                "$apply-func": {
+                                  "func": "return Object.values(Object.values(errors)[0])[0]",
+                                  "args": {
+                                    "errors": {
+                                      "$from-context": {
+                                        "path": "$response.error.errors"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "client": {
+                          "$api-workflow": {
+                            "type": "post",
+                            "options": {
+                              "observe": "response"
+                            },
+                            "id": {
+                              "$if": {
+                                "condition": {
+                                  "$not-empty": {
+                                    "data": {
+                                      "$query-params": {
+                                        "name": "id",
+                                        "filter": false
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "$query-params": {
+                                    "name": "id",
+                                    "filter": false
+                                  }
+                                },
+                                "else": ""
+                              }
+                            },
+                            "data": {
+                              "$var": {
+                                "path": "#user"
+                              }
+                            }
+                          }
+                        },
+                        "default": "$ref:operation-frontend:snippets/element/_http_message/http-default-error-message-action",
+                        "finalize": "$ref:operation-frontend:snippets/element/_loading/onclick-loading-disable"
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "cancel": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Отмена"
+                },
+                "events": {
+                  "click": {
+                    "$close-popup": null
+                  }
+                },
+                "kind": "button-btn-outline-last-style"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

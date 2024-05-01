@@ -1,0 +1,17 @@
+{
+  "backend-validation": {
+    "enabled": true,
+    "options": {
+      "schema": "partner/block",
+      "data": {
+        "$post-params": {
+          "name": null
+        }
+      },
+      "path": "#data.reason"
+    },
+    "states": [
+      "active"
+    ]
+  }
+}

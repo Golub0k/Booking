@@ -1,0 +1,31 @@
+@import "~@et/styles/src/styles/common/mixins/icon";
+
+.icon-my-supply {
+    @include svg-icon("/assets/icons/my-supply.svg", 24px);
+}
+
+.icon-my-contracts {
+    @include svg-icon("/assets/icons/my-contracts.svg", 24px);
+}
+
+.icon-contracts {
+    @include svg-icon("/assets/icons/contracts.svg", 24px);
+}
+
+.icon-alert {
+    @include svg-icon("/assets/icons/alert.svg", 16px);
+}
+.icon-events {
+    @include svg-icon("/assets/icons/sidebar/events.svg", 24px);
+}
+.icon-clock-menu {
+    @include svg-icon("/assets/icons/clock-menu.svg", 24px);
+}
+
+.icon-process-type {
+    @include svg-icon("/assets/icons/process-type.svg", 16px);
+}
+  
+.icon-users-approval {
+    @include svg-icon("/assets/icons/users-approval.svg", 16px);
+}

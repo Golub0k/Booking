@@ -1,0 +1,24 @@
+serviceName: "nsi"
+serviceVersion: "${NSI_VERSION}"
+
+imageCredentials:
+  registry: "${CI_REGISTRY}"
+  username: "${CI_REGISTRY_USERNAME}"
+  password: "${CI_REGISTRY_TOKEN}"
+
+
+mongoDsn: "${MONGODB_DSN}"
+mongoName: "${MONGODB_NAME}"
+
+nsi:
+  type: CronJob
+  cronjob:
+    # Launch Scheduler in crontab format:
+    schedule: "5 0 * * *"
+    # Policy for concurrent jobs - "Allow", "Forbid", "Replace"
+    concurrencyPolicy: Allow
+    startAfterCreation: true
+
+  # List of catalogs for refreshing
+  catalogs:
+    - nsiOKSM

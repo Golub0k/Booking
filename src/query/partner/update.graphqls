@@ -1,0 +1,7 @@
+# @title: Обновить данные экземпляров объекта "Контрагент"
+
+mutation ($id: MongoID!, $data: UpdateByIdPartnerInput!) {
+  partner: partnerUpdateById(_id: $id, record: $data) {
+    _id
+  }
+}

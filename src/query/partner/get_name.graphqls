@@ -1,0 +1,8 @@
+# @title: Получить данные экземпляра объекта "Контрагент"
+
+query ($id: MongoID!) {
+  user: partnerOne(filter: { _id: $id }) {
+    _id
+    name
+  }
+}

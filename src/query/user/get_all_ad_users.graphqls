@@ -1,0 +1,10 @@
+query {
+  items: userGet(
+    sort: { field: createdAt, type: ASC }
+    filter: { AND: [{ _operators: { state: { ne: "deleted" } } }, { userAD: true }] }
+  ) {
+    _id
+    login
+    state
+  }
+}

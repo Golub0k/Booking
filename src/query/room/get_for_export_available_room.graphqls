@@ -1,0 +1,33 @@
+query ($bookedRoom: [MongoID!], $room: [MongoID!]) {
+  items: roomGet(
+    filter: {
+      AND: [
+        { _operators: { _id: { in: $room } } }
+        { _operators: { _id: { nin: $bookedRoom } } }
+        { _operators: { state: { ne: "deleted" } } }
+      ]
+    }
+  ) {
+    id: _id
+    number
+    name
+    room_type: roomType {
+      name
+    }
+    floor
+    square
+    roomLength
+    width
+    height
+    maxOrganizers
+    additional_services {
+      additionalService {
+        name
+      }
+    }
+    configuration
+    transformation
+    roominess
+    state
+  }
+}

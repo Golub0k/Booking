@@ -1,0 +1,77 @@
+# @title: Получить бронь помещения
+
+query ($id: [MongoID!]) {
+  object: bookingGet(filter: { _operators: { _id: { in: $id } } }) {
+    id: _id
+    eventId
+    event {
+      name
+      state
+    }
+    rooms {
+      roomId
+      room {
+        name
+        state
+        type
+        roomType {
+          name
+        }
+        transformation
+        square
+        additional_services {
+          serviceId
+        }
+        equipments {
+          equipmentId
+        }
+        furniture {
+          furnitureId
+        }
+      }
+    }
+    name
+    configuration
+    minDate
+    maxDate
+    minInstallationDates
+    maxInstallationDates
+    minEventDates
+    maxEventDates
+    minDeinstallationDates
+    maxDeinstallationDates
+    seatingTypeId
+    seatingType {
+      name
+    }
+    numberOfPeople
+    comment
+    installationDates {
+      startTime
+      endTime
+    }
+    eventDates {
+      startTime
+      endTime
+    }
+    deinstallationDates {
+      startTime
+      endTime
+    }
+    partial
+    allSquare
+    file {
+      _id
+      name
+      size
+      create_date
+    }
+    discountOrMarkupFlag
+    discountOrMarkup
+    allPriceMeter
+    allPriceMeterWithDiscountOrMarkup
+    allPrice
+    allPriceWithDiscountOrMarkup
+    state
+  }
+}

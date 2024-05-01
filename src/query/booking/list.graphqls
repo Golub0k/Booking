@@ -1,0 +1,55 @@
+query ($first: Int, $rows: Int, $eventId: String) {
+  pagination: bookingPagination(
+    limit: $rows
+    offset: $first
+
+    filter: { AND: [{ _operators: { state: { nin: ["deleted", "in_group"] } } }, { eventId: $eventId }] }
+  ) {
+    count
+    items {
+      id: _id
+      rooms {
+        roomId
+        room {
+          _id
+          name
+          configuration
+          type
+          state
+        }
+      }
+      name
+      configuration
+      seatingType {
+        name
+      }
+      numberOfPeople
+      comment
+      minDate
+      maxDate
+      installationDates {
+        startTime
+        endTime
+      }
+      eventDates {
+        startTime
+        endTime
+      }
+      deinstallationDates {
+        startTime
+        endTime
+      }
+      additionalFacilities {
+        totalPrice
+        totalPriceWithDiscountOrMarkup
+        state
+      }
+      allSquare
+      discountOrMarkupFlag
+      discountOrMarkup
+      allPrice
+      allPriceWithDiscountOrMarkup
+      state
+    }
+  }
+}

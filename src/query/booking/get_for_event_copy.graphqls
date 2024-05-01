@@ -1,0 +1,15 @@
+query ($eventId: MongoID) {
+  items: bookingGet(
+    filter: {
+      AND: [{ _filterRef: { eventId: { _id: $eventId } } }, { _operators: { state: { in: ["filled", "in_group"] } } }]
+    }
+  ) {
+    rooms {
+      roomId
+    }
+    name
+    configuration
+    allSquare
+    state
+  }
+}

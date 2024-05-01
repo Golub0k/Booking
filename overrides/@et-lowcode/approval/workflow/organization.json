@@ -1,0 +1,239 @@
+{
+  "version": 2,
+  "objectType": "organization",
+  "context": "organization/context",
+  "description": "Жизненный цикл организации",
+  "rbac": {
+    "visible": false,
+    "title": "Организации"
+  },
+  "actions": {
+    "initialActions": {
+      "add": {
+        "title": "Добавить",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": false,
+            "title": "Добавить организацию"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "organization/add",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "organization/inn_exists",
+            "nsi_oksm/get-for-select"
+          ]
+        },
+        "functions": [
+          {
+            "$workflow-object-create": {
+              "objectType": "organization",
+              "query": "organization/add",
+              "variables": {
+                "data": {
+                  "$from-context": {
+                    "path": "data"
+                  }
+                }
+              },
+              "responsePath": "organization"
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "active"
+        }
+      }
+    },
+    "globalActions": {
+      "list": {
+        "title": "Просмотреть реестр организаций",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": false,
+            "title": "Просмотреть реестр организаций"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "organization/list",
+            "mode": "form",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "organization/list"
+          ]
+        }
+      },
+      "profile": {
+        "title": "Данные организации",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": false,
+            "title": "Просмотреть карточку своей организации"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "organization/profile",
+            "mode": "form",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "organization/profile"
+          ]
+        }
+      },
+      "edit-profile": {
+        "title": "Редактировать данные своей организации",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": false,
+            "title": "Редактировать данные своей организации"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "organization/edit-profile",
+            "mode": "form",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "organization/profile"
+          ]
+        },
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "organization/update",
+              "variables": {
+                "id": {
+                  "$active-user": {
+                    "field": "organizationId"
+                  }
+                },
+                "data": {
+                  "$from-context": {
+                    "path": "data"
+                  }
+                }
+              },
+              "responsePath": "object"
+            }
+          }
+        ]
+      }
+    },
+    "statesActions": {
+      "edit": {
+        "title": "Редактировать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": false,
+            "title": "Редактировать организацию"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "organization/edit",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "organization/get",
+            "organization/inn_exists",
+            "nsi_oksm/get-for-select"
+          ]
+        },
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "organization/update",
+              "variables": {
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                },
+                "data": {
+                  "$from-context": {
+                    "path": "data"
+                  }
+                }
+              },
+              "responsePath": "object"
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "active"
+        }
+      },
+      "view": {
+        "title": "Просмотреть",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": false,
+            "title": "Просмотреть организацию"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "organization/view",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "organization/get",
+            "nsi_oksm/get-for-select"
+          ]
+        }
+      },
+      "list-employees": {
+        "title": "Список пользователей",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": false,
+            "title": "Просмотреть пользователей организации"
+          },
+          "includeInActionsList": {
+            "availableForViews": "onlyFor",
+            "views": [
+              "organization/list"
+            ]
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "user/list-organization-employees",
+            "mode": "form",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "user/list-organization-employees",
+            "organization/get_short_name"
+          ]
+        }
+      }
+    }
+  },
+  "states": {
+    "active": {
+      "title": "Активная",
+      "description": "Активное состояние объекта",
+      "statesActions": [
+        "view",
+        "list-employees",
+        "edit"
+      ]
+    }
+  }
+}

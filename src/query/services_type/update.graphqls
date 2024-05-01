@@ -1,0 +1,7 @@
+# @title: Обновить данные экземпляров объекта "Тип услуг"
+
+mutation($id: [MongoID!], $filter: FilterUpdateServicesTypeInput, $data: UpdateServicesTypeInput!) {
+  result: servicesTypeUpdate(_id: $id, filter: $filter, record: $data) {
+    numAffected
+  }
+}

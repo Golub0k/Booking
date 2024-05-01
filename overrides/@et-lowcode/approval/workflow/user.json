@@ -1,0 +1,2610 @@
+{
+  "version": 2,
+  "objectType": "user",
+  "context": "user/context",
+  "description": "Жизненный цикл пользователя",
+  "rbac": {
+    "visible": true,
+    "title": "Пользователи"
+  },
+  "actions": {
+    "initialActions": {
+      "add": {
+        "context": "organization/contextForRegistration",
+        "title": "Добавить пользователя",
+        "description": "Добавить пользователя",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Добавить пользователя"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "user/add",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "timezone/search",
+            "user/email_exists",
+            "user/login_exists",
+            "role/dropdown",
+            "organization/get-for-select",
+            "organization/get_short_name",
+            "organization/contextForRegistration"
+          ]
+        },
+        "additionalParams": {
+          "actionsList": {
+            "url": "/cabinet/user/add&id={{id}}"
+          }
+        },
+        "functions": [
+          {
+            "$waterfall": {
+              "arrayFunctions": [
+                {
+                  "$object-create": {
+                    "objectType": "user_settings",
+                    "query": "user_settings/create",
+                    "variables": {
+                      "data": {
+                        "$from-context": {
+                          "path": "data.user.userSettings"
+                        }
+                      }
+                    },
+                    "responsePath": "object.id",
+                    "resultPath": "$userSettingsId"
+                  }
+                },
+                {
+                  "$workflow-object-create": {
+                    "objectType": "user",
+                    "query": "user/add",
+                    "variables": {
+                      "data": {
+                        "$assign-object": {
+                          "path": "",
+                          "data": {
+                            "userSettingsId": {
+                              "$from-context": {
+                                "path": "$userSettingsId"
+                              }
+                            },
+                            "userAD": false
+                          },
+                          "object": {
+                            "$exclude": {
+                              "data": {
+                                "$from-context": {
+                                  "path": "data.user"
+                                }
+                              },
+                              "exclude": [
+                                "userSettings"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "responsePath": "user"
+                  }
+                },
+                {
+                  "$api-data-query": {
+                    "query": "user_settings/update",
+                    "variables": {
+                      "data": {
+                        "userId": {
+                          "$from-context": {
+                            "path": "objectId"
+                          }
+                        }
+                      },
+                      "id": {
+                        "$from-context": {
+                          "path": "$userSettingsId"
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$expiredAt",
+              "data": {
+                "$date-timestamp": {
+                  "data": {
+                    "$date-add": {
+                      "date": {
+                        "$datetime-now": {}
+                      },
+                      "number": 31556952,
+                      "interval": "s"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "user/recovery_password/create",
+              "variables": {
+                "expiredAt": {
+                  "$from-context": {
+                    "path": "$expiredAt"
+                  }
+                },
+                "userId": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "result"
+            }
+          },
+          {
+            "$object-get": {
+              "objectType": "user",
+              "data": {
+                "objectId": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "fetch": {
+                "mode": "one"
+              },
+              "responsePath": "items",
+              "resultPath": "$user"
+            }
+          },
+          {
+            "$assign-object": {
+              "path": "password",
+              "data": {
+                "$generate-password": {
+                  "length": 8
+                }
+              },
+              "object": {
+                "$from-context": {
+                  "path": "data.user"
+                }
+              }
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$confirmToken",
+              "data": {
+                "$auth-api-register": {
+                  "id": {
+                    "$from-context": {
+                      "path": "objectId"
+                    }
+                  },
+                  "login": {
+                    "$from-context": {
+                      "path": "$user.login"
+                    }
+                  },
+                  "password": {
+                    "$from-context": {
+                      "path": "data.user.password"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$link",
+              "data": {
+                "$replace": {
+                  "template": "%$ref:settings:SystemDomain%/user/confirm-by-token?id={{id}}&confirmToken={{confirmToken}}&passToken={{passToken}}",
+                  "data": {
+                    "id": {
+                      "$from-context": {
+                        "path": "objectId"
+                      }
+                    },
+                    "confirmToken": {
+                      "$from-context": {
+                        "path": "$confirmToken"
+                      }
+                    },
+                    "passToken": {
+                      "$from-context": {
+                        "path": "$apiResponse._id"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$notification-send": {
+              "template": "user_add",
+              "params": {
+                "userId": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                },
+                "confirmLink": {
+                  "$from-context": {
+                    "path": "$link"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "notification/user_settings/create",
+              "variables": {
+                "$assign-object": {
+                  "path": "data",
+                  "data": {
+                    "$from-context": {
+                      "path": "data.user"
+                    }
+                  },
+                  "object": {
+                    "userId": {
+                      "$from-context": {
+                        "path": "objectId"
+                      }
+                    },
+                    "sendEmail": true,
+                    "sendPush": true
+                  }
+                }
+              },
+              "responsePath": "notificationUserSettings"
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "await_email_confirmation"
+        }
+      },
+      "create-ldap": {
+        "title": "Добавить пользователя из LDAP",
+        "description": "Добавить пользователя из LDAP",
+        "grants": {
+          "system": true,
+          "rbac": {
+            "enabled": false
+          }
+        },
+        "functions": [
+          {
+            "$object-create": {
+              "objectType": "user_settings",
+              "query": "user_settings/create",
+              "variables": {
+                "data": {
+                  "emailNotification": true,
+                  "pushNotification": true
+                }
+              },
+              "responsePath": "object.id",
+              "resultPath": "$userSettingsId"
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$nameArray",
+              "data": {
+                "$string-split": {
+                  "string": {
+                    "$from-context": {
+                      "path": "data.displayName"
+                    }
+                  },
+                  "separator": " "
+                }
+              }
+            }
+          },
+          {
+            "$workflow-object-create": {
+              "objectType": "user",
+              "query": "user/add",
+              "variables": {
+                "data": {
+                  "login": {
+                    "$from-context": {
+                      "path": "data.sAMAccountName"
+                    }
+                  },
+                  "firstName": {
+                    "$if": {
+                      "condition": {
+                        ">=": {
+                          "operand1": {
+                            "$length": {
+                              "data": {
+                                "$from-context": {
+                                  "path": "$nameArray"
+                                }
+                              }
+                            }
+                          },
+                          "operand2": 2
+                        }
+                      },
+                      "then": {
+                        "$from-context": {
+                          "path": "$nameArray.1"
+                        }
+                      },
+                      "else": {
+                        "$from-context": {
+                          "path": "data.sAMAccountName"
+                        }
+                      }
+                    }
+                  },
+                  "lastName": {
+                    "$if": {
+                      "condition": {
+                        ">=": {
+                          "operand1": {
+                            "$length": {
+                              "data": {
+                                "$from-context": {
+                                  "path": "$nameArray"
+                                }
+                              }
+                            }
+                          },
+                          "operand2": 1
+                        }
+                      },
+                      "then": {
+                        "$from-context": {
+                          "path": "$nameArray.0"
+                        }
+                      },
+                      "else": {
+                        "$from-context": {
+                          "path": "data.sAMAccountName"
+                        }
+                      }
+                    }
+                  },
+                  "middleName": {
+                    "$if": {
+                      "condition": {
+                        ">=": {
+                          "operand1": {
+                            "$length": {
+                              "data": {
+                                "$from-context": {
+                                  "path": "$nameArray"
+                                }
+                              }
+                            }
+                          },
+                          "operand2": 3
+                        }
+                      },
+                      "then": {
+                        "$from-context": {
+                          "path": "$nameArray.2"
+                        }
+                      },
+                      "else": ""
+                    }
+                  },
+                  "email": {
+                    "$if": {
+                      "condition": {
+                        "$not-empty": {
+                          "data": {
+                            "$from-context": {
+                              "path": "data.mail"
+                            }
+                          }
+                        }
+                      },
+                      "then": {
+                        "$from-context": {
+                          "path": "data.mail"
+                        }
+                      },
+                      "else": "ano@kazanexpo.ru"
+                    }
+                  },
+                  "userSettingsId": {
+                    "$from-context": {
+                      "path": "$userSettingsId"
+                    }
+                  },
+                  "timezone": {
+                    "offset": "UTC+03:00",
+                    "name": "(UTC+03:00) Москва"
+                  },
+                  "position": {
+                    "$from-context": {
+                      "path": "data.description"
+                    }
+                  },
+                  "userAD": true,
+                  "roles": [
+                    {
+                      "id": "641437ef75a98434ca7f7742"
+                    }
+                  ]
+                }
+              },
+              "responsePath": "user"
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "user_settings/update",
+              "variables": {
+                "data": {
+                  "userId": {
+                    "$from-context": {
+                      "path": "objectId"
+                    }
+                  }
+                },
+                "id": {
+                  "$from-context": {
+                    "path": "$userSettingsId"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "active"
+        }
+      }
+    },
+    "globalActions": {
+      "login": {
+        "title": "Авторизация",
+        "grants": {
+          "rbac": {
+            "enabled": false,
+            "visible": false
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "user/login",
+            "layout": "cabinet",
+            "mode": "form"
+          }
+        }
+      },
+      "list": {
+        "title": "Реестр пользователей",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Просмотреть реестр пользователей"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "user/list",
+            "layout": "cabinet",
+            "mode": "form"
+          },
+          "availableQueriesInViews": [
+            "user/list",
+            "organization/list_names",
+            "role/dropdown"
+          ]
+        }
+      },
+      "list-my-employees": {
+        "title": "Реестр пользователей моей организации",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": false,
+            "title": "Просмотреть реестр пользователей моей организации"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "user/list-my-organization-employees",
+            "layout": "cabinet",
+            "mode": "form"
+          },
+          "availableQueriesInViews": [
+            "user/list-my-organization-employees",
+            "role/dropdown"
+          ]
+        }
+      },
+      "index": {
+        "title": "Главная страница",
+        "grants": {
+          "rbac": {
+            "enabled": false,
+            "visible": false
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "cabinet/index",
+            "layout": "cabinet",
+            "mode": "form"
+          },
+          "availableQueriesInViews": []
+        }
+      },
+      "ui-kit": {
+        "title": "Все элементы системы",
+        "grants": {
+          "rbac": {
+            "enabled": false,
+            "visible": false
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "ui-kit",
+            "layout": "cabinet",
+            "mode": "form"
+          },
+          "availableQueriesInViews": []
+        }
+      },
+      "recovery-password": {
+        "title": "Восстановление пароля",
+        "grants": {
+          "rbac": {
+            "enabled": false,
+            "visible": false
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "user/recovery-password",
+            "layout": "index",
+            "mode": "form"
+          },
+          "availableQueriesInViews": [
+            "user/email_exists",
+            "user/find_by_email"
+          ]
+        },
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "user/find_by_email",
+              "variables": {
+                "$assign-object": {
+                  "path": "data",
+                  "data": {
+                    "$from-context": {
+                      "path": "data"
+                    }
+                  },
+                  "object": {
+                    "email": {
+                      "$from-context": {
+                        "path": "data.email"
+                      }
+                    }
+                  }
+                }
+              },
+              "responsePath": "user",
+              "resultPath": "$user"
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$expiredAtDate",
+              "data": {
+                "$date-timestamp": {
+                  "data": {
+                    "$date-add": {
+                      "date": {
+                        "$datetime-now": {}
+                      },
+                      "number": 86400,
+                      "interval": "s"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "user/recovery_password/create",
+              "variables": {
+                "$assign-object": {
+                  "path": "data",
+                  "data": {
+                    "$from-context": {
+                      "path": "data"
+                    }
+                  },
+                  "object": {
+                    "userId": {
+                      "$from-context": {
+                        "path": "$user._id"
+                      }
+                    },
+                    "expiredAt": {
+                      "$from-context": {
+                        "path": "$expiredAtDate"
+                      }
+                    }
+                  }
+                }
+              },
+              "responsePath": "result"
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$link",
+              "data": {
+                "$replace": {
+                  "template": "%$ref:settings:SystemDomain%/user/change-password-by-token?token={{token}}",
+                  "data": {
+                    "token": {
+                      "$from-context": {
+                        "path": "$apiResponse._id"
+                      }
+                    },
+                    "link": {
+                      "$from-context": {
+                        "path": "$link"
+                      }
+                    },
+                    "dateOfExpiry": {
+                      "$from-context": {
+                        "path": "$expiredAtDate"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$notification-send": {
+              "template": "user-recovery-password",
+              "params": {
+                "userId": {
+                  "$from-context": {
+                    "path": "$user._id"
+                  }
+                },
+                "link": {
+                  "$from-context": {
+                    "path": "$link"
+                  }
+                },
+                "dateOfExpiry": {
+                  "$from-context": {
+                    "path": "$expiredAtDate"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "my-profile": {
+        "title": "Мой профиль",
+        "grants": {
+          "rbac": {
+            "enabled": false,
+            "visible": false
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "user/my-profile",
+            "layout": "cabinet",
+            "mode": "form"
+          },
+          "availableQueriesInViews": [
+            "user/get"
+          ]
+        }
+      },
+      "confirm-by-token": {
+        "title": "Подтверждение почты и смена пароля",
+        "grants": {
+          "rbac": {
+            "enabled": false,
+            "visible": false,
+            "title": "Подтверждение почты и смена пароля"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "user/confirm-by-token"
+          },
+          "availableQueriesInViews": [
+            "user/recovery_password/exists"
+          ]
+        }
+      },
+      "change-password-by-token": {
+        "title": "Смена пароля по ссылке",
+        "grants": {
+          "rbac": {
+            "enabled": false,
+            "visible": false,
+            "title": "Смена пароля"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "user/change-password/by-token"
+          },
+          "availableQueriesInViews": [
+            "user/recovery_password/exists"
+          ]
+        },
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "user/recovery_password/complete",
+              "variables": {
+                "id": {
+                  "$from-context": {
+                    "path": "data.token"
+                  }
+                }
+              },
+              "responsePath": "result.userId",
+              "resultPath": "$userId"
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "user/get_organization_state",
+              "variables": {
+                "id": {
+                  "$from-context": {
+                    "path": "$userId"
+                  }
+                }
+              }
+            },
+            "responsePath": "user.organization",
+            "resultPath": "$userOrganization"
+          },
+          {
+            "$object-get": {
+              "objectType": "user",
+              "data": {
+                "objectId": {
+                  "$from-context": {
+                    "path": "$userId"
+                  }
+                }
+              },
+              "fetch": {
+                "mode": "one"
+              },
+              "resultPath": "$user"
+            }
+          },
+          {
+            "$auth-api-update": {
+              "id": {
+                "$from-context": {
+                  "path": "$userId"
+                }
+              },
+              "login": {
+                "$from-context": {
+                  "path": "$user.login"
+                }
+              },
+              "password": {
+                "$from-context": {
+                  "path": "data.password"
+                }
+              }
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$link",
+              "data": {
+                "$replace": {
+                  "template": "%$ref:settings:SystemDomain%/cabinet/user/my-profile"
+                }
+              }
+            }
+          },
+          {
+            "$notification-send": {
+              "template": "user-change-password",
+              "params": {
+                "userId": {
+                  "$from-context": {
+                    "path": "$userId"
+                  }
+                },
+                "linkProfile": {
+                  "$from-context": {
+                    "path": "$link"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$if": {
+              "condition": {
+                "===": {
+                  "operand1": {
+                    "$from-context": {
+                      "path": "$userOrganization.state"
+                    }
+                  },
+                  "operand2": "blocked"
+                }
+              },
+              "then": {
+                "$waterfall": {
+                  "arrayFunctions": [
+                    {
+                      "$assign-context": {
+                        "path": "$reason",
+                        "data": {
+                          "$api-data-query": {
+                            "query": "organization/get_block_reason",
+                            "variables": {
+                              "id": {
+                                "$from-context": {
+                                  "path": "$userOrganization._id"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "responsePath": "organization.blockReason.reason"
+                      }
+                    },
+                    {
+                      "$assign-object": {
+                        "path": "id",
+                        "data": {
+                          "$from-context": {
+                            "path": "$userId"
+                          }
+                        },
+                        "object": {
+                          "$from-context": {
+                            "path": "data"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "$workflow-run": {
+                        "workflowName": "user",
+                        "action": "block",
+                        "objectId": {
+                          "$from-context": {
+                            "path": "$userId"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      "profile-password": {
+        "title": "Смена пароля",
+        "grants": {
+          "rbac": {
+            "enabled": false,
+            "visible": false,
+            "title": "Смена пароля"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "user/change-password/profile-password"
+          }
+        },
+        "functions": [
+          {
+            "$object-get": {
+              "objectType": "user",
+              "data": {
+                "objectId": {
+                  "$active-user": {
+                    "field": "_id"
+                  }
+                }
+              },
+              "fetch": {
+                "mode": "one"
+              },
+              "resultPath": "$user"
+            }
+          },
+          {
+            "$auth-api-update": {
+              "id": {
+                "$from-context": {
+                  "path": "$user.id"
+                }
+              },
+              "login": {
+                "$from-context": {
+                  "path": "$user.login"
+                }
+              },
+              "password": {
+                "$from-context": {
+                  "path": "data.password"
+                }
+              }
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$link",
+              "data": {
+                "$replace": {
+                  "template": "%$ref:settings:SystemDomain%/cabinet/user/my-profile"
+                }
+              }
+            }
+          },
+          {
+            "$notification-send": {
+              "template": "user-change-password",
+              "params": {
+                "userId": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                },
+                "linkProfile": {
+                  "$from-context": {
+                    "path": "$link"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "edit-my-profile": {
+        "title": "Редактирование моего профиля",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Редактирование моего профиля"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "user/edit-my-profile",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "timezone/search",
+            "user/email_exists",
+            "user/login_exists",
+            "role/dropdown"
+          ]
+        },
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "user/get_before_edit",
+              "variables": {
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "user",
+              "resultPath": "$infoOld"
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$infoNew",
+              "data": {
+                "email": {
+                  "$from-context": {
+                    "path": "data.email"
+                  }
+                },
+                "login": {
+                  "$from-context": {
+                    "path": "data.login"
+                  }
+                },
+                "phone": {
+                  "$from-context": {
+                    "path": "data.phone"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "assign-object": {
+              "path": "email",
+              "data": {
+                "$from-context": {
+                  "path": "$infoOld.email"
+                }
+              },
+              "object": {
+                "$from-context": {
+                  "path": "data"
+                }
+              }
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$userSettings",
+              "data": {
+                "$from-context": {
+                  "path": "data.userSettings"
+                }
+              }
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "user_settings/update",
+              "variables": {
+                "id": {
+                  "$from-context": {
+                    "path": "$userSettings.id"
+                  }
+                },
+                "data": {
+                  "$exclude": {
+                    "data": {
+                      "$from-context": {
+                        "path": "$userSettings"
+                      }
+                    },
+                    "exclude": [
+                      "id"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "user/update",
+              "variables": {
+                "$assign-object": {
+                  "path": "data",
+                  "data": {
+                    "$exclude": {
+                      "data": {
+                        "$from-context": {
+                          "path": "data"
+                        }
+                      },
+                      "exclude": [
+                        "emailNotification",
+                        "pushNotification",
+                        "userSettings"
+                      ]
+                    }
+                  },
+                  "object": {
+                    "id": {
+                      "$from-context": {
+                        "path": "$infoOld._id"
+                      }
+                    }
+                  }
+                }
+              },
+              "responsePath": "user"
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "notification/user_settings/get_by_user",
+              "variables": {
+                "userId": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "notificationUserSettings",
+              "resultPath": "$notificationUserSettings"
+            }
+          },
+          {
+            "$if": {
+              "condition": {
+                "===": {
+                  "operand1": {
+                    "$from-context": {
+                      "path": "$notificationUserSettings"
+                    }
+                  },
+                  "operand2": null
+                }
+              },
+              "then": {
+                "$api-data-query": {
+                  "query": "notification/user_settings/create",
+                  "variables": {
+                    "userId": {
+                      "$from-context": {
+                        "path": "$infoOld._id"
+                      }
+                    },
+                    "sendEmail": {
+                      "$from-context": {
+                        "path": "$userSettings.emailNotification"
+                      }
+                    },
+                    "sendPush": {
+                      "$from-context": {
+                        "path": "$userSettings.pushNotification"
+                      }
+                    }
+                  },
+                  "responsePath": "notificationUserSettings"
+                }
+              },
+              "else": {
+                "$api-data-query": {
+                  "query": "notification/user_settings/update",
+                  "variables": {
+                    "id": {
+                      "$from-context": {
+                        "path": "$notificationUserSettings.id"
+                      }
+                    },
+                    "sendEmail": {
+                      "$from-context": {
+                        "path": "$userSettings.emailNotification"
+                      }
+                    },
+                    "sendPush": {
+                      "$from-context": {
+                        "path": "$userSettings.pushNotification"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$if": {
+              "condition": {
+                "!==": {
+                  "operand1": {
+                    "$from-context": {
+                      "path": "$infoOld.login"
+                    }
+                  },
+                  "operand2": {
+                    "$from-context": {
+                      "path": "$infoNew.login"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "$auth-api-update": {
+                  "id": {
+                    "$from-context": {
+                      "path": "$infoOld._id"
+                    }
+                  },
+                  "login": {
+                    "$from-context": {
+                      "path": "$infoNew.login"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$if": {
+              "condition": {
+                "!==": {
+                  "operand1": {
+                    "$from-context": {
+                      "path": "$infoOld.email"
+                    }
+                  },
+                  "operand2": {
+                    "$from-context": {
+                      "path": "$infoNew.email"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "$waterfall": {
+                  "arrayFunctions": [
+                    {
+                      "$api-data-query": {
+                        "query": "user/email_change/remove",
+                        "variables": {
+                          "userId": {
+                            "$from-context": {
+                              "path": "objectId"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "$api-data-query": {
+                        "query": "user/email_change/create",
+                        "variables": {
+                          "userId": {
+                            "$from-context": {
+                              "path": "objectId"
+                            }
+                          },
+                          "oldEmail": {
+                            "$from-context": {
+                              "path": "$infoOld.email"
+                            }
+                          },
+                          "newEmail": {
+                            "$from-context": {
+                              "path": "$infoNew.email"
+                            }
+                          }
+                        },
+                        "responsePath": "result",
+                        "resultPath": "$token"
+                      }
+                    },
+                    {
+                      "$assign-context": {
+                        "path": "$link",
+                        "data": {
+                          "$replace": {
+                            "template": "%$ref:settings:SystemDomain%/user/confirm-email?id={{id}}&token={{token}}",
+                            "data": {
+                              "id": {
+                                "$from-context": {
+                                  "path": "objectId"
+                                }
+                              },
+                              "token": {
+                                "$from-context": {
+                                  "path": "$token._id"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "$notification-send": {
+                        "template": "user-email-confirm",
+                        "params": {
+                          "userId": {
+                            "$from-context": {
+                              "path": "objectId"
+                            }
+                          },
+                          "confirmLink": {
+                            "$from-context": {
+                              "path": "$link"
+                            }
+                          },
+                          "email": {
+                            "$from-context": {
+                              "path": "$infoNew.email"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "$assign-response": {
+                        "key": "emailChanged",
+                        "data": true
+                      }
+                    }
+                  ]
+                }
+              },
+              "else": {
+                "$assign-response": {
+                  "key": "emailChanged",
+                  "data": false
+                }
+              }
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "user/get_phone_view",
+              "variables": {
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "user.phoneView",
+              "resultPath": "$phoneView"
+            }
+          }
+        ]
+      }
+    },
+    "statesActions": {
+      "update-ldap": {
+        "title": "Обновить данные по пользователю из LDAP",
+        "grants": {
+          "system": true,
+          "rbac": {
+            "enabled": false
+          }
+        },
+        "functions": [],
+        "results": {
+          "conditional": [
+            {
+              "conditions": {
+                "$in": {
+                  "array": [
+                    "514",
+                    "66050"
+                  ],
+                  "value": {
+                    "$from-context": {
+                      "path": "data.userAccountControl"
+                    }
+                  }
+                }
+              },
+              "state": "blocked"
+            },
+            {
+              "conditions": {
+                "$not": {
+                  "data": {
+                    "$in": {
+                      "array": [
+                        "514",
+                        "66050"
+                      ],
+                      "value": {
+                        "$from-context": {
+                          "path": "data.userAccountControl"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "state": "active"
+            }
+          ]
+        }
+      },
+      "reset-password": {
+        "title": "Сбросить пароль",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Сбросить пароль пользователя"
+          },
+          "includeInActionsList": {
+            "availableForViews": "onlyFor",
+            "views": [
+              "user/list",
+              "organization/list-employees",
+              "user/list-my-employees"
+            ]
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "user/reset-password",
+            "mode": "popup"
+          },
+          "availableQueriesInViews": [
+            "user/get"
+          ]
+        },
+        "functions": [
+          {
+            "$assign-context": {
+              "path": "$expiredAt",
+              "data": {
+                "$date-timestamp": {
+                  "data": {
+                    "$date-add": {
+                      "date": {
+                        "$datetime-now": {}
+                      },
+                      "number": 86400,
+                      "interval": "s"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "user/recovery_password/create",
+              "variables": {
+                "expiredAt": {
+                  "$from-context": {
+                    "path": "$expiredAt"
+                  }
+                },
+                "userId": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "result"
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$link",
+              "data": {
+                "$replace": {
+                  "template": "%$ref:settings:SystemDomain%/user/change-password-by-token?token={{token}}",
+                  "data": {
+                    "token": {
+                      "$from-context": {
+                        "path": "$apiResponse._id"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$notification-send": {
+              "template": "administrator-reset-password",
+              "params": {
+                "userId": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                },
+                "link": {
+                  "$from-context": {
+                    "path": "$link"
+                  }
+                },
+                "dateOfExpiry": {
+                  "$from-context": {
+                    "path": "$expiredAtDate"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "view": {
+        "title": "Просмотреть",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "title": "Просмотреть карточку пользователя"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "user/view",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "user/get"
+          ]
+        }
+      },
+      "edit": {
+        "title": "Редактировать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Редактировать пользователя"
+          },
+          "includeInActionsList": {
+            "availableForViews": "onlyFor",
+            "views": [
+              "user/list",
+              "organization/list-employees",
+              "user/list-my-employees"
+            ]
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "user/edit",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "timezone/search",
+            "user/get",
+            "user/email_exists",
+            "user/login_exists",
+            "role/dropdown"
+          ]
+        },
+        "functions": [
+          {
+            "$assign-context": {
+              "path": "$userSettings",
+              "data": {
+                "$from-context": {
+                  "path": "data.userSettings"
+                }
+              }
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "user_settings/update",
+              "variables": {
+                "id": {
+                  "$from-context": {
+                    "path": "$userSettings.id"
+                  }
+                },
+                "data": {
+                  "$exclude": {
+                    "data": {
+                      "$from-context": {
+                        "path": "$userSettings"
+                      }
+                    },
+                    "exclude": [
+                      "id"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "user/get_before_edit",
+              "variables": {
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "user",
+              "resultPath": "$infoOld"
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$infoNew",
+              "data": {
+                "email": {
+                  "$from-context": {
+                    "path": "data.email"
+                  }
+                },
+                "login": {
+                  "$from-context": {
+                    "path": "data.login"
+                  }
+                },
+                "phone": {
+                  "$from-context": {
+                    "path": "data.phone"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$if": {
+              "condition": {
+                "$and": {
+                  "operands": [
+                    {
+                      "===": {
+                        "operand1": {
+                          "$from-context": {
+                            "path": "$infoOld.state"
+                          }
+                        },
+                        "operand2": "await_email_confirmation"
+                      }
+                    },
+                    {
+                      "!==": {
+                        "operand1": {
+                          "$from-context": {
+                            "path": "$infoOld.email"
+                          }
+                        },
+                        "operand2": {
+                          "$from-context": {
+                            "path": "$infoNew.email"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "then": {
+                "$waterfall": {
+                  "arrayFunctions": [
+                    {
+                      "$auth-api-new-token": {
+                        "id": {
+                          "$from-context": {
+                            "path": "$infoOld._id"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "$api-data-query": {
+                        "query": "user/update",
+                        "variables": {
+                          "$assign-object": {
+                            "path": "data",
+                            "data": {
+                              "$exclude": {
+                                "data": {
+                                  "$from-context": {
+                                    "path": "data"
+                                  }
+                                },
+                                "exclude": [
+                                  "emailNotification",
+                                  "pushNotification",
+                                  "userSettings"
+                                ]
+                              }
+                            },
+                            "object": {
+                              "id": {
+                                "$from-context": {
+                                  "path": "$infoOld._id"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "responsePath": "user"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "$if": {
+              "condition": {
+                "$and": {
+                  "operands": [
+                    {
+                      "!==": {
+                        "operand1": {
+                          "$from-context": {
+                            "path": "$infoOld.state"
+                          }
+                        },
+                        "operand2": "await_email_confirmation"
+                      }
+                    },
+                    {
+                      "!==": {
+                        "operand1": {
+                          "$from-context": {
+                            "path": "$infoOld.email"
+                          }
+                        },
+                        "operand2": {
+                          "$from-context": {
+                            "path": "$infoNew.email"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "then": {
+                "$waterfall": {
+                  "arrayFunctions": [
+                    {
+                      "assign-object": {
+                        "path": "email",
+                        "data": {
+                          "$from-context": {
+                            "path": "$infoOld.email"
+                          }
+                        },
+                        "object": {
+                          "$from-context": {
+                            "path": "data"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "$api-data-query": {
+                        "query": "user/update",
+                        "variables": {
+                          "$assign-object": {
+                            "path": "data",
+                            "data": {
+                              "$exclude": {
+                                "data": {
+                                  "$from-context": {
+                                    "path": "data"
+                                  }
+                                },
+                                "exclude": [
+                                  "emailNotification",
+                                  "pushNotification",
+                                  "userSettings"
+                                ]
+                              }
+                            },
+                            "object": {
+                              "id": {
+                                "$from-context": {
+                                  "path": "$infoOld._id"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "responsePath": "user"
+                      }
+                    },
+                    {
+                      "$api-data-query": {
+                        "query": "user/email_change/create",
+                        "variables": {
+                          "userId": {
+                            "$from-context": {
+                              "path": "objectId"
+                            }
+                          },
+                          "oldEmail": {
+                            "$from-context": {
+                              "path": "$infoOld.email"
+                            }
+                          },
+                          "newEmail": {
+                            "$from-context": {
+                              "path": "$infoNew.email"
+                            }
+                          }
+                        },
+                        "responsePath": "result",
+                        "resultPath": "$token"
+                      }
+                    },
+                    {
+                      "$assign-context": {
+                        "path": "$link",
+                        "data": {
+                          "$replace": {
+                            "template": "%$ref:settings:SystemDomain%/user/confirm-email?id={{id}}&token={{token}}",
+                            "data": {
+                              "id": {
+                                "$from-context": {
+                                  "path": "objectId"
+                                }
+                              },
+                              "token": {
+                                "$from-context": {
+                                  "path": "$token._id"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "$notification-send": {
+                        "template": "user-email-confirm",
+                        "params": {
+                          "userId": {
+                            "$from-context": {
+                              "path": "objectId"
+                            }
+                          },
+                          "confirmLink": {
+                            "$from-context": {
+                              "path": "$link"
+                            }
+                          },
+                          "email": {
+                            "$from-context": {
+                              "path": "$infoNew.email"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "$assign-response": {
+                        "key": "emailChanged",
+                        "data": true
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "$if": {
+              "condition": {
+                "!==": {
+                  "operand1": {
+                    "$from-context": {
+                      "path": "$infoOld.login"
+                    }
+                  },
+                  "operand2": {
+                    "$from-context": {
+                      "path": "$infoNew.login"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "$auth-api-update": {
+                  "id": {
+                    "$from-context": {
+                      "path": "$infoOld._id"
+                    }
+                  },
+                  "login": {
+                    "$from-context": {
+                      "path": "$infoNew.login"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "user/update",
+              "variables": {
+                "$assign-object": {
+                  "path": "data",
+                  "data": {
+                    "$exclude": {
+                      "data": {
+                        "$from-context": {
+                          "path": "data"
+                        }
+                      },
+                      "exclude": [
+                        "emailNotification",
+                        "pushNotification",
+                        "userSettings"
+                      ]
+                    }
+                  },
+                  "object": {
+                    "id": {
+                      "$from-context": {
+                        "path": "$infoOld._id"
+                      }
+                    }
+                  }
+                }
+              },
+              "responsePath": "user"
+            }
+          }
+        ]
+      },
+      "resend-token": {
+        "title": "Отправить повторно e-mail для подтверждения",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Отправить повторно e-mail для подтверждения пользователя"
+          },
+          "includeInActionsList": {
+            "availableForViews": "onlyFor",
+            "views": [
+              "user/list",
+              "organization/list-employees",
+              "user/list-my-employees"
+            ]
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "user/resend-token",
+            "mode": "popup",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "user/get_full_name"
+          ]
+        },
+        "functions": [
+          {
+            "$assign-context": {
+              "path": "$confirmToken",
+              "data": {
+                "$auth-api-new-token": {
+                  "id": {
+                    "$from-context": {
+                      "path": "objectId"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$expiredAt",
+              "data": {
+                "$date-timestamp": {
+                  "data": {
+                    "$date-add": {
+                      "date": {
+                        "$datetime-now": {}
+                      },
+                      "number": 31556952,
+                      "interval": "s"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "user/recovery_password/create",
+              "variables": {
+                "$assign-object": {
+                  "path": "data",
+                  "data": {
+                    "$from-context": {
+                      "path": "data"
+                    }
+                  },
+                  "object": {
+                    "expiredAt": {
+                      "$from-context": {
+                        "path": "$expiredAt"
+                      }
+                    },
+                    "userId": {
+                      "$from-context": {
+                        "path": "objectId"
+                      }
+                    }
+                  }
+                }
+              },
+              "responsePath": "result"
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$link",
+              "data": {
+                "$replace": {
+                  "template": "%$ref:settings:SystemDomain%/user/confirm?id={{id}}&token={{token}}&passToken={{passToken}}",
+                  "data": {
+                    "id": {
+                      "$from-context": {
+                        "path": "objectId"
+                      }
+                    },
+                    "token": {
+                      "$from-context": {
+                        "path": "$confirmToken"
+                      }
+                    },
+                    "passToken": {
+                      "$from-context": {
+                        "path": "$apiResponse._id"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$notification-send": {
+              "template": "employee-add",
+              "params": {
+                "userId": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                },
+                "confirmLink": {
+                  "$from-context": {
+                    "path": "$link"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "block": {
+        "title": "Заблокировать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Заблокировать пользователя"
+          },
+          "includeInActionsList": {
+            "availableForViews": "onlyFor",
+            "views": [
+              "user/list",
+              "organization/employee-list"
+            ]
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "user/block",
+            "layout": "cabinet",
+            "mode": "popup"
+          },
+          "availableQueriesInViews": [
+            "user/get_full_name"
+          ]
+        },
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "user/block",
+              "variables": {
+                "$assign-object": {
+                  "path": "data",
+                  "data": {
+                    "$from-context": {
+                      "path": "data"
+                    }
+                  },
+                  "object": {
+                    "userId": {
+                      "$from-context": {
+                        "path": "objectId"
+                      }
+                    },
+                    "reason": {
+                      "$from-context": {
+                        "path": "data.reason"
+                      }
+                    }
+                  }
+                }
+              },
+              "responsePath": "reason"
+            }
+          },
+          {
+            "$object-update": {
+              "objectType": "user",
+              "objectId": {
+                "$from-context": {
+                  "path": "objectId"
+                }
+              },
+              "changes": [
+                {
+                  "field": "blockReasonId",
+                  "value": {
+                    "$from-context": {
+                      "path": "$apiResponse._id"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "$notification-send": {
+              "template": "user-blocked",
+              "params": {
+                "userId": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                },
+                "reason": {
+                  "$from-context": {
+                    "path": "data.reason"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "blocked"
+        }
+      },
+      "unblock": {
+        "title": "Разблокировать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Разблокировать пользователя"
+          },
+          "includeInActionsList": {
+            "availableForViews": "onlyFor",
+            "views": [
+              "user/list",
+              "organization/employee-list"
+            ]
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "user/unblock",
+            "layout": "cabinet",
+            "mode": "popup"
+          },
+          "availableQueriesInViews": [
+            "user/get_for_unblock",
+            "user/email_exists",
+            "user/get_organization_state"
+          ]
+        },
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "user/get_block_reason",
+              "variables": {
+                "$assign-object": {
+                  "path": "data",
+                  "data": {
+                    "$from-context": {
+                      "path": "data"
+                    }
+                  },
+                  "object": {
+                    "id": {
+                      "$from-context": {
+                        "path": "objectId"
+                      }
+                    }
+                  }
+                }
+              },
+              "responsePath": "user"
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "user/unblock",
+              "variables": {
+                "$assign-object": {
+                  "path": "data",
+                  "data": {
+                    "$from-context": {
+                      "path": "data"
+                    }
+                  },
+                  "object": {
+                    "userId": {
+                      "$from-context": {
+                        "path": "objectId"
+                      }
+                    },
+                    "reasonId": {
+                      "$from-context": {
+                        "path": "$apiResponse.blockReason._id"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$notification-send": {
+              "template": "user-unblocked",
+              "params": {
+                "userId": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                },
+                "link": "%$ref:settings:SystemDomain%/cabinet/user/index"
+              }
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "active"
+        }
+      },
+      "delete": {
+        "title": "Удалить",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Удалить пользователя"
+          },
+          "includeInActionsList": {
+            "availableForViews": "onlyFor",
+            "views": [
+              "user/list",
+              "organization/employee-list"
+            ]
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "user/delete",
+            "layout": "cabinet",
+            "mode": "popup"
+          }
+        },
+        "results": {
+          "unconditional": "deleted"
+        }
+      },
+      "confirm": {
+        "title": "Подтверждение регистрации",
+        "grants": {
+          "rbac": {
+            "enabled": false,
+            "visible": false,
+            "title": "Подтверждение регистрации"
+          },
+          "includeInActionsList": {
+            "availableForViews": "notForAny"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "user/confirm",
+            "layout": "cabinet"
+          }
+        },
+        "functions": [
+          {
+            "$auth-api-confirm": {
+              "token": {
+                "$from-context": {
+                  "path": "data.token"
+                }
+              }
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "user/update",
+              "variables": {
+                "$assign-object": {
+                  "path": "data",
+                  "data": {
+                    "$exclude": {
+                      "data": {
+                        "$from-context": {
+                          "path": "data"
+                        }
+                      },
+                      "exclude": [
+                        "token"
+                      ]
+                    }
+                  },
+                  "object": {
+                    "id": {
+                      "$from-context": {
+                        "path": "objectId"
+                      }
+                    }
+                  }
+                }
+              },
+              "responsePath": "user"
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "active"
+        }
+      },
+      "confirm-email": {
+        "title": "Подтверждение редактирования e-mail",
+        "grants": {
+          "rbac": {
+            "enabled": false,
+            "visible": false,
+            "title": "Подтверждение редактирования e-mail"
+          },
+          "includeInActionsList": {
+            "availableForViews": "notForAny"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "user/confirm-email",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "user/email_change/exists"
+          ]
+        },
+        "functions": [
+          {
+            "$object-get": {
+              "objectType": "user",
+              "data": {
+                "objectId": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "fetch": {
+                "mode": "one"
+              },
+              "resultPath": "$user"
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "user/email_change/get",
+              "variables": {
+                "token": {
+                  "$from-context": {
+                    "path": "data.token"
+                  }
+                },
+                "userId": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "emailChange"
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "user/email_change/make_used",
+              "variables": {
+                "id": {
+                  "$from-context": {
+                    "path": "$apiResponse.id"
+                  }
+                }
+              },
+              "responsePath": "emailChange",
+              "resultPath": "$emailChange"
+            }
+          },
+          {
+            "$assign-object": {
+              "path": "email",
+              "data": {
+                "$from-context": {
+                  "path": "$emailChange.newEmail"
+                }
+              },
+              "object": {
+                "$from-context": {
+                  "path": "data"
+                }
+              }
+            }
+          },
+          {
+            "$exclude": {
+              "data": {
+                "$from-context": {
+                  "path": "data"
+                }
+              },
+              "exclude": [
+                "token"
+              ]
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "user/update",
+              "variables": {
+                "$assign-object": {
+                  "path": "data",
+                  "data": {
+                    "$from-context": {
+                      "path": "data"
+                    }
+                  },
+                  "object": {
+                    "id": {
+                      "$from-context": {
+                        "path": "objectId"
+                      }
+                    }
+                  }
+                }
+              },
+              "responsePath": "user"
+            }
+          }
+        ]
+      }
+    },
+    "scheduledActions": {
+      "active-directory-integration": {
+        "title": "Интеграции с Active Directory для синхронизации статусов пользователей",
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "user/get_all_ad_users",
+              "responsePath": "items",
+              "resultPath": "$users"
+            }
+          },
+          {
+            "$array-map": {
+              "array": {
+                "$from-context": {
+                  "path": "$users"
+                }
+              },
+              "map": {
+                "$workflow-run": {
+                  "workflowName": "user",
+                  "action": "update-ldap",
+                  "data": {
+                    "$fetch-object": {
+                      "data": {
+                        "$integration-connector": {
+                          "connector": "ldap",
+                          "method": "getUser",
+                          "data": {
+                            "login": {
+                              "$from-context": {
+                                "path": "$data.login"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "path": "0"
+                    }
+                  },
+                  "objectId": {
+                    "$from-context": {
+                      "path": "$data._id"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "scheduleOptions": {
+          "enabled": true,
+          "cronExpression": "0 0 * * *"
+        }
+      }
+    }
+  },
+  "states": {
+    "await_email_confirmation": {
+      "title": "Ожидает подтверждения e-mail",
+      "description": "Состояние пользователя, ожидающего подтверждения e-mail",
+      "statesActions": [
+        "view",
+        "confirm",
+        "confirm-email",
+        "resend-token",
+        "edit",
+        "delete"
+      ]
+    },
+    "active": {
+      "title": "Активен",
+      "description": "Активное состояние пользователя",
+      "statesActions": [
+        "view",
+        "update-ldap",
+        "confirm-email",
+        "reset-password",
+        "edit",
+        "block"
+      ]
+    },
+    "blocked": {
+      "title": "Заблокирован",
+      "description": "Заблокированное состояние пользователя",
+      "statesActions": [
+        "view",
+        "update-ldap",
+        "delete",
+        "edit",
+        "unblock"
+      ]
+    },
+    "deleted": {
+      "title": "Удален",
+      "description": "Удаленное состояние пользователя",
+      "displaySettingsInLists": {
+        "hidden": true
+      },
+      "finish": true
+    }
+  }
+}

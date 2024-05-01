@@ -1,0 +1,7 @@
+# @title: Обновить экземпляр объекта "Бронь оснащения"
+
+mutation ($id: MongoID!, $data: UpdateByIdAdditionalFacilitiesInput!) {
+  object: additionalFacilitiesUpdateById(_id: $id, record: $data) {
+    id: _id
+  }
+}

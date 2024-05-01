@@ -1,0 +1,7 @@
+# @title: Создать экземпляры объекта "Контактное лицо"
+
+mutation ($data: [CreateContactPersonInput!]!) {
+  user: contactPersonCreate(records: $data) {
+    _id: recordIds
+  }
+}

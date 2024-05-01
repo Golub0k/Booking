@@ -1,0 +1,45 @@
+{
+  "type": "object",
+  "title": "Мебель",
+  "properties": {
+    "owner": {
+      "type": "string",
+      "required": true,
+      "index": true,
+      "fieldDescription": "Собственник",
+      "ref": "OwnerCode",
+      "refAlias": "ownerCode"
+    },
+    "name": {
+      "type": "string",
+      "required": true,
+      "index": true,
+      "trim": true,
+      "fieldDescription": "Наименование мебели"
+    },
+    "nomenclatureNumber": {
+      "type": "string",
+      "required": true,
+      "index": true,
+      "trim": true,
+      "fieldDescription": "Номенклатурный номер мебели"
+    },
+    "unitPrice": {
+      "type": "number",
+      "required": true,
+      "index": true,
+      "fieldDescription": "Цена за единицу мебели"
+    },
+    "availableQuantity": {
+      "type": "number",
+      "trim": true,
+      "fieldDescription": "Доступное количество",
+      "required": false
+    },
+    "comment": {
+      "type": "string",
+      "required": false,
+      "fieldDescription": "Примечание"
+    }
+  }
+}

@@ -1,0 +1,101 @@
+# @title: Получить список броней помещений для отчета
+
+query ($dateFrom: DateTime, $dateTo: DateTime) {
+  items: bookingGet(
+    filter: {
+      AND: [
+        { state: "filled" }
+        {
+          _filterRef: {
+            eventId: {
+              AND: [
+                { _operators: { actual: { ne: false } } }
+                {
+                  _operators: {
+                    state: { nin: ["new", "draft", "canceled", "deleted"] }
+                  }
+                }
+                {
+                  OR: [
+                    {
+                      AND: [
+                        {
+                          _operators: { installationStart: { gte: $dateFrom } }
+                        }
+                        { _operators: { installationStart: { lte: $dateTo } } }
+                      ]
+                    }
+                    {
+                      AND: [
+                        { _operators: { eventStart: { gte: $dateFrom } } }
+                        { _operators: { eventStart: { lte: $dateTo } } }
+                      ]
+                    }
+                    {
+                      AND: [
+                        {
+                          _operators: {
+                            deinstallationStart: { gte: $dateFrom }
+                          }
+                        }
+                        {
+                          _operators: { deinstallationStart: { lte: $dateTo } }
+                        }
+                      ]
+                    }
+                    {
+                      AND: [
+                        { _operators: { installationEnd: { gte: $dateFrom } } }
+                        { _operators: { installationEnd: { lte: $dateTo } } }
+                      ]
+                    }
+                    {
+                      AND: [
+                        { _operators: { eventEnd: { gte: $dateFrom } } }
+                        { _operators: { eventEnd: { lte: $dateTo } } }
+                      ]
+                    }
+                    {
+                      AND: [
+                        {
+                          _operators: { deinstallationEnd: { gte: $dateFrom } }
+                        }
+                        { _operators: { deinstallationEnd: { lte: $dateTo } } }
+                      ]
+                    }
+                    {
+                      AND: [
+                        { _operators: { eventStart: { lte: $dateTo } } }
+                        { _operators: { eventEnd: { gte: $dateFrom } } }
+                      ]
+                    }
+                    {
+                      AND: [
+                        {
+                          _operators: { deinstallationStart: { lte: $dateTo } }
+                        }
+                        {
+                          _operators: { deinstallationEnd: { gte: $dateFrom } }
+                        }
+                      ]
+                    }
+                    {
+                      AND: [
+                        { _operators: { installationStart: { lte: $dateTo } } }
+                        { _operators: { installationEnd: { gte: $dateFrom } } }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ) {
+    rooms {
+      roomId
+    }
+  }
+}

@@ -1,0 +1,540 @@
+{
+  "@title": "Реестр отчетов",
+  "type": "object",
+  "widget": {
+    "name": "container"
+  },
+  "properties": {
+    "breadcrumbs": {
+      "type": "object",
+      "widget": {
+        "name": "breadcrumb",
+        "mobileItems": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          }
+        ],
+        "items": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          },
+          {
+            "label": "Отчеты"
+          }
+        ],
+        "class": {
+          "group": "p-xs-auto mrg-lg-b-xl mrg-b-md"
+        }
+      }
+    },
+    "header-with-button": {
+      "type": "object",
+      "model": false,
+      "widget": {
+        "name": "container",
+        "options": {
+          "label": "Отчеты"
+        },
+        "class": {
+          "group": "p-grid mrg-b-lg mrg-t-0",
+          "label": "h1 p-xs-12 p-xl-9 pdd-tb-0",
+          "value": "p-xs-12 p-xl-3 pdd-tb-0 p-jc-xl-end p-as-center p-autolayout"
+        }
+      },
+      "properties": {
+        "button": {
+          "type": "string",
+          "widget": {
+            "name": "menu-button",
+            "items": [
+              {
+                "label": "Календарный план",
+                "command": {
+                  "$open-popup": {
+                    "workflow": "report",
+                    "action": "add",
+                    "params": {
+                      "reportType": "calendar"
+                    }
+                  }
+                }
+              },
+              {
+                "label": "Отмененные мероприятия",
+                "command": {
+                  "$open-popup": {
+                    "workflow": "report",
+                    "action": "add",
+                    "params": {
+                      "reportType": "cancel"
+                    }
+                  }
+                }
+              },
+              {
+                "label": "Продажи по менеджерам",
+                "command": {
+                  "$open-popup": {
+                    "workflow": "report",
+                    "action": "add",
+                    "params": {
+                      "reportType": "sale"
+                    }
+                  }
+                }
+              },
+              {
+                "label": "Наличие помещений",
+                "command": {
+                  "$open-popup": {
+                    "workflow": "report",
+                    "action": "add",
+                    "params": {
+                      "reportType": "availableRoom"
+                    }
+                  }
+                }
+              },
+              {
+                "label": "Бронирование помещений",
+                "command": {
+                  "$open-popup": {
+                    "workflow": "report",
+                    "action": "add",
+                    "params": {
+                      "reportType": "bRoom"
+                    }
+                  }
+                }
+              },
+              {
+                "label": "Бронирование оборудования",
+                "command": {
+                  "$open-popup": {
+                    "workflow": "report",
+                    "action": "add",
+                    "params": {
+                      "reportType": "bEquipment"
+                    }
+                  }
+                }
+              },
+              {
+                "label": "Бронирование услуг",
+                "command": {
+                  "$open-popup": {
+                    "workflow": "report",
+                    "action": "add",
+                    "params": {
+                      "reportType": "bAdditionalServices"
+                    }
+                  }
+                }
+              },
+              {
+                "label": "Бронирование мебели",
+                "command": {
+                  "$open-popup": {
+                    "workflow": "report",
+                    "action": "add",
+                    "params": {
+                      "reportType": "bFurniture"
+                    }
+                  }
+                }
+              },
+              {
+                "label": "Общая статистика",
+                "command": {
+                  "$open-popup": {
+                    "workflow": "report",
+                    "action": "add",
+                    "params": {
+                      "reportType": "gStatistics"
+                    }
+                  }
+                }
+              }
+            ],
+            "options": {
+              "labelKey": "label",
+              "togglerText": "Сформировать отчет",
+              "icon": "icon-caret-down",
+              "iconPos": "right",
+              "panelWidthAsButton": true,
+              "visible": true
+            },
+            "class": {
+              "value": "button_primarybutton_h1 pdd-lr-0"
+            }
+          }
+        }
+      }
+    },
+    "table": {
+      "value": {
+        "$api-table-workflow-data": {
+          "model": "#data",
+          "query": "report/list",
+          "variables": {
+            "$graphql-event-variables": {
+              "data": {
+                "$element-event": {
+                  "event": "lazyLoad"
+                }
+              }
+            }
+          },
+          "errors": {
+            "default": {
+              "$message": {
+                "severity": "error",
+                "summary": "Ошибка",
+                "detail": "При загрузке данных произошла ошибка, повторите попытку позднее"
+              }
+            }
+          }
+        }
+      },
+      "type": "array",
+      "model": "#data",
+      "widget": {
+        "name": "table-lazy",
+        "options": {
+          "emptyMessage": "Данные не найдены",
+          "responsive": false,
+          "first": 0,
+          "paginator": true,
+          "rows": 10,
+          "rowsPerPageOptions": [
+            10,
+            20,
+            50
+          ],
+          "routerOptions": [
+            "first",
+            "rows"
+          ]
+        },
+        "class": {
+          "group": "p-xxl-12 p-xs-12"
+        },
+        "events": {
+          "lazyLoad": {
+            "$element-option": {
+              "path": "#data",
+              "option": "loading",
+              "value": true
+            }
+          }
+        },
+        "subscriptions": {
+          "reload-table": {
+            "$element-event": {
+              "event": "reload",
+              "value": true
+            }
+          }
+        }
+      },
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            }
+          },
+          "reportFields": {
+            "type": "object",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            },
+            "properties": {
+              "reportType": {
+                "type": "string"
+              }
+            }
+          },
+          "typeView": {
+            "type": "object",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "label": "Тип отчета"
+              }
+            },
+            "properties": {
+              "typeView": {
+                "type": "string",
+                "value": {
+                  "$switch": {
+                    "condition": {
+                      "$from-context": {
+                        "path": "$rowData.reportFields.reportType"
+                      }
+                    },
+                    "default": "",
+                    "cases": [
+                      {
+                        "value": "calendar",
+                        "action": "Календарный план"
+                      },
+                      {
+                        "value": "cancel",
+                        "action": "Отмененные мероприятия"
+                      },
+                      {
+                        "value": "sale",
+                        "action": "Продажи по менеджерам"
+                      },
+                      {
+                        "value": "availableRoom",
+                        "action": "Наличие помещений"
+                      },
+                      {
+                        "value": "bRoom",
+                        "action": "Бронирование помещений"
+                      },
+                      {
+                        "value": "bEquipment",
+                        "action": "Бронирование оборудования"
+                      },
+                      {
+                        "value": "bAdditionalServices",
+                        "action": "Бронирование услуг"
+                      },
+                      {
+                        "value": "bFurniture",
+                        "action": "Бронирование мебели"
+                      },
+                      {
+                        "value": "gStatistics",
+                        "action": "Общая статистика"
+                      }
+                    ]
+                  }
+                },
+                "widget": {
+                  "name": "info"
+                }
+              }
+            }
+          },
+          "createdAt": {
+            "type": "datetime",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            }
+          },
+          "user": {
+            "type": "object",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            },
+            "properties": {
+              "fullName": {
+                "type": "string",
+                "widget": {
+                  "name": "info"
+                }
+              }
+            }
+          },
+          "parameters": {
+            "type": "object",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "label": "Параметры"
+              }
+            },
+            "properties": {
+              "create_date": {
+                "type": "string",
+                "value": {
+                  "$replace": {
+                    "template": "<span><b>Дата формирования:</b><br/>{{create_date}}</span>",
+                    "data": {
+                      "create_date": {
+                        "$formatter": {
+                          "format": "datetime:\"DD.MM.YYYY HH:mm\"",
+                          "data": {
+                            "$from-context": {
+                              "path": "$rowData.createdAt"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "widget": {
+                  "name": "html"
+                }
+              },
+              "user": {
+                "type": "string",
+                "value": {
+                  "$replace": {
+                    "template": "<span><b>Автор отчета:</b><br/>{{creator}}</span>",
+                    "data": {
+                      "creator": {
+                        "$from-context": {
+                          "path": "$rowData.user.fullName"
+                        }
+                      }
+                    }
+                  }
+                },
+                "widget": {
+                  "name": "html"
+                }
+              }
+            }
+          },
+          "state": {
+            "type": "string",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            }
+          },
+          "status": {
+            "type": "object",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "label": "Статус"
+              }
+            },
+            "properties": {
+              "stateView": {
+                "type": "string",
+                "value": {
+                  "$from-context": {
+                    "path": "$rowData.state"
+                  }
+                },
+                "widget": {
+                  "name": "badge",
+                  "options": {
+                    "defaultLabel": "В обработке",
+                    "displayMapping": [
+                      {
+                        "color": "badge_active",
+                        "label": "Сформирован",
+                        "value": "success"
+                      },
+                      {
+                        "color": "badge_error",
+                        "label": "Ошибка",
+                        "value": "error"
+                      },
+                      {
+                        "color": "badge_warning",
+                        "label": "В обработке",
+                        "value": "process"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "file": {
+            "type": "object",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "label": "Файл"
+              }
+            },
+            "properties": {
+              "file": {
+                "type": "file",
+                "model": "file",
+                "widget": {
+                  "name": "file",
+                  "options": {
+                    "enableFilesUpload": false,
+                    "displayUploadedFiles": true,
+                    "displayParams": {
+                      "showSize": true,
+                      "enableFilesRemove": false,
+                      "enableFilesDownload": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "actions": {
+            "type": "object",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "label": "Действия",
+                "visible": {
+                  "$active-user-has-permission": {
+                    "permission": "report.delete"
+                  }
+                }
+              },
+              "class": {
+                "header": "column_actions column_actions_fixed",
+                "cell": "column_actions"
+              }
+            },
+            "properties": {
+              "actions": {
+                "widget": {
+                  "name": "button",
+                  "options": {
+                    "icon": "icon-trashbin"
+                  },
+                  "events": {
+                    "click": {
+                      "$open-popup": {
+                        "workflow": "report",
+                        "action": "delete",
+                        "params": {
+                          "id": {
+                            "$from-context": {
+                              "path": "$rowData.id"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "class": {
+                    "group": "p-autolayout p-jc-center",
+                    "value": "button_icon button_icon-shaded"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

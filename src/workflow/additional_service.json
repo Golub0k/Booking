@@ -1,0 +1,159 @@
+{
+  "version": 2,
+  "objectType": "additional_service",
+  "context": "additional_service/context",
+  "description": "Жизненный цикл дополнительной услуги",
+  "rbac": {
+    "visible": true,
+    "title": "Дополнительные услуги"
+  },
+  "actions": {
+    "initialActions": {
+      "add": {
+        "title": "Создать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Добавить дополнительную услугу"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "additional_service/add",
+            "mode": "popup",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "services_type/get_for_select"
+          ]
+        },
+        "functions": [
+          {
+            "$workflow-object-create": {
+              "objectType": "additional_service",
+              "query": "additional_service/create",
+              "variables": {
+                "data": {
+                  "$from-context": {
+                    "path": "data"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "active"
+        }
+      }
+    },
+    "globalActions": {
+      "list": {
+        "title": "Реестр дополнительных услуг",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Просмотреть справочник дополнительных услуг"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "additional_service/list",
+            "mode": "form",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "additional_service/list",
+            "services_type/get_for_select"
+          ]
+        }
+      }
+    },
+    "statesActions": {
+      "delete": {
+        "title": "Удалить",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Удалить дополнительную услугу"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "additional_service/delete",
+            "mode": "popup",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "additional_service/get"
+          ]
+        },
+        "results": {
+          "unconditional": "deleted"
+        }
+      },
+      "edit": {
+        "title": "Редактировать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Редактировать дополнительную услугу"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "additional_service/edit",
+            "mode": "popup",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "additional_service/get",
+            "services_type/get_for_select"
+          ]
+        },
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "additional_service/update",
+              "variables": {
+                "data": {
+                  "$from-context": {
+                    "path": "data"
+                  }
+                },
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "object"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "states": {
+    "active": {
+      "title": "Активна",
+      "description": "Активное состояние дополнительной услуги",
+      "statesActions": [
+        "edit",
+        "delete"
+      ]
+    },
+    "deleted": {
+      "title": "Удалена",
+      "description": "Удаленное состояние дополнительной услуги",
+      "displaySettingsInLists": {
+        "hidden": true
+      },
+      "finish": true
+    }
+  }
+}

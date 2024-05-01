@@ -1,0 +1,270 @@
+{
+  "version": 2,
+  "objectType": "notification",
+  "context": "notification/context",
+  "description": "Жизненный цикл уведомления",
+  "rbac": {
+    "visible": false,
+    "title": "Сообщение"
+  },
+  "actions": {
+    "initialActions": {},
+    "globalActions": {
+      "list": {
+        "title": "Входящие сообщения",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Просмотреть реестр \"Входящие сообщения\""
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "notification/list",
+            "mode": "form",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "notification/list",
+            "notification/count-new"
+          ]
+        }
+      },
+      "list-sent": {
+        "title": "Отправленные сообщения",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Просмотреть реестр \"Отправленные сообщения\""
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "notification/sent/list",
+            "mode": "form",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "notification/list-sent",
+            "organization/list_names",
+            "user/get-users-of-organizations"
+          ]
+        }
+      },
+      "delete-multiple": {
+        "title": "Удалить",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Удалить входящее сообщение"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "notification/delete-multiple",
+            "mode": "popup",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "notification/get"
+          ]
+        }
+      },
+      "count": {
+        "title": "Для работы счетчика \"Входящие сообщения\"",
+        "grants": {
+          "rbac": {
+            "enabled": false,
+            "visible": false
+          }
+        },
+        "topics": [
+          {
+            "routingKey": "notification.send.notification",
+            "filterValueKey": "recipientId",
+            "data": {
+              "$from-context": {
+                "path": "$wsEvent"
+              }
+            }
+          }
+        ],
+        "views": {
+          "gui": {
+            "path": "notification/delete-multiple",
+            "mode": "popup",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "notification/count-new"
+          ]
+        }
+      },
+      "push": {
+        "title": "Пуш уведомления",
+        "grants": {
+          "rbac": {
+            "enabled": false,
+            "visible": false
+          }
+        },
+        "topics": [
+          {
+            "routingKey": "notification.push.notification",
+            "filterValueKey": "recipientId",
+            "data": {
+              "$from-context": {
+                "path": "$wsEvent"
+              }
+            }
+          }
+        ],
+        "views": {
+          "gui": {}
+        }
+      }
+    },
+    "statesActions": {
+      "delete": {
+        "title": "Удалить",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Удалить входящее сообщение",
+            "permissionCode": "notification.delete-multiple"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "notification/delete",
+            "layout": "cabinet",
+            "mode": "popup"
+          },
+          "availableQueriesInViews": [
+            "notification/get"
+          ]
+        },
+        "results": {
+          "unconditional": "deleted"
+        }
+      },
+      "view": {
+        "title": "Просмотр сообщения",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Просмотреть входящее сообщение"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "notification/view",
+            "layout": "cabinet",
+            "mode": "form"
+          },
+          "availableQueriesInViews": [
+            "notification/get"
+          ]
+        }
+      },
+      "view-sent": {
+        "title": "Просмотр сообщения",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Просмотреть отправленное сообщение"
+          },
+          "includeInActionsList": {
+            "availableForViews": "notForAny",
+            "views": []
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "notification/sent/view",
+            "layout": "cabinet",
+            "mode": "form"
+          },
+          "availableQueriesInViews": [
+            "notification/get"
+          ]
+        }
+      },
+      "make_viewed": {
+        "title": "Отметить как прочитанное",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Отметить сообщение как прочитанное в разделе \"Сообщения\""
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "notification/make_viewed",
+            "layout": "cabinet",
+            "mode": "popup",
+            "hidden": true
+          }
+        },
+        "results": {
+          "unconditional": "viewed"
+        }
+      },
+      "make_new": {
+        "title": "Отметить как непрочитанное",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Отметить сообщение как непрочитанное в разделе \"Сообщения\""
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "notification/make_new",
+            "layout": "cabinet",
+            "mode": "popup",
+            "hidden": true
+          }
+        },
+        "results": {
+          "unconditional": "new"
+        }
+      }
+    }
+  },
+  "states": {
+    "new": {
+      "title": "Непрочитанное",
+      "description": "Непрочитанное состояние объекта",
+      "statesActions": [
+        "view",
+        "view-sent",
+        "delete",
+        "make_viewed"
+      ]
+    },
+    "viewed": {
+      "title": "Прочитанное",
+      "description": "Прочитанное состояние объекта",
+      "statesActions": [
+        "view",
+        "view-sent",
+        "delete",
+        "make_new"
+      ]
+    },
+    "deleted": {
+      "title": "Удаленное",
+      "description": "Удаленное состояние объекта",
+      "system": true
+    }
+  }
+}

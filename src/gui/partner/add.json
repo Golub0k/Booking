@@ -1,0 +1,3055 @@
+{
+  "@title": "Добавление контрагента",
+  "type": "object",
+  "widget": {
+    "name": "container"
+  },
+  "properties": {
+    "breadcrumbs": {
+      "type": "object",
+      "widget": {
+        "name": "breadcrumb",
+        "mobileItems": [
+          {
+            "label": "Контрагенты",
+            "routerLink": "/cabinet/partner/list"
+          }
+        ],
+        "items": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          },
+          {
+            "label": "Контрагенты",
+            "routerLink": "/cabinet/partner/list"
+          },
+          {
+            "label": "Добавление контрагента"
+          }
+        ],
+        "class": {
+          "group": "p-xs-auto mrg-lg-b-xl mrg-b-md"
+        }
+      }
+    },
+    "form": {
+      "type": "object",
+      "model": "#data",
+      "widget": {
+        "name": "form",
+        "options": {
+          "label": "Добавление контрагента"
+        },
+        "class": {
+          "label": "h1 mrg-b-lg d-block",
+          "value": "mrg-b-xl d-block"
+        }
+      },
+      "properties": {
+        "mainInfo": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "options": {
+              "label": "Общие данные"
+            },
+            "class": {
+              "group": "form-section",
+              "label": "h2 mrg-b-xl"
+            }
+          },
+          "properties": {
+            "container_partner_view": {
+              "type": "object",
+              "widget": {
+                "name": "container",
+                "options": {
+                  "label": "Вид контрагента"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid p-fluid",
+                  "label": "form-label form-label_required pdd-r-md mrg-t-0 p-col-12 p-md-4 p-xl-3",
+                  "value": "form-item-element p-col-12 p-md-6 p-xl-4"
+                }
+              },
+              "properties": {
+                "isClient": {
+                  "type": "boolean",
+                  "model": "#data.mainInfo.isClient",
+                  "value": false,
+                  "widget": {
+                    "name": "checkbox",
+                    "options": {
+                      "optionLabel": "",
+                      "optionLabelHTML": "Клиент"
+                    },
+                    "class": {
+                      "value": "form-item-element form-item-element_checkbox form-item-element_label-html"
+                    }
+                  }
+                },
+                "isSupplier": {
+                  "type": "boolean",
+                  "model": "#data.mainInfo.isSupplier",
+                  "value": false,
+                  "widget": {
+                    "name": "checkbox",
+                    "options": {
+                      "optionLabel": "",
+                      "optionLabelHTML": "Поставщик"
+                    },
+                    "class": {
+                      "value": "form-item-element form-item-element_checkbox form-item-element_label-html"
+                    }
+                  },
+                  "validation": [
+                    {
+                      "type": "schema",
+                      "params": {
+                        "rule": {
+                          "$or": {
+                            "operands": [
+                              {
+                                "$var": {
+                                  "path": "#data.mainInfo.isClient"
+                                }
+                              },
+                              {
+                                "$var": {
+                                  "path": "#data.mainInfo.isSupplier"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "message": "Должно быть выбрано хотя бы 1 значение"
+                      },
+                      "events": [
+                        "onUpdate",
+                        "onBackend"
+                      ]
+                    }
+                  ]
+                }
+              }
+            },
+            "type": {
+              "value": "ur",
+              "type": "string",
+              "widget": {
+                "name": "radio-button",
+                "options": {
+                  "label": "Тип организации",
+                  "valueKey": "code",
+                  "optionLabel": "title",
+                  "valueOptions": [
+                    {
+                      "code": "ur",
+                      "title": "Юридическое лицо"
+                    },
+                    {
+                      "code": "ip",
+                      "title": "Индивидуальный предприниматель"
+                    },
+                    {
+                      "code": "fz",
+                      "title": "Физическое лицо"
+                    },
+                    {
+                      "code": "sm",
+                      "title": "Самозанятый"
+                    }
+                  ]
+                },
+                "kind": "radio-button-radio-vertical-list-required-style"
+              }
+            },
+            "name": {
+              "type": "string",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": {
+                    "$if": {
+                      "condition": {
+                        "$or": {
+                          "operands": [
+                            {
+                              "===": {
+                                "operand1": {
+                                  "$subs": {
+                                    "path": "#data.mainInfo.type"
+                                  }
+                                },
+                                "operand2": "ur"
+                              }
+                            },
+                            {
+                              "===": {
+                                "operand1": {
+                                  "$subs": {
+                                    "path": "#data.mainInfo.type"
+                                  }
+                                },
+                                "operand2": "ip"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "then": "Полное наименование организации",
+                      "else": "ФИО (полностью)"
+                    }
+                  }
+                },
+                "kind": "input-text-input-required-style"
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$not-empty": {
+                        "data": {
+                          "$var": {
+                            "path": "."
+                          }
+                        }
+                      }
+                    },
+                    "message": "Поле обязательно для заполнения"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                },
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "<=": {
+                        "operand1": {
+                          "$length": {
+                            "data": {
+                              "$if": {
+                                "condition": {
+                                  "$not-empty": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                },
+                                "else": ""
+                              }
+                            }
+                          }
+                        },
+                        "operand2": 255
+                      }
+                    },
+                    "message": "Максимум 255 символов"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            },
+            "inn": {
+              "type": "string",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": {
+                    "$if": {
+                      "condition": {
+                        "===": {
+                          "operand1": {
+                            "$subs": {
+                              "path": "#data.mainInfo.country.code"
+                            }
+                          },
+                          "operand2": "643"
+                        }
+                      },
+                      "then": "ИНН",
+                      "else": "Аналог ИНН (в вашей стране)"
+                    }
+                  },
+                  "inputmask": {
+                    "$if": {
+                      "condition": {
+                        "===": {
+                          "operand1": {
+                            "$subs": {
+                              "path": "#data.mainInfo.country.code"
+                            }
+                          },
+                          "operand2": "643"
+                        }
+                      },
+                      "then": {
+                        "$if": {
+                          "condition": {
+                            "===": {
+                              "operand1": {
+                                "$subs": {
+                                  "path": "#data.mainInfo.type"
+                                }
+                              },
+                              "operand2": "ur"
+                            }
+                          },
+                          "then": {
+                            "alias": "alphabetical",
+                            "mask": "0",
+                            "repeat": 10,
+                            "rightAlign": false,
+                            "placeholder": "",
+                            "definitions": {
+                              "0": {
+                                "validator": "[0-9]"
+                              }
+                            }
+                          },
+                          "else": {
+                            "alias": "alphabetical",
+                            "mask": "0",
+                            "repeat": 12,
+                            "rightAlign": false,
+                            "placeholder": "",
+                            "definitions": {
+                              "0": {
+                                "validator": "[0-9]"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "else": {
+                        "alias": "alphabetical",
+                        "mask": "0",
+                        "repeat": 20,
+                        "rightAlign": false,
+                        "placeholder": "",
+                        "definitions": {
+                          "0": {
+                            "validator": "[0-9]"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "kind": "input-text-input-required-style"
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$not-empty": {
+                        "data": {
+                          "$var": {
+                            "path": "."
+                          }
+                        }
+                      }
+                    },
+                    "message": "Поле обязательно для заполнения"
+                  },
+                  "events": [
+                    "onUpdate",
+                    "onBackend"
+                  ]
+                },
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$if": {
+                        "condition": {
+                          "$and": {
+                            "operands": [
+                              {
+                                "==": {
+                                  "operand1": {
+                                    "$var": {
+                                      "path": "#data.mainInfo.country.code"
+                                    }
+                                  },
+                                  "operand2": "643"
+                                }
+                              },
+                              {
+                                "==": {
+                                  "operand1": {
+                                    "$var": {
+                                      "path": "#data.mainInfo.type"
+                                    }
+                                  },
+                                  "operand2": "ur"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "then": {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                }
+                              }
+                            },
+                            "then": {
+                              "==": {
+                                "operand1": {
+                                  "$length": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "operand2": 10
+                              }
+                            },
+                            "else": true
+                          }
+                        },
+                        "else": true
+                      }
+                    },
+                    "message": "Значение ИНН должно содержать 10 цифр"
+                  },
+                  "events": [
+                    "onUpdate",
+                    "onBackend"
+                  ]
+                },
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$if": {
+                        "condition": {
+                          "$and": {
+                            "operands": [
+                              {
+                                "==": {
+                                  "operand1": {
+                                    "$var": {
+                                      "path": "#data.mainInfo.country.code"
+                                    }
+                                  },
+                                  "operand2": "643"
+                                }
+                              },
+                              {
+                                "!==": {
+                                  "operand1": {
+                                    "$var": {
+                                      "path": "#data.mainInfo.type"
+                                    }
+                                  },
+                                  "operand2": "ur"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "then": {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                }
+                              }
+                            },
+                            "then": {
+                              "==": {
+                                "operand1": {
+                                  "$length": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "operand2": 12
+                              }
+                            },
+                            "else": true
+                          }
+                        },
+                        "else": true
+                      }
+                    },
+                    "message": "Значение ИНН должно содержать 12 цифр"
+                  },
+                  "events": [
+                    "onUpdate",
+                    "onBackend"
+                  ]
+                },
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$if": {
+                        "condition": {
+                          "==": {
+                            "operand1": {
+                              "$var": {
+                                "path": "#data.mainInfo.country.code"
+                              }
+                            },
+                            "operand2": "643"
+                          }
+                        },
+                        "then": {
+                          "$inn-validate": {
+                            "$var": {
+                              "path": "."
+                            }
+                          }
+                        },
+                        "else": true
+                      }
+                    },
+                    "message": "Некорректное значение ИНН"
+                  },
+                  "events": [
+                    "onUpdate",
+                    "onBackend"
+                  ]
+                },
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "===": {
+                        "operand1": 0,
+                        "operand2": {
+                          "$fetch-object": {
+                            "path": "data.count",
+                            "data": {
+                              "$api-data": {
+                                "query": "partner/inn_exists",
+                                "variables": {
+                                  "inn": {
+                                    "$var": {
+                                      "path": "."
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "message": "Контрагент с таким ИНН уже добавлен в Систему"
+                  },
+                  "events": [
+                    "onBackend"
+                  ]
+                }
+              ]
+            },
+            "kpp": {
+              "type": "string",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": "КПП",
+                  "visible": {
+                    "===": {
+                      "operand1": {
+                        "$subs": {
+                          "path": "#data.mainInfo.type"
+                        }
+                      },
+                      "operand2": "ur"
+                    }
+                  },
+                  "inputmask": {
+                    "alias": "integer",
+                    "rightAlign": false,
+                    "allowMinus": false,
+                    "integerDigits": 9
+                  }
+                },
+                "kind": "input-text-input-style"
+              }
+            },
+            "ogrn": {
+              "type": "string",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": {
+                    "$if": {
+                      "condition": {
+                        "===": {
+                          "operand1": {
+                            "$subs": {
+                              "path": "#data.mainInfo.type"
+                            }
+                          },
+                          "operand2": "ur"
+                        }
+                      },
+                      "then": "ОГРН",
+                      "else": "ОГРНИП"
+                    }
+                  },
+                  "visible": {
+                    "$or": {
+                      "operands": [
+                        {
+                          "===": {
+                            "operand1": {
+                              "$subs": {
+                                "path": "#data.mainInfo.type"
+                              }
+                            },
+                            "operand2": "ur"
+                          }
+                        },
+                        {
+                          "===": {
+                            "operand1": {
+                              "$subs": {
+                                "path": "#data.mainInfo.type"
+                              }
+                            },
+                            "operand2": "ip"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "inputmask": {
+                    "$if": {
+                      "condition": {
+                        "===": {
+                          "operand1": {
+                            "$subs": {
+                              "path": "#data.mainInfo.type"
+                            }
+                          },
+                          "operand2": "ur"
+                        }
+                      },
+                      "then": {
+                        "alias": "integer",
+                        "rightAlign": false,
+                        "allowMinus": false,
+                        "integerDigits": 13
+                      },
+                      "else": {
+                        "alias": "integer",
+                        "rightAlign": false,
+                        "allowMinus": false,
+                        "integerDigits": 15
+                      }
+                    }
+                  }
+                },
+                "kind": "input-text-input-style"
+              }
+            },
+            "websiteAddress": {
+              "type": "string",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": "Адрес сайта"
+                },
+                "kind": "input-text-input-style"
+              }
+            },
+            "blockReason": {
+              "type": "string",
+              "widget": {
+                "name": "hidden"
+              },
+              "value": ""
+            },
+            "mainFlag": {
+              "type": "boolean",
+              "model": "#data.mainFlag",
+              "value": true,
+              "widget": "hidden"
+            },
+            "mainContactPerson": {
+              "type": "object",
+              "widget": {
+                "name": "container"
+              },
+              "properties": {
+                "fullName": {
+                  "type": "string",
+                  "widget": {
+                    "name": "hidden"
+                  },
+                  "value": ""
+                },
+                "phone": {
+                  "type": "string",
+                  "widget": {
+                    "name": "hidden"
+                  },
+                  "value": ""
+                }
+              }
+            }
+          }
+        },
+        "address": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "options": {
+              "label": "Адрес организации"
+            },
+            "class": {
+              "group": "form-section",
+              "label": "h2 mrg-b-xl"
+            }
+          },
+          "properties": {
+            "country": {
+              "type": "object",
+              "model": "#data.mainInfo.country",
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "widget": {
+                    "name": "input"
+                  }
+                },
+                "fullName": {
+                  "type": "string",
+                  "widget": {
+                    "name": "input"
+                  }
+                }
+              },
+              "value": {
+                "code": "643",
+                "fullName": "Российская Федерация"
+              },
+              "widget": {
+                "name": "dropdown",
+                "options": {
+                  "label": "Страна",
+                  "optionLabel": "fullName",
+                  "filter": true,
+                  "valueOptions": {
+                    "$fetch-object": {
+                      "path": "data.items",
+                      "data": {
+                        "$api-data": {
+                          "query": "partner/get_country"
+                        }
+                      }
+                    }
+                  }
+                },
+                "kind": "dropdown-dropdown-input-style"
+              }
+            },
+            "legal": {
+              "type": "string",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": "Юридический адрес"
+                },
+                "kind": "input-text-input-required-style"
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$not-empty": {
+                        "data": {
+                          "$var": {
+                            "path": "."
+                          }
+                        }
+                      }
+                    },
+                    "message": "Поле обязательно для заполнения"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                },
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "<=": {
+                        "operand1": {
+                          "$length": {
+                            "data": {
+                              "$if": {
+                                "condition": {
+                                  "$not-empty": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                },
+                                "else": ""
+                              }
+                            }
+                          }
+                        },
+                        "operand2": 255
+                      }
+                    },
+                    "message": "Максимум 255 символов"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            },
+            "mail": {
+              "type": "string",
+              "value": {
+                "$if": {
+                  "condition": {
+                    "$subs": {
+                      "path": "#data.address.sameAsLegal"
+                    }
+                  },
+                  "then": {
+                    "$subs": {
+                      "path": "#data.address.legal"
+                    }
+                  },
+                  "else": ""
+                }
+              },
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": "Почтовый адрес",
+                  "disabled": {
+                    "$subs": {
+                      "path": "#data.address.sameAsLegal"
+                    }
+                  }
+                },
+                "kind": "input-text-input-required-style"
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$not-empty": {
+                        "data": {
+                          "$var": {
+                            "path": "."
+                          }
+                        }
+                      }
+                    },
+                    "message": "Поле обязательно для заполнения"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                },
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "<=": {
+                        "operand1": {
+                          "$length": {
+                            "data": {
+                              "$if": {
+                                "condition": {
+                                  "$not-empty": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                },
+                                "else": ""
+                              }
+                            }
+                          }
+                        },
+                        "operand2": 255
+                      }
+                    },
+                    "message": "Максимум 255 символов"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            },
+            "container_sameAsLegal": {
+              "type": "object",
+              "model": false,
+              "widget": {
+                "name": "container",
+                "options": {
+                  "label": " "
+                },
+                "kind": "container-text-input-style"
+              },
+              "properties": {
+                "sameAsLegal": {
+                  "type": "boolean",
+                  "model": "#data.address.sameAsLegal",
+                  "value": false,
+                  "widget": {
+                    "name": "checkbox",
+                    "options": {
+                      "optionLabel": "",
+                      "optionLabelHTML": "Совпадает с юридическим"
+                    },
+                    "class": {
+                      "value": "form-item-element form-item-element_checkbox form-item-element_label-html"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "contactList": {
+          "type": "object",
+          "widget": {
+            "name": "container"
+          },
+          "properties": {
+            "header-with-button-for-contact": {
+              "type": "object",
+              "widget": {
+                "name": "container",
+                "options": {
+                  "label": "Контактные лица"
+                },
+                "class": {
+                  "group": "flex-row p-grid mrg-b-lg mrg-t-0",
+                  "label": "h2  p-xs-12 p-md-4 p-xl-3 pdd-tb-0 mrg-md-b-md",
+                  "value": "p-xs-12 p-md-8 p-xl-9 pdd-tb-0"
+                }
+              },
+              "properties": {
+                "button": {
+                  "widget": {
+                    "name": "button",
+                    "options": {
+                      "icon": "icon-plus",
+                      "label": "Добавить контактное лицо"
+                    },
+                    "events": {
+                      "click": {
+                        "$waterfall": {
+                          "arrayFunctions": [
+                            {
+                              "$element-option": {
+                                "option": "visible",
+                                "path": "#modalCreateContacts",
+                                "value": true
+                              }
+                            },
+                            {
+                              "$populate": {
+                                "path": "#modalCreateContacts",
+                                "data": {}
+                              }
+                            },
+                            {
+                              "$populate": {
+                                "path": "#modalCreateContacts.phone.prefix",
+                                "data": "+7"
+                              }
+                            },
+                            {
+                              "$populate": {
+                                "path": "#modalCreateContacts.main",
+                                "data": {
+                                  "$var": {
+                                    "path": "#data.mainFlag"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "class": {
+                      "value": "button_link"
+                    }
+                  }
+                }
+              }
+            },
+            "table": {
+              "type": "array",
+              "widget": {
+                "name": "table-old",
+                "class": {
+                  "group": "p-xxl-12 p-xs-12 mrg-t-md mrg-b-xl"
+                },
+                "options": {
+                  "emptyMessage": "Данные не найдены"
+                },
+                "columns": {
+                  "lastName": {
+                    "label": "Фамилия"
+                  },
+                  "firstName": {
+                    "label": "Имя"
+                  },
+                  "middleName": {
+                    "label": "Отчество"
+                  },
+                  "phoneView": {
+                    "label": "Телефон"
+                  },
+                  "email": {
+                    "label": "Почта"
+                  },
+                  "actions": {
+                    "label": "Действия",
+                    "class": {
+                      "label": "column_actions",
+                      "value": "column_actions"
+                    }
+                  }
+                }
+              },
+              "items": {
+                "type": "object",
+                "properties": {
+                  "lastName": {
+                    "type": "string",
+                    "widget": {
+                      "name": "html",
+                      "class": {
+                        "value": {
+                          "$if": {
+                            "condition": {
+                              "$subs": {
+                                "path": "#data.contactList.table[].main"
+                              }
+                            },
+                            "then": "user-state_online",
+                            "else": "user-state_offline"
+                          }
+                        }
+                      },
+                      "options": {
+                        "tooltip": "Контактное лицо выбрано основным",
+                        "tooltipPosition": "bottom"
+                      }
+                    }
+                  },
+                  "firstName": {
+                    "type": "string",
+                    "widget": {
+                      "name": "info"
+                    }
+                  },
+                  "middleName": {
+                    "type": "string",
+                    "widget": {
+                      "name": "info"
+                    }
+                  },
+                  "phone": {
+                    "type": "object",
+                    "widget": {
+                      "name": "container"
+                    },
+                    "properties": {
+                      "prefix": {
+                        "type": "string",
+                        "widget": {
+                          "name": "hidden"
+                        }
+                      },
+                      "num": {
+                        "type": "string",
+                        "widget": {
+                          "name": "hidden"
+                        }
+                      }
+                    }
+                  },
+                  "phoneView": {
+                    "type": "string",
+                    "widget": {
+                      "name": "info"
+                    }
+                  },
+                  "main": {
+                    "type": "boolean",
+                    "widget": "hidden"
+                  },
+                  "email": {
+                    "type": "string",
+                    "widget": {
+                      "name": "info"
+                    }
+                  },
+                  "actions": {
+                    "type": "array",
+                    "model": false,
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string",
+                          "widget": "hidden"
+                        }
+                      },
+                      "widget": {
+                        "name": "fieldset"
+                      }
+                    },
+                    "widget": {
+                      "name": "menu-button",
+                      "options": {
+                        "labelKey": "title"
+                      },
+                      "class": {
+                        "toggle": "actions-button"
+                      },
+                      "items": [
+                        {
+                          "title": "Редактировать",
+                          "command": {
+                            "$waterfall": {
+                              "arrayFunctions": [
+                                {
+                                  "$populate": {
+                                    "path": "#modalEditContacts",
+                                    "data": {
+                                      "$var": {
+                                        "path": "#data.contactList.table[]"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "$populate": {
+                                    "path": "#modalEditContacts.phone",
+                                    "data": {
+                                      "$var": {
+                                        "path": "#data.contactList.table[].phone"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "$populate": {
+                                    "path": "#modalEditContacts.toMainContactPerson.phone",
+                                    "data": {
+                                      "$replace": {
+                                        "template": "{{0.prefix}} {{0.num}}",
+                                        "data": [
+                                          {
+                                            "$subs": {
+                                              "path": "#data.contactList.table[].phone"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "$populate": {
+                                    "path": "#modalEditContacts.toMainContactPerson.fullName",
+                                    "data": {
+                                      "$replace": {
+                                        "template": "{{lastName}} {{firstName}}{{middleName}}",
+                                        "data": {
+                                          "lastName": {
+                                            "$subs": {
+                                              "path": "#data.contactList.table[].lastName"
+                                            }
+                                          },
+                                          "firstName": {
+                                            "$subs": {
+                                              "path": "#data.contactList.table[].firstName"
+                                            }
+                                          },
+                                          "middleName": {
+                                            "$apply-func": {
+                                              "func": "return middleName ? (' ' + middleName ) : '';",
+                                              "args": {
+                                                "middleName": {
+                                                  "$subs": {
+                                                    "path": "#data.contactList.table[].middleName"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "$populate": {
+                                    "path": "#modalEditContacts.mainOld",
+                                    "data": {
+                                      "$var": {
+                                        "path": "#data.contactList.table[].main"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "$populate": {
+                                    "path": "#modalEditContacts.positionIndex",
+                                    "data": {
+                                      "$subtract": {
+                                        "operand1": {
+                                          "$collection": {
+                                            "action": "row-number"
+                                          }
+                                        },
+                                        "operand2": 1
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "$element-option": {
+                                    "option": "visible",
+                                    "path": "#modalEditContacts",
+                                    "value": true
+                                  }
+                                },
+                                {
+                                  "$element-option": {
+                                    "option": "disabled",
+                                    "path": "#modalEditContacts.main",
+                                    "value": {
+                                      "$if": {
+                                        "condition": {
+                                          "$or": {
+                                            "operands": [
+                                              {
+                                                "$var": {
+                                                  "path": "#data.mainFlag"
+                                                }
+                                              },
+                                              {
+                                                "$var": {
+                                                  "path": "#modalEditContacts.main"
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "then": false,
+                                        "else": true
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "title": "Удалить",
+                          "command": {
+                            "$confirmation": {
+                              "header": "Подтверждение удаления",
+                              "message": {
+                                "$replace": {
+                                  "template": "Вы действительно хотите удалить контактное лицо {{lastName}} {{firstName}} {{middleName}}?",
+                                  "data": {
+                                    "lastName": {
+                                      "$var": {
+                                        "path": "#data.contactList.table[].lastName"
+                                      }
+                                    },
+                                    "firstName": {
+                                      "$var": {
+                                        "path": "#data.contactList.table[].firstName"
+                                      }
+                                    },
+                                    "middleName": {
+                                      "$apply-func": {
+                                        "func": "return middleName ? (' ' + middleName) : '';",
+                                        "args": {
+                                          "middleName": {
+                                            "$var": {
+                                              "path": "#data.contactList.table[].middleName"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "accept": [
+                                {
+                                  "$if": {
+                                    "condition": {
+                                      "$subs": {
+                                        "path": "#data.contactList.table[].main"
+                                      }
+                                    },
+                                    "then": {
+                                      "$populate": {
+                                        "path": "#data.mainFlag",
+                                        "data": true
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "$collection": {
+                                    "action": "row-remove"
+                                  }
+                                },
+                                {
+                                  "$message": {
+                                    "severity": "success",
+                                    "summary": "Удаление контактного лица",
+                                    "detail": "Контактное лицо успешно удалено"
+                                  }
+                                }
+                              ],
+                              "acceptLabel": "Удалить",
+                              "rejectLabel": "Отмена",
+                              "rejectButtonStyleClass": "button_outline",
+                              "reject": false
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$not-empty": {
+                        "data": {
+                          "$var": {
+                            "path": "#data.contactList.table"
+                          }
+                        }
+                      }
+                    },
+                    "message": "Должно быть указано хотя бы 1 контактное лицо"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                },
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$not": {
+                        "data": {
+                          "$var": {
+                            "path": "#data.mainFlag"
+                          }
+                        }
+                      }
+                    },
+                    "message": "Выберите основное контактное лицо"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "actions": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "group": "form-actions mrg-t-lg",
+              "value": "p-jc-xl-end p-autolayout"
+            }
+          },
+          "properties": {
+            "add": {
+              "widget": {
+                "name": "submit-button",
+                "options": {
+                  "label": "Добавить",
+                  "clientValidation": true,
+                  "dataForClientValidation": "/",
+                  "showClientValidationErrorsForElement": "form",
+                  "showClientValidationErrorMessage": true,
+                  "clientValidationErrorMessageSummary": "Ошибка",
+                  "clientValidationErrorMessageDetail": "Одно или несколько полей заполнены некорректно",
+                  "workflowAction": "partner.add",
+                  "workflowObjectId": {
+                    "$query-params": {
+                      "name": "id"
+                    }
+                  },
+                  "dataForSubmit": {
+                    "$var": {
+                      "path": "#data"
+                    }
+                  },
+                  "showSuccessMessage": true,
+                  "successMessageSummary": "Добавление контрагента",
+                  "successMessageDetail": "Контрагент успешно добавлен",
+                  "urlInCaseOfSuccess": "/cabinet/partner/list",
+                  "showServerValidationErrorMessage": true,
+                  "serverValidationErrorMessageSummary": "Добавление контрагента",
+                  "serverValidationErrorMessageDetail": "Одно или несколько полей заполнены некорректно",
+                  "showOtherErrorMessageSummary": true,
+                  "otherErrorMessageSummary": "Добавление контрагента",
+                  "otherErrorMessageDetail": "Непредвиденная ошибка",
+                  "reloadTable": true,
+                  "closePopup": false
+                },
+                "class": {
+                  "value": "mrg-r-sm"
+                }
+              }
+            },
+            "cancel": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Отмена"
+                },
+                "events": {
+                  "click": {
+                    "$navigate": {
+                      "commands": [
+                        "/cabinet/partner/list"
+                      ]
+                    }
+                  }
+                },
+                "class": {
+                  "value": "button_outline mrg-r-0 mrg-b-0"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "createContacts": {
+      "type": "object",
+      "model": "#modalCreateContacts",
+      "widget": {
+        "name": "dialog",
+        "options": {
+          "visible": false,
+          "closable": true
+        },
+        "class": {
+          "group": "popup form-section",
+          "label": "h1 mrg-b-lg",
+          "value": "form-group_popup-collapse"
+        }
+      },
+      "properties": {
+        "header": {
+          "model": false,
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "value": "p-autolayout p-jc-between p-ai-center"
+            }
+          },
+          "properties": {
+            "label": {
+              "model": false,
+              "type": "string",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "viewedValue": "Добавление контактного лица"
+                },
+                "class": {
+                  "value": "h3 mrg-b-lg"
+                }
+              }
+            }
+          }
+        },
+        "lastName": {
+          "type": "string",
+          "widget": {
+            "name": "input",
+            "options": {
+              "label": "Фамилия"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_required",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$not-empty": {
+                    "data": {
+                      "$var": {
+                        "path": "#modalCreateContacts.lastName"
+                      }
+                    }
+                  }
+                },
+                "message": "Обязательно для заполнения"
+              },
+              "events": [
+                "onUpdate"
+              ]
+            }
+          ]
+        },
+        "firstName": {
+          "type": "string",
+          "widget": {
+            "name": "input",
+            "options": {
+              "label": "Имя"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_required",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$not-empty": {
+                    "data": {
+                      "$var": {
+                        "path": "#modalCreateContacts.firstName"
+                      }
+                    }
+                  }
+                },
+                "message": "Обязательно для заполнения"
+              },
+              "events": [
+                "onUpdate"
+              ]
+            }
+          ]
+        },
+        "middleName": {
+          "type": "string",
+          "widget": {
+            "name": "input",
+            "options": {
+              "label": "Отчество"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          }
+        },
+        "phone-container": {
+          "type": "object",
+          "model": false,
+          "widget": {
+            "name": "container",
+            "options": {
+              "label": "Телефон"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_required",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          },
+          "properties": {
+            "phone-container-wrapper": {
+              "type": "object",
+              "model": false,
+              "widget": {
+                "name": "container"
+              },
+              "properties": {
+                "phone": {
+                  "type": "object",
+                  "model": "#modalCreateContacts.phone",
+                  "value": {
+                    "prefix": "+7",
+                    "num": ""
+                  },
+                  "widget": {
+                    "name": "phone-mask",
+                    "options": {
+                      "noCountry": true,
+                      "maxLengthWithoutMask": {
+                        "$subtract": {
+                          "operand1": 20,
+                          "operand2": {
+                            "$length": {
+                              "data": {
+                                "$subs": {
+                                  "path": "#modalCreateContacts.phone.prefix"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "class": {
+                      "group": "p-xs-12 p-xxl-6 pos-rel",
+                      "value": "flex-1"
+                    }
+                  },
+                  "properties": {
+                    "prefix": {
+                      "type": "string",
+                      "widget": {
+                        "name": "input"
+                      }
+                    },
+                    "num": {
+                      "type": "string",
+                      "widget": {
+                        "name": "input"
+                      }
+                    }
+                  },
+                  "validation": [
+                    {
+                      "type": "schema",
+                      "params": {
+                        "rule": {
+                          "$and": {
+                            "operands": [
+                              {
+                                "$not-empty": {
+                                  "data": {
+                                    "$fetch-object": {
+                                      "path": "num",
+                                      "data": {
+                                        "$var": {
+                                          "path": "#modalCreateContacts.phone"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "$not-empty": {
+                                  "data": {
+                                    "$match": {
+                                      "data": {
+                                        "$fetch-object": {
+                                          "path": "num",
+                                          "data": {
+                                            "$var": {
+                                              "path": "#modalCreateContacts.phone"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "pattern": "[0-9]+"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "message": "Обязательно для заполнения"
+                      },
+                      "events": [
+                        "onUpdate"
+                      ]
+                    },
+                    {
+                      "type": "schema",
+                      "params": {
+                        "rule": {
+                          "<=": {
+                            "operand1": {
+                              "$length": {
+                                "data": {
+                                  "$replace": {
+                                    "template": "{{prefix}}{{num}}",
+                                    "data": {
+                                      "$var": {
+                                        "path": "#modalCreateContacts.phone"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "operand2": 20
+                          }
+                        },
+                        "message": "Максимум 20 символов"
+                      },
+                      "events": [
+                        "onUpdate"
+                      ]
+                    },
+                    {
+                      "type": "schema",
+                      "params": {
+                        "rule": {
+                          "$if": {
+                            "condition": {
+                              "$and": {
+                                "operands": [
+                                  {
+                                    "===": {
+                                      "operand1": {
+                                        "$fetch-object": {
+                                          "path": "prefix",
+                                          "data": {
+                                            "$var": {
+                                              "path": "#modalCreateContacts.phone"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "operand2": "+7"
+                                    }
+                                  },
+                                  {
+                                    "$not-empty": {
+                                      "data": {
+                                        "$fetch-object": {
+                                          "path": "num",
+                                          "data": {
+                                            "$var": {
+                                              "path": "#modalCreateContacts.phone"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "$if": {
+                                      "condition": {
+                                        "$not-empty": {
+                                          "data": {
+                                            "$fetch-object": {
+                                              "path": "num",
+                                              "data": {
+                                                "$var": {
+                                                  "path": "#modalCreateContacts.phone"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "then": {
+                                        "<": {
+                                          "operand1": {
+                                            "$length": {
+                                              "data": {
+                                                "$string-split": {
+                                                  "string": {
+                                                    "$fetch-object": {
+                                                      "path": "num",
+                                                      "data": {
+                                                        "$var": {
+                                                          "path": "#modalCreateContacts.phone"
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  "separator": "_"
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "operand2": 2
+                                        }
+                                      },
+                                      "else": false
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "then": true,
+                            "else": {
+                              "$if": {
+                                "condition": {
+                                  "$and": {
+                                    "operands": [
+                                      {
+                                        "$not-empty": {
+                                          "data": {
+                                            "$fetch-object": {
+                                              "path": "num",
+                                              "data": {
+                                                "$var": {
+                                                  "path": "#modalCreateContacts.phone"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "!==": {
+                                          "operand1": {
+                                            "$fetch-object": {
+                                              "path": "prefix",
+                                              "data": {
+                                                "$var": {
+                                                  "path": "#modalCreateContacts.phone"
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "operand2": "+7"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                "then": true,
+                                "else": false
+                              }
+                            }
+                          }
+                        },
+                        "message": "Некорректное значение телефона"
+                      },
+                      "events": [
+                        "onUpdate"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "toMainContactPerson": {
+          "type": "object",
+          "widget": {
+            "name": "hidden"
+          },
+          "properties": {
+            "phone": {
+              "type": "string",
+              "widget": {
+                "name": "hidden"
+              },
+              "value": {
+                "$replace": {
+                  "template": "{{0.prefix}} {{0.num}}",
+                  "data": [
+                    {
+                      "$subs": {
+                        "path": "#modalCreateContacts.phone"
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "fullName": {
+              "type": "string",
+              "widget": {
+                "name": "hidden"
+              },
+              "value": {
+                "$replace": {
+                  "template": "{{lastName}} {{firstName}}{{middleName}}",
+                  "data": {
+                    "lastName": {
+                      "$subs": {
+                        "path": "#modalCreateContacts.lastName"
+                      }
+                    },
+                    "firstName": {
+                      "$subs": {
+                        "path": "#modalCreateContacts.firstName"
+                      }
+                    },
+                    "middleName": {
+                      "$apply-func": {
+                        "func": "return middleName ? (' ' + middleName ) : '';",
+                        "args": {
+                          "middleName": {
+                            "$subs": {
+                              "path": "#modalCreateContacts.middleName"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "email": {
+          "type": "string",
+          "widget": {
+            "name": "input",
+            "options": {
+              "label": "Почта"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "<=": {
+                    "operand1": {
+                      "$length": {
+                        "data": {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$var": {
+                                    "path": "#modalCreateContacts.email"
+                                  }
+                                }
+                              }
+                            },
+                            "then": {
+                              "$var": {
+                                "path": "#modalCreateContacts.email"
+                              }
+                            },
+                            "else": ""
+                          }
+                        }
+                      }
+                    },
+                    "operand2": 255
+                  }
+                },
+                "message": "Максимум 255 символов"
+              },
+              "events": [
+                "onUpdate"
+              ]
+            },
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$or": {
+                    "operands": [
+                      {
+                        "$empty": {
+                          "data": {
+                            "$var": {
+                              "path": "#modalCreateContacts.email"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "$not-empty": {
+                          "data": {
+                            "$match": {
+                              "pattern": "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{1,1000}$",
+                              "data": {
+                                "$var": {
+                                  "path": "#modalCreateContacts.email"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "message": "Некорректное значение адреса электронной почты"
+              },
+              "events": [
+                "onUpdate"
+              ]
+            }
+          ]
+        },
+        "main": {
+          "type": "boolean",
+          "value": {
+            "$var": {
+              "path": "#data.mainFlag"
+            }
+          },
+          "widget": {
+            "name": "checkbox",
+            "options": {
+              "optionLabel": "Выбрать основным контактным лицом",
+              "disabled": {
+                "$if": {
+                  "condition": {
+                    "===": {
+                      "operand1": {
+                        "$subs": {
+                          "path": "#data.mainFlag"
+                        }
+                      },
+                      "operand2": false
+                    }
+                  },
+                  "then": true,
+                  "else": false
+                }
+              },
+              "tooltip": {
+                "$if": {
+                  "condition": {
+                    "$element-option": {
+                      "option": "disabled$",
+                      "path": "#modalCreateContacts.main"
+                    }
+                  },
+                  "then": "У контрагента не может быть более 1 основного контактного лица. Для разблокировки поля снимите отметку с другого контактного лица",
+                  "else": false
+                }
+              }
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "value": "form-item-element form-item-element_checkbox form-item-element_label-html"
+            }
+          }
+        },
+        "actions": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "group": "form-actions p-field p-grid mrg-t-lg",
+              "value": "p-jc-xl-end p-autolayout"
+            }
+          },
+          "properties": {
+            "add": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Добавить"
+                },
+                "events": {
+                  "click": {
+                    "$if": {
+                      "condition": {
+                        "$validate": {
+                          "path": "#modalCreateContacts"
+                        }
+                      },
+                      "then": {
+                        "$waterfall": {
+                          "arrayFunctions": [
+                            {
+                              "$if": {
+                                "condition": {
+                                  "$var": {
+                                    "path": "#modalCreateContacts.main"
+                                  }
+                                },
+                                "then": {
+                                  "$waterfall": {
+                                    "arrayFunctions": [
+                                      {
+                                        "$populate": {
+                                          "path": "#data.mainFlag",
+                                          "data": false
+                                        }
+                                      },
+                                      {
+                                        "$populate": {
+                                          "path": "#data.mainInfo.mainContactPerson",
+                                          "data": {
+                                            "$var": {
+                                              "path": "#modalCreateContacts.toMainContactPerson"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "$populate": {
+                                          "path": "#modalEditContacts",
+                                          "data": {
+                                            "$var": {
+                                              "path": "#modalCreateContacts"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "$populate": {
+                                          "path": "#modalEditContacts.phone",
+                                          "data": {
+                                            "$var": {
+                                              "path": "#modalCreateContacts.phone"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "$populate": {
+                                          "path": "#modalEditContacts.toMainContactPerson.phone",
+                                          "data": {
+                                            "$replace": {
+                                              "template": "{{0.prefix}} {{0.num}}",
+                                              "data": [
+                                                {
+                                                  "$var": {
+                                                    "path": "#modalCreateContacts.phone"
+                                                  }
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "$populate": {
+                                          "path": "#modalEditContacts.toMainContactPerson.fullName",
+                                          "data": {
+                                            "$replace": {
+                                              "template": "{{lastName}} {{firstName}}{{middleName}}",
+                                              "data": {
+                                                "lastName": {
+                                                  "$var": {
+                                                    "path": "#modalCreateContacts.lastName"
+                                                  }
+                                                },
+                                                "firstName": {
+                                                  "$var": {
+                                                    "path": "#modalCreateContacts.firstName"
+                                                  }
+                                                },
+                                                "middleName": {
+                                                  "$apply-func": {
+                                                    "func": "return middleName ? (' ' + middleName ) : '';",
+                                                    "args": {
+                                                      "middleName": {
+                                                        "$var": {
+                                                          "path": "#modalCreateContacts.middleName"
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "$populate": {
+                                          "path": "#modalEditContacts.mainOld",
+                                          "data": {
+                                            "$var": {
+                                              "path": "#modalCreateContacts.main"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "$populate": {
+                                "type": "patch",
+                                "element": {
+                                  "$collection": {
+                                    "action": "row-add",
+                                    "path": "#data.contactList.table"
+                                  }
+                                },
+                                "data": {
+                                  "$assign-object": {
+                                    "object": {
+                                      "$var": {
+                                        "path": "#modalCreateContacts"
+                                      }
+                                    },
+                                    "data": {
+                                      "$replace": {
+                                        "template": "{{0.prefix}} {{0.num}}",
+                                        "data": [
+                                          {
+                                            "$var": {
+                                              "path": "#modalCreateContacts.phone"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "path": "phoneView"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "$element-option": {
+                                "option": "visible",
+                                "path": "#modalCreateContacts",
+                                "value": false
+                              }
+                            },
+                            {
+                              "$message": {
+                                "severity": "success",
+                                "summary": "Добавление контактного лица",
+                                "detail": "Контактное лицо успешно добавлено"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "else": {
+                        "$form-control-mark": {
+                          "key": "form"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "cancel": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Отмена"
+                },
+                "events": {
+                  "click": {
+                    "$element-option": {
+                      "option": "visible",
+                      "path": "#modalCreateContacts",
+                      "value": false
+                    }
+                  }
+                },
+                "class": {
+                  "value": "button_outline mrg-r-0 mrg-b-0"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "editContacts": {
+      "type": "object",
+      "model": "#modalEditContacts",
+      "widget": {
+        "name": "dialog",
+        "options": {
+          "visible": false,
+          "closable": true
+        },
+        "class": {
+          "group": "popup form-section",
+          "label": "h1 mrg-b-lg",
+          "value": "form-group_popup-collapse"
+        }
+      },
+      "properties": {
+        "positionIndex": {
+          "type": "number",
+          "widget": "hidden"
+        },
+        "header": {
+          "model": false,
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "value": "p-autolayout p-jc-between p-ai-center"
+            }
+          },
+          "properties": {
+            "label": {
+              "model": false,
+              "type": "string",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "viewedValue": "Редактирование контактного лица"
+                },
+                "class": {
+                  "value": "h3 mrg-b-lg"
+                }
+              }
+            }
+          }
+        },
+        "lastName": {
+          "type": "string",
+          "widget": {
+            "name": "input",
+            "options": {
+              "label": "Фамилия"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_required",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$not-empty": {
+                    "data": {
+                      "$var": {
+                        "path": "#modalEditContacts.lastName"
+                      }
+                    }
+                  }
+                },
+                "message": "Обязательно для заполнения"
+              },
+              "events": [
+                "onUpdate"
+              ]
+            }
+          ]
+        },
+        "firstName": {
+          "type": "string",
+          "widget": {
+            "name": "input",
+            "options": {
+              "label": "Имя"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_required",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$not-empty": {
+                    "data": {
+                      "$var": {
+                        "path": "#modalEditContacts.firstName"
+                      }
+                    }
+                  }
+                },
+                "message": "Обязательно для заполнения"
+              },
+              "events": [
+                "onUpdate"
+              ]
+            }
+          ]
+        },
+        "middleName": {
+          "type": "string",
+          "widget": {
+            "name": "input",
+            "options": {
+              "label": "Отчество"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          }
+        },
+        "phone-container": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "options": {
+              "label": "Телефон"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_required",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          },
+          "properties": {
+            "phone-container-wrapper": {
+              "type": "object",
+              "widget": {
+                "name": "container"
+              },
+              "properties": {
+                "phone": {
+                  "model": "#modalEditContacts.phone",
+                  "type": "object",
+                  "widget": {
+                    "name": "phone-mask",
+                    "options": {
+                      "noCountry": true,
+                      "maxLengthWithoutMask": {
+                        "$subtract": {
+                          "operand1": 20,
+                          "operand2": {
+                            "$length": {
+                              "data": {
+                                "$subs": {
+                                  "path": "#modalEditContacts.phone.prefix"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "class": {
+                      "group": "p-xs-12 p-xxl-6 pos-rel",
+                      "value": "flex-1"
+                    }
+                  },
+                  "properties": {
+                    "prefix": {
+                      "type": "string",
+                      "widget": {
+                        "name": "input"
+                      }
+                    },
+                    "num": {
+                      "type": "string",
+                      "widget": {
+                        "name": "input"
+                      }
+                    }
+                  },
+                  "validation": [
+                    {
+                      "type": "schema",
+                      "params": {
+                        "rule": {
+                          "$and": {
+                            "operands": [
+                              {
+                                "$not-empty": {
+                                  "data": {
+                                    "$fetch-object": {
+                                      "path": "num",
+                                      "data": {
+                                        "$var": {
+                                          "path": "#modalEditContacts.phone"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "$not-empty": {
+                                  "data": {
+                                    "$match": {
+                                      "data": {
+                                        "$fetch-object": {
+                                          "path": "num",
+                                          "data": {
+                                            "$var": {
+                                              "path": "#modalEditContacts.phone"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "pattern": "[0-9]+"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "message": "Обязательно для заполнения"
+                      },
+                      "events": [
+                        "onUpdate"
+                      ]
+                    },
+                    {
+                      "type": "schema",
+                      "params": {
+                        "rule": {
+                          "<=": {
+                            "operand1": {
+                              "$length": {
+                                "data": {
+                                  "$replace": {
+                                    "template": "{{prefix}}{{num}}",
+                                    "data": {
+                                      "$var": {
+                                        "path": "#modalEditContacts.phone"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "operand2": 20
+                          }
+                        },
+                        "message": "Максимум 20 символов"
+                      },
+                      "events": [
+                        "onUpdate"
+                      ]
+                    },
+                    {
+                      "type": "schema",
+                      "params": {
+                        "rule": {
+                          "$if": {
+                            "condition": {
+                              "$and": {
+                                "operands": [
+                                  {
+                                    "===": {
+                                      "operand1": {
+                                        "$fetch-object": {
+                                          "path": "prefix",
+                                          "data": {
+                                            "$var": {
+                                              "path": "#modalEditContacts.phone"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "operand2": "+7"
+                                    }
+                                  },
+                                  {
+                                    "$not-empty": {
+                                      "data": {
+                                        "$fetch-object": {
+                                          "path": "num",
+                                          "data": {
+                                            "$var": {
+                                              "path": "#modalEditContacts.phone"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "$if": {
+                                      "condition": {
+                                        "$not-empty": {
+                                          "data": {
+                                            "$fetch-object": {
+                                              "path": "num",
+                                              "data": {
+                                                "$var": {
+                                                  "path": "#modalEditContacts.phone"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "then": {
+                                        "<": {
+                                          "operand1": {
+                                            "$length": {
+                                              "data": {
+                                                "$string-split": {
+                                                  "string": {
+                                                    "$fetch-object": {
+                                                      "path": "num",
+                                                      "data": {
+                                                        "$var": {
+                                                          "path": "#modalEditContacts.phone"
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  "separator": "_"
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "operand2": 2
+                                        }
+                                      },
+                                      "else": false
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "then": true,
+                            "else": {
+                              "$if": {
+                                "condition": {
+                                  "$and": {
+                                    "operands": [
+                                      {
+                                        "$not-empty": {
+                                          "data": {
+                                            "$fetch-object": {
+                                              "path": "num",
+                                              "data": {
+                                                "$var": {
+                                                  "path": "#modalEditContacts.phone"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "!==": {
+                                          "operand1": {
+                                            "$fetch-object": {
+                                              "path": "prefix",
+                                              "data": {
+                                                "$var": {
+                                                  "path": "#modalEditContacts.phone"
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "operand2": "+7"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                "then": true,
+                                "else": false
+                              }
+                            }
+                          }
+                        },
+                        "message": "Некорректное значение телефона"
+                      },
+                      "events": [
+                        "onUpdate"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "toMainContactPerson": {
+          "type": "object",
+          "widget": {
+            "name": "hidden"
+          },
+          "properties": {
+            "phone": {
+              "type": "string",
+              "widget": {
+                "name": "hidden"
+              }
+            },
+            "fullName": {
+              "type": "string",
+              "widget": {
+                "name": "hidden"
+              }
+            }
+          }
+        },
+        "email": {
+          "type": "string",
+          "widget": {
+            "name": "input",
+            "options": {
+              "label": "Почта"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "<=": {
+                    "operand1": {
+                      "$length": {
+                        "data": {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$var": {
+                                    "path": "#modalCreateContacts.email"
+                                  }
+                                }
+                              }
+                            },
+                            "then": {
+                              "$var": {
+                                "path": "#modalCreateContacts.email"
+                              }
+                            },
+                            "else": ""
+                          }
+                        }
+                      }
+                    },
+                    "operand2": 255
+                  }
+                },
+                "message": "Максимум 255 символов"
+              },
+              "events": [
+                "onUpdate"
+              ]
+            },
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$or": {
+                    "operands": [
+                      {
+                        "$empty": {
+                          "data": {
+                            "$var": {
+                              "path": "#modalEditContacts.email"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "$not-empty": {
+                          "data": {
+                            "$match": {
+                              "pattern": "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{1,1000}$",
+                              "data": {
+                                "$var": {
+                                  "path": "#modalEditContacts.email"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "message": "Некорректное значение адреса электронной почты"
+              },
+              "events": [
+                "onUpdate"
+              ]
+            }
+          ]
+        },
+        "mainOld": {
+          "type": "boolean",
+          "widget": "hidden"
+        },
+        "main": {
+          "type": "boolean",
+          "value": false,
+          "widget": {
+            "name": "checkbox",
+            "options": {
+              "optionLabel": "Выбрать основным контактным лицом",
+              "tooltip": {
+                "$if": {
+                  "condition": {
+                    "$element-option": {
+                      "option": "disabled$",
+                      "path": "#modalEditContacts.main"
+                    }
+                  },
+                  "then": "У контрагента не может быть более 1 основного контактного лица. Для разблокировки поля снимите отметку с другого контактного лица",
+                  "else": false
+                }
+              }
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "value": "form-item-element form-item-element_checkbox form-item-element_label-html"
+            }
+          }
+        },
+        "actions": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "group": "form-actions p-field p-grid mrg-t-lg",
+              "value": "p-jc-xl-end p-autolayout"
+            }
+          },
+          "properties": {
+            "save": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Сохранить"
+                },
+                "events": {
+                  "click": {
+                    "$if": {
+                      "condition": {
+                        "$validate": {
+                          "path": "#modalEditContacts"
+                        }
+                      },
+                      "then": {
+                        "$waterfall": {
+                          "arrayFunctions": [
+                            {
+                              "$if": {
+                                "condition": {
+                                  "$var": {
+                                    "path": "#modalEditContacts.main"
+                                  }
+                                },
+                                "then": {
+                                  "$waterfall": {
+                                    "arrayFunctions": [
+                                      {
+                                        "$populate": {
+                                          "path": "#data.mainFlag",
+                                          "data": false
+                                        }
+                                      },
+                                      {
+                                        "$populate": {
+                                          "path": "#data.mainInfo.mainContactPerson",
+                                          "data": {
+                                            "$var": {
+                                              "path": "#modalEditContacts.toMainContactPerson"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "$if": {
+                                "condition": {
+                                  "$and": {
+                                    "operands": [
+                                      {
+                                        "$var": {
+                                          "path": "#modalEditContacts.mainOld"
+                                        }
+                                      },
+                                      {
+                                        "===": {
+                                          "operand1": {
+                                            "$var": {
+                                              "path": "#modalEditContacts.main"
+                                            }
+                                          },
+                                          "operand2": false
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                "then": {
+                                  "$populate": {
+                                    "path": "#data.mainFlag",
+                                    "data": true
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "$populate": {
+                                "type": "patch",
+                                "path": {
+                                  "$replace": {
+                                    "template": "#data.contactList.table.{{0}}",
+                                    "data": [
+                                      {
+                                        "$var": {
+                                          "path": "#modalEditContacts.positionIndex"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                "data": {
+                                  "$assign-object": {
+                                    "object": {
+                                      "$var": {
+                                        "path": "#modalEditContacts"
+                                      }
+                                    },
+                                    "data": {
+                                      "$replace": {
+                                        "template": "{{0.prefix}} {{0.num}}",
+                                        "data": [
+                                          {
+                                            "$var": {
+                                              "path": "#modalEditContacts.phone"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "path": "phoneView"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "$element-option": {
+                                "option": "visible",
+                                "path": "#modalEditContacts",
+                                "value": false
+                              }
+                            },
+                            {
+                              "$message": {
+                                "severity": "success",
+                                "summary": "Редактирование контактного лица",
+                                "detail": "Контактное лицо успешно отредактировано"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "else": {
+                        "$form-control-mark": {
+                          "key": "form"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "cancel": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Отмена"
+                },
+                "events": {
+                  "click": {
+                    "$element-option": {
+                      "option": "visible",
+                      "path": "#modalEditContacts",
+                      "value": false
+                    }
+                  }
+                },
+                "class": {
+                  "value": "button_outline mrg-r-0 mrg-b-0"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

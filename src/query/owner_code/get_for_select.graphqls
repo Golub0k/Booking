@@ -1,0 +1,8 @@
+# @title: Получить для списка выбора данные экземпляров объекта "Справочник собственников"
+
+query {
+  items: ownerCodeGet(filter: { _operators: { state: { ne: "deleted" } } }) {
+    id: _id
+    name
+  }
+}

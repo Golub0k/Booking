@@ -1,0 +1,335 @@
+{
+  "meta": {
+    "title": "Филдсет value_input"
+  },
+  "schema": {
+    "type": "object",
+    "widget": "container",
+    "properties": {
+      "boolean": {
+        "type": "boolean",
+        "widget": {
+          "name": "radio-button",
+          "options": {
+            "label": "@@label",
+            "valueKey": "id",
+            "optionLabel": "label",
+            "visible": {
+              "===": {
+                "operand1": {
+                  "$subs": {
+                    "path": "@@model.type"
+                  }
+                },
+                "operand2": "boolean"
+              }
+            },
+            "valueOptions": [
+              {
+                "id": true,
+                "label": "Да"
+              },
+              {
+                "id": false,
+                "label": "Нет"
+              }
+            ]
+          },
+          "class": {
+            "group": "form-item form-item_radio p-field p-grid p-fluid",
+            "label": "form-label mrg-t-0 p-xs-12 p-md-4 p-xl-3",
+            "value": "form-item-element p-xs-12 p-md-6 p-xl-4",
+            "item": "form-item_radio__item"
+          }
+        }
+      },
+      "string": {
+        "type": "string",
+        "widget": {
+          "name": "input",
+          "options": {
+            "label": "@@label",
+            "visible": {
+              "$and": {
+                "operands": [
+                  {
+                    "===": {
+                      "operand1": {
+                        "$subs": {
+                          "path": "@@model.type"
+                        }
+                      },
+                      "operand2": "string"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "class": {
+            "group": "form-item p-field p-grid p-fluid",
+            "label": "form-label p-xs-12 p-md-4 p-xl-3",
+            "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+          }
+        }
+      },
+      "number": {
+        "type": "number",
+        "widget": {
+          "name": "input",
+          "options": {
+            "label": "@@label",
+            "visible": {
+              "$or": {
+                "operands": [
+                  {
+                    "$and": {
+                      "operands": [
+                        {
+                          "===": {
+                            "operand1": {
+                              "$subs": {
+                                "path": "@@model.type"
+                              }
+                            },
+                            "operand2": "number"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            "inputmask": {
+              "alias": "numeric"
+            }
+          },
+          "class": {
+            "group": "form-item p-field p-grid p-fluid",
+            "label": "form-label p-xs-12 p-md-4 p-xl-3",
+            "value": "form-item-element p-xs-12 p-md-6 p-xl-2"
+          }
+        }
+      },
+      "date": {
+        "type": "date",
+        "widget": {
+          "name": "calendar",
+          "options": {
+            "label": "@@label",
+            "yearNavigator": true,
+            "yearRange": "1950:2100",
+            "monthNavigator": true,
+            "dataType": "string",
+            "visible": {
+              "$or": {
+                "operands": [
+                  {
+                    "$and": {
+                      "operands": [
+                        {
+                          "===": {
+                            "operand1": {
+                              "$subs": {
+                                "path": "@@model.type"
+                              }
+                            },
+                            "operand2": "date"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "class": {
+            "group": "form-item p-field p-grid p-fluid",
+            "label": "form-label p-xs-12 p-md-4 p-xl-3",
+            "value": "form-item-element p-xs-12 p-md-6 p-xl-2"
+          }
+        }
+      },
+      "dateTime": {
+        "type": "datetime",
+        "widget": {
+          "name": "calendar",
+          "options": {
+            "label": "@@label",
+            "yearNavigator": true,
+            "yearRange": "1950:2100",
+            "monthNavigator": true,
+            "dataType": "string",
+            "visible": {
+              "$or": {
+                "operands": [
+                  {
+                    "$and": {
+                      "operands": [
+                        {
+                          "===": {
+                            "operand1": {
+                              "$subs": {
+                                "path": "@@model.type"
+                              }
+                            },
+                            "operand2": "datetime"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "class": {
+            "group": "form-item p-field p-grid p-fluid",
+            "label": "form-label p-xs-12 p-md-4 p-xl-3",
+            "value": "form-item-element p-xs-12 p-md-6 p-xl-2"
+          }
+        }
+      },
+      "file": {
+        "type": "file",
+        "widget": {
+          "name": "file",
+          "options": {
+            "visible": {
+              "$or": {
+                "operands": [
+                  {
+                    "$and": {
+                      "operands": [
+                        {
+                          "===": {
+                            "operand1": {
+                              "$subs": {
+                                "path": "@@model.type"
+                              }
+                            },
+                            "operand2": "file"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            "label": "@@label",
+            "enableFilesUpload": true,
+            "displayUploadedFiles": true,
+            "uploadParams": {
+              "workflow": "settings",
+              "action": "upload",
+              "accept": ".doc, .docx, .xls, .xlsx, .txt, .rtf, .zip, .rar, .7z, .jpg, .gif, .png, .pdf, .jpeg, .tif, .tiff, .ico, .svg",
+              "multiple": false,
+              "maxFileSize": 62914560,
+              "chooseLabel": "Выбрать файл"
+            },
+            "displayParams": {
+              "workflow": "settings",
+              "action": "download"
+            }
+          },
+          "kind": "file-form-item-file-upload-style"
+        }
+      },
+      "object": {
+        "type": "string",
+        "widget": {
+          "name": "dropdown",
+          "options": {
+            "label": "@@label",
+            "optionLabel": "preview",
+            "dataKey": "_id",
+            "valueKey": "_id",
+            "placeholder": "Выбрать",
+            "visible": {
+              "$or": {
+                "operands": [
+                  {
+                    "$and": {
+                      "operands": [
+                        {
+                          "===": {
+                            "operand1": {
+                              "$subs": {
+                                "path": "@@model.type"
+                              }
+                            },
+                            "operand2": "object"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            "valueOptions": {
+              "$if": {
+                "condition": {
+                  "$not-empty": {
+                    "data": {
+                      "$subs": {
+                        "path": "@@model.defaultValue.object"
+                      }
+                    }
+                  }
+                },
+                "then": {
+                  "$fetch-object": {
+                    "path": "data.values.items",
+                    "data": {
+                      "$api-data": {
+                        "query": "settings/object_preview",
+                        "id": {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$query-params": {
+                                    "name": "id",
+                                    "filter": false
+                                  }
+                                }
+                              }
+                            },
+                            "then": {
+                              "$query-params": {
+                                "name": "id",
+                                "filter": false
+                              }
+                            },
+                            "else": ""
+                          }
+                        },
+                        "variables": {
+                          "objectType": {
+                            "$subs": {
+                              "path": "#data.object.objectType"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "else": null
+              }
+            }
+          },
+          "class": {
+            "group": "form-item p-field p-grid p-fluid",
+            "label": "form-label p-xs-12 p-md-4 p-xl-3",
+            "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+          }
+        }
+      }
+    }
+  }
+}

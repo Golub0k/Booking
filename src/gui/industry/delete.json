@@ -1,0 +1,124 @@
+{
+  "@title": "Подтверждение удаления отрасли",
+  "@preload": {
+    "$from-context": {
+      "path": "$response.body.data.items.0",
+      "data": {
+        "$api-data": {
+          "id": {
+            "$query-params": {
+              "name": "id"
+            }
+          },
+          "options": {
+            "observe": "response"
+          },
+          "variables": {
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            }
+          },
+          "query": "industry/get"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "model": "#data",
+  "widget": {
+    "name": "container",
+    "options": {
+      "label": "Подтверждение удаления"
+    },
+    "class": {
+      "group": "popup",
+      "label": "h1 mrg-b-lg",
+      "value": "form-group_popup-collapse"
+    }
+  },
+  "properties": {
+    "object": {
+      "type": "string",
+      "widget": {
+        "name": "info",
+        "options": {
+          "viewedValue": {
+            "$replace": {
+              "template": "Вы действительно хотите удалить отрасль \"{{title}}\"?",
+              "data": {
+                "title": {
+                  "$from-context": {
+                    "path": "@preload.name"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "form-actions p-field p-grid mrg-t-lg",
+          "value": "p-jc-xs-end p-autolayout"
+        }
+      },
+      "properties": {
+        "accept": {
+          "widget": {
+            "name": "submit-button",
+            "options": {
+              "label": "Удалить",
+              "clientValidation": false,
+              "workflowAction": "industry.delete",
+              "workflowObjectId": {
+                "$query-params": {
+                  "name": "id"
+                }
+              },
+              "showSuccessMessage": true,
+              "successMessageSummary": "Удаление отрасли",
+              "successMessageDetail": "Отрасль успешно удалена",
+              "urlInCaseOfSuccess": "/cabinet/industry/list",
+              "showServerValidationErrorMessage": true,
+              "serverValidationErrorMessageSummary": "Удаление отрасли",
+              "serverValidationErrorMessageDetail": "Форма содержит ошибки",
+              "showOtherErrorMessageSummary": true,
+              "otherErrorMessageSummary": "Удаление отрасли",
+              "otherErrorMessageDetail": "Непредвиденная ошибка",
+              "reloadTable": true,
+              "closePopup": true
+            },
+            "class": {
+              "value": "mrg-r-sm"
+            }
+          }
+        },
+        "cancel": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Отмена"
+            },
+            "events": {
+              "click": {
+                "$go": {
+                  "workflow": "industry",
+                  "action": "list"
+                }
+              }
+            },
+            "class": {
+              "value": "button_outline mrg-r-0 mrg-b-0"
+            }
+          }
+        }
+      }
+    }
+  }
+}

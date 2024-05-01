@@ -1,0 +1,221 @@
+{
+  "version": 2,
+  "objectType": "furniture",
+  "context": "furniture/context",
+  "description": "Жизненный цикл мебели",
+  "rbac": {
+    "visible": true,
+    "title": "Мебель"
+  },
+  "actions": {
+    "initialActions": {
+      "add": {
+        "title": "Создать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Добавить мебель"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "furniture/add",
+            "mode": "popup",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "owner_code/get_for_select"
+          ]
+        },
+        "functions": [
+          {
+            "$workflow-object-create": {
+              "objectType": "furniture",
+              "query": "furniture/create",
+              "variables": {
+                "data": {
+                  "$from-context": {
+                    "path": "data"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "active"
+        }
+      }
+    },
+    "globalActions": {
+      "list": {
+        "title": "Просмотреть справочник мебели",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Просмотреть справочник мебели"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "furniture/list",
+            "mode": "form",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "furniture/list"
+          ]
+        }
+      }
+    },
+    "statesActions": {
+      "delete": {
+        "title": "Удалить",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Удалить мебель"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "furniture/delete",
+            "mode": "popup",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "additional_facilities/get_for_info"
+          ]
+        },
+        "results": {
+          "unconditional": "deleted"
+        }
+      },
+      "edit": {
+        "title": "Редактировать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Редактировать мебель"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "furniture/edit",
+            "mode": "popup",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "owner_code/get_for_select"
+          ]
+        },
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "furniture/update",
+              "variables": {
+                "data": {
+                  "$from-context": {
+                    "path": "data"
+                  }
+                },
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "object"
+            }
+          }
+        ]
+      },
+      "archive": {
+        "title": "Перенести в архив",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Перенести мебель в архив"
+          },
+          "includeInActionsList": {
+            "availableForViews": "onlyFor",
+            "views": [
+              "furniture/list"
+            ]
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "furniture/archive",
+            "layout": "cabinet",
+            "mode": "popup"
+          },
+          "availableQueriesInViews": [
+            "additional_facilities/get_for_info"
+          ]
+        },
+        "results": {
+          "unconditional": "archived"
+        }
+      },
+      "extract_from_archive": {
+        "title": "Вернуть из архива",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Вернуть мебель из архива"
+          },
+          "includeInActionsList": {
+            "availableForViews": "onlyFor",
+            "views": [
+              "furniture/list"
+            ]
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "furniture/extract_from_archive",
+            "layout": "cabinet",
+            "mode": "popup"
+          }
+        },
+        "results": {
+          "unconditional": "active"
+        }
+      }
+    }
+  },
+  "states": {
+    "active": {
+      "title": "Активна",
+      "description": "Активное состояние мебели",
+      "statesActions": [
+        "edit",
+        "archive",
+        "delete"
+      ]
+    },
+    "archived": {
+      "title": "В архиве",
+      "description": "Архивированное состояние мебели",
+      "statesActions": [
+        "extract_from_archive",
+        "delete"
+      ]
+    },
+    "deleted": {
+      "title": "Удалена",
+      "description": "Удаленное состояние мебели",
+      "displaySettingsInLists": {
+        "hidden": true
+      },
+      "finish": true
+    }
+  }
+}

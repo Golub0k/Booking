@@ -1,0 +1,152 @@
+{
+  "meta": {
+    "title": "Филдсет list_simple_search"
+  },
+  "schema": {
+    "type": "object",
+    "model": "#simple-search",
+    "bindRouter": true,
+    "widget": {
+      "name": "container",
+      "options": {
+        "displayNone": false,
+        "routerOptions": [
+          "displayNone"
+        ]
+      },
+      "kind": "container-search-form-collapsed-container-style"
+    },
+    "properties": {
+      "search": {
+        "type": "string",
+        "widget": {
+          "name": "input",
+          "options": {
+            "placeholder": "Наименование, описание, код"
+          },
+          "events": {
+            "keypress-13": {
+              "$if": {
+                "condition": {
+                  "$validate": {
+                    "path": "/"
+                  }
+                },
+                "then": {
+                  "$grid": {
+                    "action": "lazyLoad",
+                    "path": "#data",
+                    "filters": {
+                      "$var": {
+                        "path": "#simple-search"
+                      }
+                    }
+                  }
+                },
+                "else": {}
+              }
+            }
+          },
+          "kind": "input-search-form-expanded-search-input-style",
+          "append": {
+            "type": "string",
+            "widget": {
+              "name": "button",
+              "class": {
+                "value": "search-form-trigger search-form-trigger_collapsed"
+              },
+              "options": {
+                "icon": "icon-caret-down-sm-shaded d-md-block d-none",
+                "label": "Расширенный поиск"
+              },
+              "events": {
+                "click": [
+                  {
+                    "$element-option": {
+                      "path": "#simple-search",
+                      "option": "displayNone",
+                      "value": true
+                    }
+                  },
+                  {
+                    "$element-option": {
+                      "path": "#advanced-search",
+                      "option": "displayNone",
+                      "value": false
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "clear-button": {
+        "widget": {
+          "name": "button",
+          "options": {
+            "label": "Сбросить"
+          },
+          "events": {
+            "click": [
+              {
+                "$populate": {
+                  "path": "#simple-search",
+                  "data": {}
+                }
+              },
+              {
+                "$grid": {
+                  "action": "lazyLoad",
+                  "path": "#data",
+                  "filters": {}
+                }
+              }
+            ]
+          },
+          "kind": "button-search-form-clear-button-style"
+        }
+      },
+      "search-button": {
+        "widget": {
+          "name": "button",
+          "options": {
+            "label": "Найти"
+          },
+          "events": {
+            "click": [
+              {
+                "$populate": {
+                  "path": "#advanced-search",
+                  "data": {}
+                }
+              },
+              {
+                "$if": {
+                  "condition": {
+                    "$validate": {
+                      "path": "/"
+                    }
+                  },
+                  "then": {
+                    "$grid": {
+                      "action": "lazyLoad",
+                      "path": "#data",
+                      "filters": {
+                        "$var": {
+                          "path": "#simple-search"
+                        }
+                      }
+                    }
+                  },
+                  "else": {}
+                }
+              }
+            ]
+          },
+          "kind": "button-search-form-action-button-fill-style"
+        }
+      }
+    }
+  }
+}

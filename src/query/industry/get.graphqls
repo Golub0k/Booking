@@ -1,0 +1,8 @@
+# @title: Получить данные экземпляров объекта "Отрасль"
+
+query ($id: [MongoID!], $filter: FilterGetIndustryInput) {
+  items: industryGet(_id: $id, filter: $filter) {
+    id: _id
+    name
+  }
+}

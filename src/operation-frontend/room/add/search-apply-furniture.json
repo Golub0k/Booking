@@ -1,0 +1,16 @@
+{
+  "meta": {
+    "title": "Выражение search-apply-furniture"
+  },
+  "schema": {
+    "$grid": {
+      "action": "lazyLoad",
+      "path": "#selectorFurniture",
+      "filters": {
+        "$var": {
+          "path": "#searchFurniture"
+        }
+      }
+    }
+  }
+}

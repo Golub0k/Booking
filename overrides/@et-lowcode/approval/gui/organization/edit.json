@@ -1,0 +1,2845 @@
+{
+  "@title": "Редактирование организации",
+  "@preload": {
+    "$from-context": {
+      "path": "$response.body.data.items.0",
+      "data": {
+        "$api-data": {
+          "id": {
+            "$query-params": {
+              "name": "id"
+            }
+          },
+          "options": {
+            "observe": "response"
+          },
+          "variables": {
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            }
+          },
+          "query": "organization/get"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "model": "#data",
+  "widget": {
+    "name": "container"
+  },
+  "properties": {
+    "breadcrumbs": {
+      "type": "object",
+      "model": false,
+      "widget": {
+        "name": "breadcrumb",
+        "mobileItems": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          }
+        ],
+        "items": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          },
+          {
+            "label": "Реестр организаций",
+            "routerLink": "/cabinet/organization/list"
+          },
+          {
+            "label": {
+              "$from-context": {
+                "path": "@preload.shortName"
+              }
+            },
+            "routerLink": "/cabinet/organization/view",
+            "queryParams": {
+              "id": {
+                "$query-params": {
+                  "name": "id"
+                }
+              }
+            }
+          },
+          {
+            "label": "Редактирование организации"
+          }
+        ],
+        "class": {
+          "group": "p-xs-auto mrg-b-md"
+        }
+      }
+    },
+    "header": {
+      "type": "string",
+      "model": false,
+      "widget": {
+        "name": "info",
+        "options": {
+          "label": "Редактирование организации"
+        },
+        "class": {
+          "label": "h1 mrg-b-xl"
+        }
+      }
+    },
+    "organization": {
+      "type": "object",
+      "model": "#data.organization",
+      "widget": {
+        "name": "form",
+        "kind": "form-form-group-with-h2-style"
+      },
+      "properties": {
+        "generalInformation": {
+          "type": "object",
+          "value": {
+            "$from-context": {
+              "path": "@preload"
+            }
+          },
+          "model": false,
+          "widget": {
+            "name": "container",
+            "options": {
+              "label": "Общие данные"
+            },
+            "class": {
+              "group": "form-section",
+              "label": "h2 mrg-b-md"
+            }
+          },
+          "properties": {
+            "country": {
+              "type": "object",
+              "model": "#data.organization.country",
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "widget": "hidden"
+                },
+                "fullName": {
+                  "type": "string",
+                  "widget": "hidden"
+                }
+              },
+              "widget": {
+                "name": "fieldset"
+              }
+            },
+            "type": {
+              "type": "string",
+              "model": "#data.organization.type",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Тип организации",
+                  "viewedValue": {
+                    "$switch": {
+                      "condition": {
+                        "$from-context": {
+                          "path": "@preload.type"
+                        }
+                      },
+                      "default": "",
+                      "cases": [
+                        {
+                          "value": "ur",
+                          "action": "Юридическое лицо"
+                        },
+                        {
+                          "value": "fz",
+                          "action": "Физическое лицо"
+                        },
+                        {
+                          "value": "ip",
+                          "action": "Индивидуальный предприниматель"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            },
+            "shortName": {
+              "type": "string",
+              "model": "#data.organization.shortName",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": {
+                    "$switch": {
+                      "condition": {
+                        "$from-context": {
+                          "path": "@preload.type"
+                        }
+                      },
+                      "default": "",
+                      "cases": [
+                        {
+                          "value": "ur",
+                          "action": "Краткое наименование организации"
+                        },
+                        {
+                          "value": "fz",
+                          "action": "Фамилия и инициалы"
+                        },
+                        {
+                          "value": "ip",
+                          "action": "Краткое наименование организации"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "kind": "input-text-input-required-style"
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$not-empty": {
+                        "data": {
+                          "$var": {
+                            "path": "."
+                          }
+                        }
+                      }
+                    },
+                    "message": "Обязательно для заполнения"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                },
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "<=": {
+                        "operand1": {
+                          "$length": {
+                            "data": {
+                              "$if": {
+                                "condition": {
+                                  "$not-empty": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                },
+                                "else": ""
+                              }
+                            }
+                          }
+                        },
+                        "operand2": 255
+                      }
+                    },
+                    "message": "Максимум 255 символов"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            },
+            "fullName": {
+              "type": "string",
+              "model": "#data.organization.fullName",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": {
+                    "$switch": {
+                      "condition": {
+                        "$from-context": {
+                          "path": "@preload.type"
+                        }
+                      },
+                      "default": "",
+                      "cases": [
+                        {
+                          "value": "ur",
+                          "action": "Полное наименование организации"
+                        },
+                        {
+                          "value": "fz",
+                          "action": "ФИО полностью"
+                        },
+                        {
+                          "value": "ip",
+                          "action": "Полное наименование организации"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "kind": "input-text-input-required-style"
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$not-empty": {
+                        "data": {
+                          "$var": {
+                            "path": "."
+                          }
+                        }
+                      }
+                    },
+                    "message": "Обязательно для заполнения"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                },
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "<=": {
+                        "operand1": {
+                          "$length": {
+                            "data": {
+                              "$if": {
+                                "condition": {
+                                  "$not-empty": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                },
+                                "else": ""
+                              }
+                            }
+                          }
+                        },
+                        "operand2": 255
+                      }
+                    },
+                    "message": "Максимум 255 символов"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            },
+            "inn": {
+              "type": "string",
+              "model": "#data.organization.inn",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": {
+                    "$if": {
+                      "condition": {
+                        "==": {
+                          "operand1": {
+                            "$from-context": {
+                              "path": "@preload.country.code"
+                            }
+                          },
+                          "operand2": "643"
+                        }
+                      },
+                      "then": "ИНН",
+                      "else": "Аналог ИНН (в вашей стране)"
+                    }
+                  },
+                  "inputmask": {
+                    "$if": {
+                      "condition": {
+                        "==": {
+                          "operand1": {
+                            "$from-context": {
+                              "path": "@preload.country.code"
+                            }
+                          },
+                          "operand2": "643"
+                        }
+                      },
+                      "then": {
+                        "$if": {
+                          "condition": {
+                            "==": {
+                              "operand1": {
+                                "$from-context": {
+                                  "path": "@preload.type"
+                                }
+                              },
+                              "operand2": "ur"
+                            }
+                          },
+                          "then": {
+                            "alias": "alphabetical",
+                            "mask": "0",
+                            "repeat": 10,
+                            "rightAlign": false,
+                            "placeholder": "",
+                            "definitions": {
+                              "0": {
+                                "validator": "[0-9]"
+                              }
+                            }
+                          },
+                          "else": {
+                            "alias": "alphabetical",
+                            "mask": "0",
+                            "repeat": 12,
+                            "rightAlign": false,
+                            "placeholder": "",
+                            "definitions": {
+                              "0": {
+                                "validator": "[0-9]"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "else": {
+                        "alias": "alphabetical",
+                        "mask": "0",
+                        "repeat": 20,
+                        "rightAlign": false,
+                        "placeholder": "",
+                        "definitions": {
+                          "0": {
+                            "validator": "[0-9]"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "kind": "input-text-input-required-style"
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$not-empty": {
+                        "data": {
+                          "$var": {
+                            "path": "."
+                          }
+                        }
+                      }
+                    },
+                    "message": "Обязательно для заполнения"
+                  },
+                  "events": [
+                    "onUpdate",
+                    "onBackend"
+                  ]
+                },
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$if": {
+                        "condition": {
+                          "$and": {
+                            "operands": [
+                              {
+                                "==": {
+                                  "operand1": {
+                                    "$from-context": {
+                                      "path": "@preload.country.code"
+                                    }
+                                  },
+                                  "operand2": "643"
+                                }
+                              },
+                              {
+                                "==": {
+                                  "operand1": {
+                                    "$from-context": {
+                                      "path": "@preload.type"
+                                    }
+                                  },
+                                  "operand2": "ur"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "then": {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                }
+                              }
+                            },
+                            "then": {
+                              "==": {
+                                "operand1": {
+                                  "$length": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "operand2": 10
+                              }
+                            },
+                            "else": true
+                          }
+                        },
+                        "else": true
+                      }
+                    },
+                    "message": "Значение ИНН должно содержать 10 цифр"
+                  },
+                  "events": [
+                    "onUpdate",
+                    "onBackend"
+                  ]
+                },
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$if": {
+                        "condition": {
+                          "$and": {
+                            "operands": [
+                              {
+                                "==": {
+                                  "operand1": {
+                                    "$from-context": {
+                                      "path": "@preload.country.code"
+                                    }
+                                  },
+                                  "operand2": "643"
+                                }
+                              },
+                              {
+                                "!==": {
+                                  "operand1": {
+                                    "$from-context": {
+                                      "path": "@preload.type"
+                                    }
+                                  },
+                                  "operand2": "ur"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "then": {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                }
+                              }
+                            },
+                            "then": {
+                              "==": {
+                                "operand1": {
+                                  "$length": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "operand2": 12
+                              }
+                            },
+                            "else": true
+                          }
+                        },
+                        "else": true
+                      }
+                    },
+                    "message": "Значение ИНН должно содержать 12 цифр"
+                  },
+                  "events": [
+                    "onUpdate",
+                    "onBackend"
+                  ]
+                },
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$if": {
+                        "condition": {
+                          "==": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "@preload.country.code"
+                              }
+                            },
+                            "operand2": "643"
+                          }
+                        },
+                        "then": {
+                          "$inn-validate": {
+                            "$var": {
+                              "path": "."
+                            }
+                          }
+                        },
+                        "else": true
+                      }
+                    },
+                    "message": "Некорректное значение ИНН"
+                  },
+                  "events": [
+                    "onUpdate",
+                    "onBackend"
+                  ]
+                },
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "===": {
+                        "operand1": 0,
+                        "operand2": {
+                          "$fetch-object": {
+                            "path": "data.count",
+                            "data": {
+                              "$api-data": {
+                                "query": "organization/inn_exists",
+                                "id": {
+                                  "$query-params": {
+                                    "name": "id"
+                                  }
+                                },
+                                "variables": {
+                                  "inn": {
+                                    "$var": {
+                                      "path": "."
+                                    }
+                                  },
+                                  "except": {
+                                    "$query-params": {
+                                      "name": "id"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "message": "Организация с таким ИНН уже зарегистрирована в системе"
+                  },
+                  "events": [
+                    "onBackend"
+                  ]
+                }
+              ]
+            },
+            "kpp": {
+              "type": "string",
+              "model": "#data.organization.kpp",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": "КПП",
+                  "inputmask": {
+                    "alias": "alphabetical",
+                    "mask": "0",
+                    "repeat": 9,
+                    "noValuePatching": true,
+                    "rightAlign": false,
+                    "placeholder": "",
+                    "definitions": {
+                      "0": {
+                        "validator": "[0-9]"
+                      }
+                    }
+                  },
+                  "visible": {
+                    "==": {
+                      "operand1": {
+                        "$from-context": {
+                          "path": "@preload.type"
+                        }
+                      },
+                      "operand2": "ur"
+                    }
+                  }
+                },
+                "kind": "input-text-input-style"
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$if": {
+                        "condition": {
+                          "==": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "@preload.type"
+                              }
+                            },
+                            "operand2": "ur"
+                          }
+                        },
+                        "then": {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                }
+                              }
+                            },
+                            "then": {
+                              "==": {
+                                "operand1": {
+                                  "$length": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "operand2": 9
+                              }
+                            },
+                            "else": true
+                          }
+                        },
+                        "else": true
+                      }
+                    },
+                    "message": "Значение КПП должно содержать 9 цифр"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            },
+            "ogrn": {
+              "type": "string",
+              "model": "#data.organization.ogrn",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": {
+                    "$if": {
+                      "condition": {
+                        "==": {
+                          "operand1": {
+                            "$from-context": {
+                              "path": "@preload.type"
+                            }
+                          },
+                          "operand2": "ur"
+                        }
+                      },
+                      "then": "ОГРН",
+                      "else": "ОГРНИП"
+                    }
+                  },
+                  "required": {
+                    "$not-empty": {
+                      "data": {
+                        "$var": {
+                          "path": "."
+                        }
+                      }
+                    }
+                  },
+                  "inputmask": {
+                    "$if": {
+                      "condition": {
+                        "==": {
+                          "operand1": {
+                            "$from-context": {
+                              "path": "@preload.type"
+                            }
+                          },
+                          "operand2": "ur"
+                        }
+                      },
+                      "then": {
+                        "alias": "alphabetical",
+                        "mask": "0",
+                        "repeat": 13,
+                        "rightAlign": false,
+                        "placeholder": "",
+                        "definitions": {
+                          "0": {
+                            "validator": "[0-9]"
+                          }
+                        }
+                      },
+                      "else": {
+                        "alias": "alphabetical",
+                        "mask": "0",
+                        "repeat": 15,
+                        "rightAlign": false,
+                        "placeholder": "",
+                        "definitions": {
+                          "0": {
+                            "validator": "[0-9]"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "visible": {
+                    "!==": {
+                      "operand1": {
+                        "$from-context": {
+                          "path": "@preload.type"
+                        }
+                      },
+                      "operand2": "fz"
+                    }
+                  }
+                },
+                "kind": "input-text-input-style"
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$if": {
+                        "condition": {
+                          "==": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "@preload.country.code"
+                              }
+                            },
+                            "operand2": "643"
+                          }
+                        },
+                        "then": {
+                          "$if": {
+                            "condition": {
+                              "==": {
+                                "operand1": {
+                                  "$from-context": {
+                                    "path": "@preload.type"
+                                  }
+                                },
+                                "operand2": "ur"
+                              }
+                            },
+                            "then": {
+                              "$if": {
+                                "condition": {
+                                  "$not-empty": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "==": {
+                                    "operand1": {
+                                      "$length": {
+                                        "data": {
+                                          "$var": {
+                                            "path": "."
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "operand2": 13
+                                  }
+                                },
+                                "else": true
+                              }
+                            },
+                            "else": true
+                          }
+                        },
+                        "else": true
+                      }
+                    },
+                    "message": "Значение ОГРН должно содержать 13 цифр"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                },
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$if": {
+                        "condition": {
+                          "==": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "@preload.country.code"
+                              }
+                            },
+                            "operand2": "643"
+                          }
+                        },
+                        "then": {
+                          "$if": {
+                            "condition": {
+                              "==": {
+                                "operand1": {
+                                  "$from-context": {
+                                    "path": "@preload.type"
+                                  }
+                                },
+                                "operand2": "ip"
+                              }
+                            },
+                            "then": {
+                              "$if": {
+                                "condition": {
+                                  "$not-empty": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "==": {
+                                    "operand1": {
+                                      "$length": {
+                                        "data": {
+                                          "$var": {
+                                            "path": "."
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "operand2": 15
+                                  }
+                                },
+                                "else": true
+                              }
+                            },
+                            "else": true
+                          }
+                        },
+                        "else": true
+                      }
+                    },
+                    "message": "Значение ОГРНИП должно содержать 15 цифр"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            },
+            "majorTaxPayerKpp": {
+              "type": "string",
+              "model": "#data.organization.majorTaxPayerKpp",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": "КПП крупнейшего налогоплательщика",
+                  "inputmask": {
+                    "alias": "alphabetical",
+                    "mask": "0",
+                    "repeat": 9,
+                    "noValuePatching": true,
+                    "rightAlign": false,
+                    "placeholder": "",
+                    "definitions": {
+                      "0": {
+                        "validator": "[0-9]"
+                      }
+                    }
+                  },
+                  "visible": {
+                    "==": {
+                      "operand1": {
+                        "$from-context": {
+                          "path": "@preload.type"
+                        }
+                      },
+                      "operand2": "ur"
+                    }
+                  }
+                },
+                "kind": "input-text-input-style"
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$if": {
+                        "condition": {
+                          "$not-empty": {
+                            "data": {
+                              "$var": {
+                                "path": "."
+                              }
+                            }
+                          }
+                        },
+                        "then": {
+                          "==": {
+                            "operand1": {
+                              "$length": {
+                                "data": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                }
+                              }
+                            },
+                            "operand2": 9
+                          }
+                        },
+                        "else": true
+                      }
+                    },
+                    "message": "Значение КПП должно содержать 9 цифр"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            },
+            "site": {
+              "type": "string",
+              "model": "#data.organization.site",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "placeholder": "Например, https://site.ru/",
+                  "label": "Адрес сайта",
+                  "visible": {
+                    "==": {
+                      "operand1": {
+                        "$from-context": {
+                          "path": "@preload.type"
+                        }
+                      },
+                      "operand2": "ur"
+                    }
+                  }
+                },
+                "kind": "input-text-input-style"
+              }
+            }
+          }
+        },
+        "legal-address": {
+          "type": "object",
+          "value": {
+            "$from-context": {
+              "path": "@preload.addresses.legal"
+            }
+          },
+          "model": "#data.organization.addresses.legal",
+          "widget": {
+            "name": "container",
+            "options": {
+              "label": {
+                "$if": {
+                  "condition": {
+                    "==": {
+                      "operand1": {
+                        "$from-context": {
+                          "path": "@preload.type"
+                        }
+                      },
+                      "operand2": "ur"
+                    }
+                  },
+                  "then": "Юридический адрес",
+                  "else": "Адрес места нахождения"
+                }
+              }
+            },
+            "class": {
+              "group": "form-section",
+              "label": "h2 mrg-b-md"
+            }
+          },
+          "properties": {
+            "country": {
+              "type": "object",
+              "model": "#data.organization.addresses.legal.country",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.country"
+                }
+              },
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "widget": "hidden"
+                },
+                "fullName": {
+                  "type": "string",
+                  "widget": {
+                    "name": "info",
+                    "options": {
+                      "label": "Страна"
+                    },
+                    "class": {
+                      "group": "form-item p-field p-grid",
+                      "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                      "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                    }
+                  },
+                  "validation": [
+                    {
+                      "type": "schema",
+                      "params": {
+                        "rule": {
+                          "===": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "@preload.country.code"
+                              }
+                            },
+                            "operand2": {
+                              "$var": {
+                                "path": "#data.organization.addresses.legal.country.code"
+                              }
+                            }
+                          }
+                        },
+                        "message": "Неизменяемое значение"
+                      },
+                      "events": [
+                        "onBackend"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "widget": {
+                "name": "fieldset"
+              }
+            },
+            "zip": {
+              "type": "string",
+              "model": "#data.organization.addresses.legal.zip",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": "Почтовый индекс",
+                  "inputmask": {
+                    "alias": "alphabetical",
+                    "mask": "0",
+                    "repeat": 6,
+                    "rightAlign": false,
+                    "placeholder": "",
+                    "definitions": {
+                      "0": {
+                        "validator": "[0-9]"
+                      }
+                    }
+                  }
+                },
+                "kind": "input-text-input-style"
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$if": {
+                        "condition": {
+                          "===": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "@preload.country.code"
+                              }
+                            },
+                            "operand2": "643"
+                          }
+                        },
+                        "then": {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                }
+                              }
+                            },
+                            "then": {
+                              "==": {
+                                "operand1": {
+                                  "$length": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "operand2": 6
+                              }
+                            },
+                            "else": true
+                          }
+                        },
+                        "else": true
+                      }
+                    },
+                    "message": "Значение должно содержать 6 цифр"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            },
+            "region": {
+              "type": "string",
+              "model": "#data.organization.addresses.legal.region",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": "Регион/область"
+                },
+                "kind": "input-text-input-style"
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "<=": {
+                        "operand1": {
+                          "$length": {
+                            "data": {
+                              "$if": {
+                                "condition": {
+                                  "$not-empty": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                },
+                                "else": ""
+                              }
+                            }
+                          }
+                        },
+                        "operand2": 255
+                      }
+                    },
+                    "message": "Максимум 255 символов"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            },
+            "city": {
+              "type": "string",
+              "model": "#data.organization.addresses.legal.city",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": "Город/район"
+                },
+                "kind": "input-text-input-style"
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "<=": {
+                        "operand1": {
+                          "$length": {
+                            "data": {
+                              "$if": {
+                                "condition": {
+                                  "$not-empty": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                },
+                                "else": ""
+                              }
+                            }
+                          }
+                        },
+                        "operand2": 255
+                      }
+                    },
+                    "message": "Максимум 255 символов"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            },
+            "locality": {
+              "type": "string",
+              "model": "#data.organization.addresses.legal.locality",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": "Населенный пункт"
+                },
+                "kind": "input-text-input-style"
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "<=": {
+                        "operand1": {
+                          "$length": {
+                            "data": {
+                              "$if": {
+                                "condition": {
+                                  "$not-empty": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                },
+                                "else": ""
+                              }
+                            }
+                          }
+                        },
+                        "operand2": 255
+                      }
+                    },
+                    "message": "Максимум 255 символов"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            },
+            "street": {
+              "type": "string",
+              "model": "#data.organization.addresses.legal.street",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": "Улица"
+                },
+                "kind": "input-text-input-style"
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "<=": {
+                        "operand1": {
+                          "$length": {
+                            "data": {
+                              "$if": {
+                                "condition": {
+                                  "$not-empty": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                },
+                                "else": ""
+                              }
+                            }
+                          }
+                        },
+                        "operand2": 255
+                      }
+                    },
+                    "message": "Максимум 255 символов"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            },
+            "house": {
+              "type": "string",
+              "model": "#data.organization.addresses.legal.house",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": "Дом и офис"
+                },
+                "kind": "input-text-input-style"
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "<=": {
+                        "operand1": {
+                          "$length": {
+                            "data": {
+                              "$if": {
+                                "condition": {
+                                  "$not-empty": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                },
+                                "else": ""
+                              }
+                            }
+                          }
+                        },
+                        "operand2": 255
+                      }
+                    },
+                    "message": "Максимум 255 символов"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "factual-address": {
+          "type": "object",
+          "value": {
+            "$from-context": {
+              "path": "@preload.addresses.factual"
+            }
+          },
+          "model": "#data.organization.addresses.factual",
+          "widget": {
+            "name": "container",
+            "options": {
+              "label": "Почтовый адрес"
+            },
+            "class": {
+              "group": "form-section",
+              "label": "h2 mrg-b-md"
+            }
+          },
+          "properties": {
+            "sameAsLegal": {
+              "type": "boolean",
+              "model": "#data.organization.addresses.factual.sameAsLegal",
+              "value": {
+                "$if": {
+                  "condition": {
+                    "$not-empty": {
+                      "data": {
+                        "$from-context": {
+                          "path": "@preload.addresses.factual.sameAsLegal"
+                        }
+                      }
+                    }
+                  },
+                  "then": {
+                    "$from-context": {
+                      "path": "@preload.addresses.factual.sameAsLegal"
+                    }
+                  },
+                  "else": false
+                }
+              },
+              "widget": {
+                "name": "checkbox",
+                "options": {
+                  "label": {
+                    "$if": {
+                      "condition": {
+                        "==": {
+                          "operand1": {
+                            "$from-context": {
+                              "path": "@preload.type"
+                            }
+                          },
+                          "operand2": "ur"
+                        }
+                      },
+                      "then": "Совпадает с юридическим",
+                      "else": "Совпадает с адресом места нахождения"
+                    }
+                  },
+                  "optionLabel": ""
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-col-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_checkbox p-col-12 p-md-6 p-xl-4"
+                }
+              }
+            },
+            "country": {
+              "type": "object",
+              "model": "#data.organization.addresses.factual.country",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.country"
+                }
+              },
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "widget": "hidden"
+                },
+                "fullName": {
+                  "type": "string",
+                  "widget": {
+                    "name": "info",
+                    "options": {
+                      "label": "Страна",
+                      "visible": {
+                        "!==": {
+                          "operand1": {
+                            "$subs": {
+                              "path": "#data.organization.addresses.factual.sameAsLegal"
+                            }
+                          },
+                          "operand2": true
+                        }
+                      }
+                    },
+                    "class": {
+                      "group": "form-item p-field p-grid",
+                      "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                      "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                    }
+                  },
+                  "validation": [
+                    {
+                      "type": "schema",
+                      "params": {
+                        "rule": {
+                          "===": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "@preload.country.code"
+                              }
+                            },
+                            "operand2": {
+                              "$var": {
+                                "path": "#data.organization.addresses.factual.country.code"
+                              }
+                            }
+                          }
+                        },
+                        "message": "Неизменяемое значение"
+                      },
+                      "events": [
+                        "onBackend"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "widget": {
+                "name": "fieldset"
+              }
+            },
+            "zip": {
+              "type": "string",
+              "model": "#data.organization.addresses.factual.zip",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": "Почтовый индекс",
+                  "inputmask": {
+                    "alias": "alphabetical",
+                    "mask": "0",
+                    "repeat": 6,
+                    "rightAlign": false,
+                    "placeholder": "",
+                    "definitions": {
+                      "0": {
+                        "validator": "[0-9]"
+                      }
+                    }
+                  },
+                  "visible": {
+                    "!==": {
+                      "operand1": {
+                        "$subs": {
+                          "path": "#data.organization.addresses.factual.sameAsLegal"
+                        }
+                      },
+                      "operand2": true
+                    }
+                  }
+                },
+                "kind": "input-text-input-style"
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$if": {
+                        "condition": {
+                          "===": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "@preload.country.code"
+                              }
+                            },
+                            "operand2": "643"
+                          }
+                        },
+                        "then": {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                }
+                              }
+                            },
+                            "then": {
+                              "==": {
+                                "operand1": {
+                                  "$length": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "operand2": 6
+                              }
+                            },
+                            "else": true
+                          }
+                        },
+                        "else": true
+                      }
+                    },
+                    "message": "Значение должно содержать 6 цифр"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            },
+            "region": {
+              "type": "string",
+              "model": "#data.organization.addresses.factual.region",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": "Регион/область",
+                  "visible": {
+                    "!==": {
+                      "operand1": {
+                        "$subs": {
+                          "path": "#data.organization.addresses.factual.sameAsLegal"
+                        }
+                      },
+                      "operand2": true
+                    }
+                  }
+                },
+                "kind": "input-text-input-style"
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "<=": {
+                        "operand1": {
+                          "$length": {
+                            "data": {
+                              "$if": {
+                                "condition": {
+                                  "$not-empty": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                },
+                                "else": ""
+                              }
+                            }
+                          }
+                        },
+                        "operand2": 255
+                      }
+                    },
+                    "message": "Максимум 255 символов"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            },
+            "city": {
+              "type": "string",
+              "model": "#data.organization.addresses.factual.city",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": "Город/район",
+                  "visible": {
+                    "!==": {
+                      "operand1": {
+                        "$subs": {
+                          "path": "#data.organization.addresses.factual.sameAsLegal"
+                        }
+                      },
+                      "operand2": true
+                    }
+                  }
+                },
+                "kind": "input-text-input-style"
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "<=": {
+                        "operand1": {
+                          "$length": {
+                            "data": {
+                              "$if": {
+                                "condition": {
+                                  "$not-empty": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                },
+                                "else": ""
+                              }
+                            }
+                          }
+                        },
+                        "operand2": 255
+                      }
+                    },
+                    "message": "Максимум 255 символов"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            },
+            "locality": {
+              "type": "string",
+              "model": "#data.organization.addresses.factual.locality",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": "Населенный пункт",
+                  "visible": {
+                    "!==": {
+                      "operand1": {
+                        "$subs": {
+                          "path": "#data.organization.addresses.factual.sameAsLegal"
+                        }
+                      },
+                      "operand2": true
+                    }
+                  }
+                },
+                "kind": "input-text-input-style"
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "<=": {
+                        "operand1": {
+                          "$length": {
+                            "data": {
+                              "$if": {
+                                "condition": {
+                                  "$not-empty": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                },
+                                "else": ""
+                              }
+                            }
+                          }
+                        },
+                        "operand2": 255
+                      }
+                    },
+                    "message": "Максимум 255 символов"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            },
+            "street": {
+              "type": "string",
+              "model": "#data.organization.addresses.factual.street",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": "Улица",
+                  "visible": {
+                    "!==": {
+                      "operand1": {
+                        "$subs": {
+                          "path": "#data.organization.addresses.factual.sameAsLegal"
+                        }
+                      },
+                      "operand2": true
+                    }
+                  }
+                },
+                "kind": "input-text-input-style"
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "<=": {
+                        "operand1": {
+                          "$length": {
+                            "data": {
+                              "$if": {
+                                "condition": {
+                                  "$not-empty": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                },
+                                "else": ""
+                              }
+                            }
+                          }
+                        },
+                        "operand2": 255
+                      }
+                    },
+                    "message": "Максимум 255 символов"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            },
+            "house": {
+              "type": "string",
+              "model": "#data.organization.addresses.factual.house",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": "Дом и офис",
+                  "visible": {
+                    "!==": {
+                      "operand1": {
+                        "$subs": {
+                          "path": "#data.organization.addresses.factual.sameAsLegal"
+                        }
+                      },
+                      "operand2": true
+                    }
+                  }
+                },
+                "kind": "input-text-input-style"
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "<=": {
+                        "operand1": {
+                          "$length": {
+                            "data": {
+                              "$if": {
+                                "condition": {
+                                  "$not-empty": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                },
+                                "else": ""
+                              }
+                            }
+                          }
+                        },
+                        "operand2": 255
+                      }
+                    },
+                    "message": "Максимум 255 символов"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "bank-account": {
+          "type": "object",
+          "value": {
+            "$from-context": {
+              "path": "@preload.account"
+            }
+          },
+          "model": "#data.organization.account",
+          "widget": {
+            "name": "container",
+            "options": {
+              "label": "Банковские реквизиты"
+            },
+            "class": {
+              "group": "form-section",
+              "label": "h2 mrg-b-md"
+            }
+          },
+          "properties": {
+            "checking": {
+              "type": "string",
+              "model": "#data.organization.account.checking",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": {
+                    "$if": {
+                      "condition": {
+                        "==": {
+                          "operand1": {
+                            "$from-context": {
+                              "path": "@preload.country.code"
+                            }
+                          },
+                          "operand2": "643"
+                        }
+                      },
+                      "then": "Расчетный счет",
+                      "else": "Расчетный счет/IBAN"
+                    }
+                  },
+                  "inputmask": {
+                    "$if": {
+                      "condition": {
+                        "==": {
+                          "operand1": {
+                            "$from-context": {
+                              "path": "@preload.country.code"
+                            }
+                          },
+                          "operand2": "643"
+                        }
+                      },
+                      "then": {
+                        "alias": "alphabetical",
+                        "mask": "0",
+                        "repeat": 25,
+                        "rightAlign": false,
+                        "placeholder": "",
+                        "definitions": {
+                          "0": {
+                            "validator": "[0-9]"
+                          }
+                        }
+                      },
+                      "else": {
+                        "alias": "alphabetical",
+                        "mask": "0",
+                        "repeat": 35,
+                        "rightAlign": false,
+                        "placeholder": "",
+                        "definitions": {
+                          "0": {
+                            "validator": "[0-9A-Za-z]"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "kind": "input-text-input-style"
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$if": {
+                        "condition": {
+                          "!==": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "@preload.country.code"
+                              }
+                            },
+                            "operand2": "643"
+                          }
+                        },
+                        "then": {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                }
+                              }
+                            },
+                            "then": {
+                              "<=": {
+                                "operand1": {
+                                  "$length": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "operand2": 35
+                              }
+                            },
+                            "else": true
+                          }
+                        },
+                        "else": true
+                      }
+                    }
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                },
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$if": {
+                        "condition": {
+                          "==": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "@preload.country.code"
+                              }
+                            },
+                            "operand2": "643"
+                          }
+                        },
+                        "then": {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                }
+                              }
+                            },
+                            "then": {
+                              "$and": {
+                                "operands": [
+                                  {
+                                    ">=": {
+                                      "operand1": {
+                                        "$length": {
+                                          "data": {
+                                            "$var": {
+                                              "path": "."
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "operand2": 20
+                                    }
+                                  },
+                                  {
+                                    "<=": {
+                                      "operand1": {
+                                        "$length": {
+                                          "data": {
+                                            "$var": {
+                                              "path": "."
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "operand2": 25
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "else": true
+                          }
+                        },
+                        "else": true
+                      }
+                    },
+                    "message": "Значение должно содержать минимум 20 знаков, максимум 25"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            },
+            "bik": {
+              "type": "string",
+              "model": "#data.organization.account.bik",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": {
+                    "$if": {
+                      "condition": {
+                        "==": {
+                          "operand1": {
+                            "$from-context": {
+                              "path": "@preload.country.code"
+                            }
+                          },
+                          "operand2": "643"
+                        }
+                      },
+                      "then": "БИК",
+                      "else": "Код банка"
+                    }
+                  },
+                  "inputmask": {
+                    "$if": {
+                      "condition": {
+                        "==": {
+                          "operand1": {
+                            "$from-context": {
+                              "path": "@preload.country.code"
+                            }
+                          },
+                          "operand2": "643"
+                        }
+                      },
+                      "then": {
+                        "alias": "alphabetical",
+                        "mask": "0",
+                        "repeat": 9,
+                        "rightAlign": false,
+                        "placeholder": "",
+                        "definitions": {
+                          "0": {
+                            "validator": "[0-9]"
+                          }
+                        }
+                      },
+                      "else": {
+                        "alias": "alphabetical",
+                        "mask": "0",
+                        "repeat": 35,
+                        "rightAlign": false,
+                        "placeholder": "",
+                        "definitions": {
+                          "0": {
+                            "validator": "[0-9]"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "kind": "input-text-input-style"
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$if": {
+                        "condition": {
+                          "!==": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "@preload.country.code"
+                              }
+                            },
+                            "operand2": "643"
+                          }
+                        },
+                        "then": {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                }
+                              }
+                            },
+                            "then": {
+                              "<=": {
+                                "operand1": {
+                                  "$length": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "operand2": 35
+                              }
+                            },
+                            "else": true
+                          }
+                        },
+                        "else": true
+                      }
+                    }
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                },
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$if": {
+                        "condition": {
+                          "==": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "@preload.country.code"
+                              }
+                            },
+                            "operand2": "643"
+                          }
+                        },
+                        "then": {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                }
+                              }
+                            },
+                            "then": {
+                              "==": {
+                                "operand1": {
+                                  "$length": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "operand2": 9
+                              }
+                            },
+                            "else": true
+                          }
+                        },
+                        "else": true
+                      }
+                    },
+                    "message": "Значение должно содержать 9 цифр"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            },
+            "bankName": {
+              "type": "string",
+              "model": "#data.organization.account.bankName",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": "Наименование банка"
+                },
+                "kind": "input-text-input-style"
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "<=": {
+                        "operand1": {
+                          "$length": {
+                            "data": {
+                              "$if": {
+                                "condition": {
+                                  "$not-empty": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                },
+                                "else": ""
+                              }
+                            }
+                          }
+                        },
+                        "operand2": 255
+                      }
+                    },
+                    "message": "Максимум 255 символов"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            },
+            "bankAddress": {
+              "type": "string",
+              "model": "#data.organization.account.bankAddress",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": "Адрес банка"
+                },
+                "kind": "input-text-input-style"
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "<=": {
+                        "operand1": {
+                          "$length": {
+                            "data": {
+                              "$if": {
+                                "condition": {
+                                  "$not-empty": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                },
+                                "else": ""
+                              }
+                            }
+                          }
+                        },
+                        "operand2": 255
+                      }
+                    },
+                    "message": "Максимум 255 символов"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            },
+            "correspondent": {
+              "type": "string",
+              "model": "#data.organization.account.correspondent",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": {
+                    "$if": {
+                      "condition": {
+                        "==": {
+                          "operand1": {
+                            "$from-context": {
+                              "path": "@preload.country.code"
+                            }
+                          },
+                          "operand2": "643"
+                        }
+                      },
+                      "then": "Корреспондентский счет",
+                      "else": "SWIFT"
+                    }
+                  },
+                  "inputmask": {
+                    "$if": {
+                      "condition": {
+                        "$empty": {
+                          "data": {
+                            "$from-context": {
+                              "path": "@preload.country.code"
+                            }
+                          }
+                        }
+                      },
+                      "then": {},
+                      "else": {
+                        "$if": {
+                          "condition": {
+                            "==": {
+                              "operand1": {
+                                "$from-context": {
+                                  "path": "@preload.country.code"
+                                }
+                              },
+                              "operand2": "643"
+                            }
+                          },
+                          "then": {
+                            "alias": "alphabetical",
+                            "mask": "0",
+                            "repeat": 20,
+                            "rightAlign": false,
+                            "placeholder": "",
+                            "definitions": {
+                              "0": {
+                                "validator": "[0-9]"
+                              }
+                            }
+                          },
+                          "else": {
+                            "alias": "alphabetical",
+                            "mask": [
+                              "0"
+                            ],
+                            "repeat": 11,
+                            "rightAlign": false,
+                            "placeholder": "",
+                            "definitions": {
+                              "0": {
+                                "validator": "[0-9A-Za-z]"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "kind": "input-text-input-style"
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$if": {
+                        "condition": {
+                          "!==": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "@preload.country.code"
+                              }
+                            },
+                            "operand2": "643"
+                          }
+                        },
+                        "then": {
+                          "$or": {
+                            "operands": [
+                              {
+                                "$if": {
+                                  "condition": {
+                                    "$not-empty": {
+                                      "data": {
+                                        "$var": {
+                                          "path": "."
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "then": {
+                                    "==": {
+                                      "operand1": {
+                                        "$length": {
+                                          "data": {
+                                            "$var": {
+                                              "path": "."
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "operand2": 8
+                                    }
+                                  },
+                                  "else": true
+                                }
+                              },
+                              {
+                                "$if": {
+                                  "condition": {
+                                    "$not-empty": {
+                                      "data": {
+                                        "$var": {
+                                          "path": "."
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "then": {
+                                    "==": {
+                                      "operand1": {
+                                        "$length": {
+                                          "data": {
+                                            "$var": {
+                                              "path": "."
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "operand2": 11
+                                    }
+                                  },
+                                  "else": true
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "else": true
+                      }
+                    },
+                    "message": "Значение должно содержать 8 или 11 символов"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                },
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$if": {
+                        "condition": {
+                          "==": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "@preload.country.code"
+                              }
+                            },
+                            "operand2": "643"
+                          }
+                        },
+                        "then": {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                }
+                              }
+                            },
+                            "then": {
+                              "==": {
+                                "operand1": {
+                                  "$length": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "."
+                                      }
+                                    }
+                                  }
+                                },
+                                "operand2": 20
+                              }
+                            },
+                            "else": true
+                          }
+                        },
+                        "else": true
+                      }
+                    },
+                    "message": "Значение должно содержать 20 цифр"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "model": "#actions",
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "form-actions p-field p-grid mrg-t-lg",
+          "value": "p-jc-xs-end p-autolayout"
+        }
+      },
+      "properties": {
+        "button_add": {
+          "widget": {
+            "name": "submit-button",
+            "options": {
+              "label": "Сохранить",
+              "clientValidation": true,
+              "dataForClientValidation": "/",
+              "showClientValidationErrorsForElement": "form",
+              "showClientValidationErrorMessage": true,
+              "clientValidationErrorMessageSummary": "Ошибка",
+              "clientValidationErrorMessageDetail": "Одно или несколько полей заполнены некорректно",
+              "workflowAction": "organization.edit",
+              "workflowObjectId": {
+                "$query-params": {
+                  "name": "id"
+                }
+              },
+              "dataForSubmit": {
+                "$var": {
+                  "path": "#data.organization"
+                }
+              },
+              "showSuccessMessage": true,
+              "successMessageSummary": "Изменение данных организации",
+              "successMessageDetail": "Измененные данные успешно сохранены",
+              "urlInCaseOfSuccess": {
+                "$replace": {
+                  "template": "/cabinet/organization/view?id={{id}}",
+                  "data": {
+                    "id": {
+                      "$query-params": {
+                        "name": "id"
+                      }
+                    }
+                  }
+                }
+              },
+              "showServerValidationErrorMessage": true,
+              "serverValidationErrorMessageSummary": "Изменение данных организации",
+              "serverValidationErrorMessageDetail": "Форма содержит ошибки",
+              "showOtherErrorMessageSummary": true,
+              "otherErrorMessageSummary": "Изменение данных организации",
+              "otherErrorMessageDetail": "Непредвиденная ошибка",
+              "reloadTable": true,
+              "closePopup": false
+            },
+            "class": {
+              "value": "mrg-r-sm"
+            }
+          }
+        },
+        "button_cancel": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Отменить"
+            },
+            "events": {
+              "click": {
+                "$go": {
+                  "workflow": "organization",
+                  "action": "view",
+                  "id": {
+                    "$query-params": {
+                      "name": "id"
+                    }
+                  }
+                }
+              }
+            },
+            "class": {
+              "value": "button_outline mrg-r-0 mrg-b-0"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "version": 2,
+  "objectType": "partner_address",
+  "context": "partner_address/context",
+  "description": "Жизненный цикл объекта \"Адрес контрагента\"",
+  "rbac": {
+    "visible": false,
+    "title": "Адрес контрагента"
+  },
+  "actions": {
+    "initialActions": {
+      "add": {
+        "title": "Создать",
+        "grants": {
+          "rbac": {
+            "enabled": false,
+            "title": "Создать экземпляр объекта \"Адрес контрагента\""
+          },
+          "system": true
+        },
+        "views": {},
+        "functions": [
+          {
+            "$workflow-object-create": {
+              "objectType": "partner_address",
+              "query": "partner_address/create",
+              "variables": {
+                "data": {
+                  "$from-context": {
+                    "path": "data"
+                  }
+                }
+              },
+              "responsePath": "address"
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "active"
+        }
+      }
+    },
+    "globalActions": {
+      "list": {
+        "title": "Реестр экземпляров объекта \"Адрес контрагента\"",
+        "grants": {
+          "rbac": {
+            "enabled": false,
+            "visible": false,
+            "title": "Просмотреть реестр экземпляров объекта \"Адрес контрагента\""
+          }
+        },
+        "views": {}
+      }
+    },
+    "statesActions": {
+      "edit": {
+        "title": "Редактировать",
+        "grants": {
+          "rbac": {
+            "enabled": false,
+            "visible": false,
+            "title": "Редактировать экземпляр объекта \"Контрагент\""
+          },
+          "system": true
+        },
+        "views": {},
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "partner_address/update",
+              "variables": {
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                },
+                "data": {
+                  "$from-context": {
+                    "path": "data"
+                  }
+                }
+              },
+              "responsePath": "result"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "states": {
+    "active": {
+      "title": "Активная",
+      "description": "Активное состояние объекта",
+      "statesActions": [
+        "edit"
+      ]
+    }
+  }
+}

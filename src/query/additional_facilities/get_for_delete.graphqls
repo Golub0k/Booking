@@ -1,0 +1,12 @@
+query ($bookingIds: [String!]) {
+  facilities: additionalFacilitiesGet(
+    filter: {
+      AND: [
+        { _operators: { bookingId: { in: $bookingIds } } }
+        { _operators: { state: { ne: "deleted" } } }
+      ]
+    }
+  ) {
+    id: _id
+  }
+}

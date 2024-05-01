@@ -1,0 +1,81 @@
+{
+  "type": "update",
+  "object": "role",
+  "data": [
+    {
+      "_id": {
+        "$oid": "618e11c604d5220041f1cb28"
+      },
+      "name": "Администратор",
+      "state": "active",
+      "isDefault": false,
+      "permissions": [
+        "event-log",
+        "event-log.list",
+        "notification",
+        "notification.list",
+        "notification.list-sent",
+        "notification.delete-multiple",
+        "notification.view",
+        "notification.view.new",
+        "notification.view.viewed",
+        "notification.view-sent",
+        "notification.view-sent.new",
+        "notification.view-sent.viewed",
+        "notification.make_viewed.new",
+        "notification.make_new.viewed",
+        "settings",
+        "settings.list",
+        "settings.set-value.active",
+        "user-role",
+        "user-role.list",
+        "user-role.add",
+        "user-role.edit.active",
+        "user-role.delete.active",
+        "user",
+        "user.list",
+        "user.edit-my-profile",
+        "user.add",
+        "user.resend-token.await_email_confirmation",
+        "user.edit",
+        "user.edit.await_email_confirmation",
+        "user.edit.active",
+        "user.edit.blocked",
+        "user.delete",
+        "user.delete.await_email_confirmation",
+        "user.delete.blocked",
+        "user.reset-password.active",
+        "user.block.active",
+        "user.unblock.blocked",
+        "user.view",
+        "user.view.await_email_confirmation",
+        "user.view.active",
+        "user.view.blocked"
+      ]
+    },
+    {
+      "_id": {
+        "$oid": "641437ef75a98434ca7f7742"
+      },
+      "name": "Пользователь",
+      "state": "active",
+      "isDefault": false,
+      "permissions": [
+        "notification.list",
+        "notification.delete-multiple",
+        "notification.view",
+        "notification.view.new",
+        "notification.view.viewed",
+        "notification.make_viewed.new",
+        "notification.make_new.viewed",
+        "user.list",
+        "user.view",
+        "user.view.await_email_confirmation",
+        "user.view.active",
+        "user.view.blocked",
+        "user-role.list"
+      ]
+    }
+  ],
+  "enabled": true
+}

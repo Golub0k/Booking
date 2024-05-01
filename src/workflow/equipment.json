@@ -1,0 +1,221 @@
+{
+  "version": 2,
+  "objectType": "equipment",
+  "context": "equipment/context",
+  "description": "Жизненный цикл оборудования",
+  "rbac": {
+    "visible": true,
+    "title": "Оборудование"
+  },
+  "actions": {
+    "initialActions": {
+      "add": {
+        "title": "Создать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Добавить оборудование"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "equipment/add",
+            "mode": "popup",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "owner_code/get_for_select"
+          ]
+        },
+        "functions": [
+          {
+            "$workflow-object-create": {
+              "objectType": "equipment",
+              "query": "equipment/create",
+              "variables": {
+                "data": {
+                  "$from-context": {
+                    "path": "data"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "active"
+        }
+      }
+    },
+    "globalActions": {
+      "list": {
+        "title": "Просмотреть справочник оборудования",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Просмотреть справочник оборудования"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "equipment/list",
+            "mode": "form",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "equipment/list"
+          ]
+        }
+      }
+    },
+    "statesActions": {
+      "delete": {
+        "title": "Удалить",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Удалить оборудование"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "equipment/delete",
+            "mode": "popup",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "additional_facilities/get_for_info"
+          ]
+        },
+        "results": {
+          "unconditional": "deleted"
+        }
+      },
+      "edit": {
+        "title": "Редактировать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Редактировать оборудование"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "equipment/edit",
+            "mode": "popup",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "owner_code/get_for_select"
+          ]
+        },
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "equipment/update",
+              "variables": {
+                "data": {
+                  "$from-context": {
+                    "path": "data"
+                  }
+                },
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "object"
+            }
+          }
+        ]
+      },
+      "archive": {
+        "title": "Перенести в архив",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Перенести оборудование в архив"
+          },
+          "includeInActionsList": {
+            "availableForViews": "onlyFor",
+            "views": [
+              "equipment/list"
+            ]
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "equipment/archive",
+            "layout": "cabinet",
+            "mode": "popup"
+          },
+          "availableQueriesInViews": [
+            "additional_facilities/get_for_info"
+          ]
+        },
+        "results": {
+          "unconditional": "archived"
+        }
+      },
+      "extract_from_archive": {
+        "title": "Вернуть из архива",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Вернуть оборудование из архива"
+          },
+          "includeInActionsList": {
+            "availableForViews": "onlyFor",
+            "views": [
+              "equipment/list"
+            ]
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "equipment/extract_from_archive",
+            "layout": "cabinet",
+            "mode": "popup"
+          }
+        },
+        "results": {
+          "unconditional": "active"
+        }
+      }
+    }
+  },
+  "states": {
+    "active": {
+      "title": "Активно",
+      "description": "Активное состояние оборудования",
+      "statesActions": [
+        "edit",
+        "archive",
+        "delete"
+      ]
+    },
+    "archived": {
+      "title": "В архиве",
+      "description": "Архивированное состояние оборудования",
+      "statesActions": [
+        "extract_from_archive",
+        "delete"
+      ]
+    },
+    "deleted": {
+      "title": "Удалено",
+      "description": "Удаленное состояние оборудования",
+      "displaySettingsInLists": {
+        "hidden": true
+      },
+      "finish": true
+    }
+  }
+}

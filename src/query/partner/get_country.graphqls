@@ -1,0 +1,6 @@
+query {
+  items: nsiOksmGet(sort: { field: countryFullName, type: ASC }) {
+    code: countryCode
+    fullName: countryFullName
+  }
+}

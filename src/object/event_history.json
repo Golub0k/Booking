@@ -1,0 +1,39 @@
+{
+  "type": "object",
+  "title": "История изменений мероприятия",
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "fieldDescription": "Мероприятие",
+      "ref": "Event",
+      "refAlias": "event",
+      "inversedBy": "eventHistory"
+    },
+    "bookingId": {
+      "type": "string",
+      "fieldDescription": "Бронь помещения",
+      "ref": "Booking",
+      "refAlias": "booking",
+      "inversedBy": "bookingHistory"
+    },
+    "additionalFacilitiesId": {
+      "type": "string",
+      "fieldDescription": "Бронь оснащения",
+      "ref": "AdditionalFacilities",
+      "refAlias": "additionalFacilities",
+      "inversedBy": "additionalFacilitiesHistory"
+    },
+    "actionTitle": {
+      "type": "string",
+      "trim": true,
+      "fieldDescription": "Наименование совершенного действия",
+      "required": false
+    },
+    "userId": {
+      "type": "string",
+      "ref": "User",
+      "fieldDescription": "Инициатор действия",
+      "refAlias": "user"
+    }
+  }
+}

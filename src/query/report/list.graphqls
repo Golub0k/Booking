@@ -1,0 +1,52 @@
+query ($first: Int, $rows: Int) {
+  pagination: exportEventPagination(
+    limit: $rows
+    offset: $first
+    filter: {
+      AND: [
+        { _operators: { state: { ne: "deleted" } } }
+        {
+          _operators: {
+            reportFields: {
+              reportType: {
+                in: [
+                  "calendar"
+                  "cancel"
+                  "sale"
+                  "availableRoom"
+                  "bEquipment"
+                  "bRoom"
+                  "bAdditionalServices"
+                  "bFurniture"
+                  "gStatistics"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+    sort: { field: createdAt, type: DESC }
+  ) {
+    count
+    items {
+      id: _id
+      file {
+        _id
+        size
+        name
+      }
+
+      createdAt
+      user {
+        id: _id
+        fullName
+      }
+      state
+
+      reportFields {
+        reportType
+      }
+    }
+  }
+}

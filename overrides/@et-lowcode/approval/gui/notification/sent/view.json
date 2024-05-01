@@ -1,0 +1,193 @@
+{
+  "@title": "Просмотр исходящего уведомления",
+  "type": "object",
+  "widget": {
+    "name": "container"
+  },
+  "properties": {
+    "breadcrumbs": {
+      "type": "object",
+      "widget": {
+        "name": "breadcrumb",
+        "mobileItems": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          }
+        ],
+        "items": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          },
+          {
+            "label": "Исходящие уведомления",
+            "routerLink": "/cabinet/notification/list-sent"
+          },
+          {
+            "label": "Просмотр"
+          }
+        ],
+        "kind": "breadcrumb-breadcrumbs-container-style"
+      }
+    },
+    "data": {
+      "type": "object",
+      "value": {
+        "$if": {
+          "condition": {
+            "$not-empty": {
+              "data": {
+                "$active-user": {
+                  "field": "_id"
+                }
+              }
+            }
+          },
+          "then": {
+            "$json-model": {
+              "data": {
+                "$from-context": {
+                  "path": "$message",
+                  "data": [
+                    {
+                      "$element-option": {
+                        "option": "loading",
+                        "value": true
+                      }
+                    },
+                    {
+                      "$http-code": {
+                        "200": [
+                          {
+                            "$element-option": {
+                              "option": "loading",
+                              "value": false
+                            }
+                          },
+                          {
+                            "$assign-context": {
+                              "path": "$message",
+                              "data": {
+                                "$from-context": {
+                                  "path": "$response.body.data.message"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "client": {
+                          "$api-data": {
+                            "id": {
+                              "$query-params": {
+                                "name": "id"
+                              }
+                            },
+                            "query": "notification/get",
+                            "options": {
+                              "observe": "response"
+                            },
+                            "variables": {
+                              "id": {
+                                "$query-params": {
+                                  "name": "id"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "default": {
+                          "$message": {
+                            "severity": "error",
+                            "summary": "Ошибка",
+                            "detail": "Не удалось получить данные c сервера"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "model": "#message",
+      "widget": {
+        "name": "container",
+        "options": {
+          "label": {
+            "$subs": {
+              "path": "#message.subject"
+            }
+          }
+        },
+        "kind": "container-h1-style"
+      },
+      "properties": {
+        "state": {
+          "type": "string",
+          "widget": "hidden"
+        },
+        "subject": {
+          "type": "string",
+          "widget": "hidden"
+        },
+        "createDateTime": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Дата отправки",
+              "formatter": "datetime:\"DD.MM.YYYY HH:mm\":\"Europe/Moscow\""
+            },
+            "kind": "info-form-item-text-view-style"
+          }
+        },
+        "body": {
+          "type": "string",
+          "widget": {
+            "name": "html",
+            "options": {
+              "label": "Содержание"
+            },
+            "kind": "html-form-item-text-view-style"
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "model": false,
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "form-actions p-field p-grid mrg-t-lg",
+          "value": "p-jc-xs-end p-autolayout"
+        }
+      },
+      "properties": {
+        "messageList": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Вернуться в реестр"
+            },
+            "events": {
+              "click": {
+                "$go": {
+                  "workflow": "notification",
+                  "action": "list-sent",
+                  "id": ""
+                }
+              }
+            },
+            "class": {
+              "value": "button_outline mrg-r-0 mrg-b-0"
+            }
+          }
+        }
+      }
+    }
+  }
+}

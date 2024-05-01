@@ -1,0 +1,10 @@
+# @title: Получить данные экземпляров объекта "Мебель"
+
+query ($ids: [MongoID!]) {
+  items: furnitureGet(
+    filter: { AND: [{ _operators: { state: { ne: "deleted" } } }, { _operators: { _id: { in: $ids } } }] }
+  ) {
+    id: _id
+    name
+  }
+}

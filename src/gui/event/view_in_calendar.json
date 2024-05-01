@@ -1,0 +1,745 @@
+{
+  "@title": "Просмотр краткой информации о мероприятии в рамках календаря",
+  "@preload": {
+    "$from-context": {
+      "path": "$response.body.data.items.0",
+      "data": {
+        "$api-data": {
+          "id": {
+            "$query-params": {
+              "name": "id"
+            }
+          },
+          "options": {
+            "observe": "response"
+          },
+          "variables": {
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            }
+          },
+          "query": "event/get_info_for_calendar"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "model": "#data",
+  "widget": {
+    "name": "container"
+  },
+  "properties": {
+    "header": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "mrg-b-sm",
+          "value": "p-autolayout p-jc-start p-ai-center p-flex-row"
+        }
+      },
+      "properties": {
+        "name": {
+          "type": "string",
+          "model": false,
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": {
+                "$from-context": {
+                  "path": "@preload.name"
+                }
+              }
+            },
+            "class": {
+              "group": "p-col-9 p-xs-9 p-xl-9 p-ai-center",
+              "label": "h2"
+            }
+          }
+        },
+        "badge": {
+          "type": "string",
+          "value": {
+            "$from-context": {
+              "path": "@preload.state"
+            }
+          },
+          "widget": {
+            "name": "badge",
+            "options": {
+              "defaultLabel": "Не заполнено",
+              "displayMapping": [
+                {
+                  "color": "badge_default",
+                  "label": "Черновик",
+                  "value": "draft"
+                },
+                {
+                  "color": "badge_default",
+                  "label": "Предварительная бронь",
+                  "value": "pre_booking"
+                },
+                {
+                  "color": "badge_warning",
+                  "label": "Получен запрос",
+                  "value": "requested"
+                },
+                {
+                  "color": "badge_custom_orange",
+                  "label": "Получено ТЗ",
+                  "value": "task_received"
+                },
+                {
+                  "color": "badge_active",
+                  "label": "Согласована смета",
+                  "value": "agreed"
+                },
+                {
+                  "color": "badge_accent",
+                  "label": "Пройден check-in",
+                  "value": "check_in"
+                },
+                {
+                  "color": "badge_canceled",
+                  "label": "Пройден check-out",
+                  "value": "check_out"
+                },
+                {
+                  "color": "badge_error",
+                  "label": "Отменено",
+                  "value": "canceled"
+                }
+              ]
+            },
+            "class": {
+              "group": "p-col-2 p-xs-2 p-xl-2 p-ai-center"
+            }
+          }
+        }
+      }
+    },
+    "object": {
+      "type": "object",
+      "model": false,
+      "value": {
+        "$from-context": {
+          "path": "@preload"
+        }
+      },
+      "widget": {
+        "name": "container"
+      },
+      "properties": {
+        "number": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Номер"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view p-xs-12 p-md-4",
+              "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-8"
+            }
+          }
+        },
+        "installationView": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Монтаж",
+              "emptyText": "Не указано"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view p-xs-12 p-md-4",
+              "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-8"
+            }
+          },
+          "value": {
+            "$replace": {
+              "template": "{{start}}{{dash}}{{end}}",
+              "data": {
+                "start": {
+                  "$if": {
+                    "condition": {
+                      "$not-empty": {
+                        "data": {
+                          "$from-context": {
+                            "path": "@preload.installationStart"
+                          }
+                        }
+                      }
+                    },
+                    "then": {
+                      "$formatter": {
+                        "format": "$ref:operation-frontend:snippets/element/_active_user_timezone/date-formatter",
+                        "data": {
+                          "$from-context": {
+                            "path": "@preload.installationStart"
+                          }
+                        }
+                      }
+                    },
+                    "else": ""
+                  }
+                },
+                "dash": {
+                  "$if": {
+                    "condition": {
+                      "$and": {
+                        "operands": [
+                          {
+                            "$not-empty": {
+                              "data": {
+                                "$from-context": {
+                                  "path": "@preload.installationStart"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "$not-empty": {
+                              "data": {
+                                "$from-context": {
+                                  "path": "@preload.installationEnd"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "then": " - ",
+                    "else": ""
+                  }
+                },
+                "end": {
+                  "$if": {
+                    "condition": {
+                      "$not-empty": {
+                        "data": {
+                          "$from-context": {
+                            "path": "@preload.installationEnd"
+                          }
+                        }
+                      }
+                    },
+                    "then": {
+                      "$formatter": {
+                        "format": "$ref:operation-frontend:snippets/element/_active_user_timezone/date-formatter",
+                        "data": {
+                          "$from-context": {
+                            "path": "@preload.installationEnd"
+                          }
+                        }
+                      }
+                    },
+                    "else": ""
+                  }
+                }
+              }
+            }
+          }
+        },
+        "eventView": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Мероприятие",
+              "emptyText": "Не указано"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view p-xs-12 p-md-4",
+              "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-8"
+            }
+          },
+          "value": {
+            "$replace": {
+              "template": "{{start}}{{dash}}{{end}}",
+              "data": {
+                "start": {
+                  "$if": {
+                    "condition": {
+                      "$not-empty": {
+                        "data": {
+                          "$from-context": {
+                            "path": "@preload.eventStart"
+                          }
+                        }
+                      }
+                    },
+                    "then": {
+                      "$formatter": {
+                        "format": "$ref:operation-frontend:snippets/element/_active_user_timezone/date-formatter",
+                        "data": {
+                          "$from-context": {
+                            "path": "@preload.eventStart"
+                          }
+                        }
+                      }
+                    },
+                    "else": ""
+                  }
+                },
+                "dash": {
+                  "$if": {
+                    "condition": {
+                      "$and": {
+                        "operands": [
+                          {
+                            "$not-empty": {
+                              "data": {
+                                "$from-context": {
+                                  "path": "@preload.eventStart"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "$not-empty": {
+                              "data": {
+                                "$from-context": {
+                                  "path": "@preload.eventEnd"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "then": " - ",
+                    "else": ""
+                  }
+                },
+                "end": {
+                  "$if": {
+                    "condition": {
+                      "$not-empty": {
+                        "data": {
+                          "$from-context": {
+                            "path": "@preload.eventEnd"
+                          }
+                        }
+                      }
+                    },
+                    "then": {
+                      "$formatter": {
+                        "format": "$ref:operation-frontend:snippets/element/_active_user_timezone/date-formatter",
+                        "data": {
+                          "$from-context": {
+                            "path": "@preload.eventEnd"
+                          }
+                        }
+                      }
+                    },
+                    "else": ""
+                  }
+                }
+              }
+            }
+          }
+        },
+        "deinstallationView": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Демонтаж",
+              "emptyText": "Не указано"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view p-xs-12 p-md-4",
+              "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-8"
+            }
+          },
+          "value": {
+            "$replace": {
+              "template": "{{start}}{{dash}}{{end}}",
+              "data": {
+                "start": {
+                  "$if": {
+                    "condition": {
+                      "$not-empty": {
+                        "data": {
+                          "$from-context": {
+                            "path": "@preload.deinstallationStart"
+                          }
+                        }
+                      }
+                    },
+                    "then": {
+                      "$formatter": {
+                        "format": "$ref:operation-frontend:snippets/element/_active_user_timezone/date-formatter",
+                        "data": {
+                          "$from-context": {
+                            "path": "@preload.deinstallationStart"
+                          }
+                        }
+                      }
+                    },
+                    "else": ""
+                  }
+                },
+                "dash": {
+                  "$if": {
+                    "condition": {
+                      "$and": {
+                        "operands": [
+                          {
+                            "$not-empty": {
+                              "data": {
+                                "$from-context": {
+                                  "path": "@preload.deinstallationStart"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "$not-empty": {
+                              "data": {
+                                "$from-context": {
+                                  "path": "@preload.deinstallationEnd"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "then": " - ",
+                    "else": ""
+                  }
+                },
+                "end": {
+                  "$if": {
+                    "condition": {
+                      "$not-empty": {
+                        "data": {
+                          "$from-context": {
+                            "path": "@preload.deinstallationEnd"
+                          }
+                        }
+                      }
+                    },
+                    "then": {
+                      "$formatter": {
+                        "format": "$ref:operation-frontend:snippets/element/_active_user_timezone/date-formatter",
+                        "data": {
+                          "$from-context": {
+                            "path": "@preload.deinstallationEnd"
+                          }
+                        }
+                      }
+                    },
+                    "else": ""
+                  }
+                }
+              }
+            }
+          }
+        },
+        "emptyCurators": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Кураторы",
+              "visible": {
+                "$empty": {
+                  "data": {
+                    "$from-context": {
+                      "path": "@preload.curators"
+                    }
+                  }
+                }
+              }
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view p-xs-12 p-md-4",
+              "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-8"
+            }
+          },
+          "value": "Не указано"
+        },
+        "curators": {
+          "type": "array",
+          "widget": {
+            "name": "container",
+            "options": {
+              "label": "Кураторы",
+              "visible": {
+                "$not-empty": {
+                  "data": {
+                    "$from-context": {
+                      "path": "@preload.curators"
+                    }
+                  }
+                }
+              }
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view p-xs-12 p-md-4",
+              "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-8"
+            }
+          },
+          "items": {
+            "type": "object",
+            "widget": "container",
+            "properties": {
+              "user": {
+                "type": "object",
+                "widget": "hidden",
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "widget": "hidden"
+                  },
+                  "fullName": {
+                    "type": "string",
+                    "widget": "hidden"
+                  }
+                }
+              },
+              "link": {
+                "type": "string",
+                "model": false,
+                "widget": {
+                  "name": "link",
+                  "options": {
+                    "target": "_blank",
+                    "viewedValue": {
+                      "$subs": {
+                        "path": "#data.curators[].user.fullName"
+                      }
+                    },
+                    "routerLink": "/cabinet/user/view",
+                    "queryParams": {
+                      "id": {
+                        "$subs": {
+                          "path": "#data.curators[].user.userId"
+                        }
+                      }
+                    },
+                    "visible": {
+                      "$active-user-has-permission": {
+                        "permission": "user.view"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "organizers": {
+          "type": "array",
+          "model": "#data.organizers",
+          "widget": {
+            "name": "table",
+            "options": {
+              "paginator": false,
+              "label": "Организаторы",
+              "emptyMessage": "Не добавлено информации для отображения",
+              "responsive": false,
+              "sortField": "organizerNumber",
+              "sortOrder": 1
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view p-xs-12 p-md-4",
+              "value": "data-table form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-8"
+            }
+          },
+          "items": {
+            "type": "object",
+            "properties": {
+              "organizerNumber": {
+                "type": "number",
+                "widget": {
+                  "name": "table-column",
+                  "options": {
+                    "label": "№",
+                    "viewedValue": {
+                      "$collection": {
+                        "action": "row-number"
+                      }
+                    }
+                  }
+                }
+              },
+              "name": {
+                "type": "string",
+                "widget": {
+                  "name": "table-column",
+                  "options": {
+                    "visible": false
+                  }
+                }
+              },
+              "organizerInfo": {
+                "type": "object",
+                "widget": {
+                  "name": "table-column",
+                  "options": {
+                    "label": "Наименование контрагента"
+                  }
+                },
+                "properties": {
+                  "link": {
+                    "type": "string",
+                    "model": false,
+                    "widget": {
+                      "name": "link",
+                      "options": {
+                        "target": "_blank",
+                        "viewedValue": {
+                          "$from-context": {
+                            "path": "$rowData.name"
+                          }
+                        },
+                        "routerLink": "/cabinet/partner/view",
+                        "queryParams": {
+                          "id": {
+                            "$from-context": {
+                              "path": "$rowData.organizerId"
+                            }
+                          }
+                        },
+                        "visible": {
+                          "$active-user-has-permission": {
+                            "permission": "partner.view"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "name": {
+                    "type": "string",
+                    "model": false,
+                    "widget": {
+                      "name": "info",
+                      "options": {
+                        "viewedValue": {
+                          "$from-context": {
+                            "path": "$rowData.name"
+                          }
+                        },
+                        "visible": {
+                          "$not": {
+                            "data": {
+                              "$active-user-has-permission": {
+                                "permission": "partner.view"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "mainContactPerson": {
+                "type": "object",
+                "widget": {
+                  "name": "table-column",
+                  "options": {
+                    "label": "Контактное лицо"
+                  }
+                },
+                "properties": {
+                  "fullName": {
+                    "type": "string",
+                    "widget": {
+                      "name": "info"
+                    }
+                  },
+                  "phone": {
+                    "type": "string",
+                    "widget": {
+                      "name": "info"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "value": {
+            "$if": {
+              "condition": {
+                "$not-empty": {
+                  "data": {
+                    "$from-context": {
+                      "path": "@preload.organizers"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "$array-pluck": {
+                  "array": {
+                    "$from-context": {
+                      "path": "@preload.organizers"
+                    }
+                  },
+                  "key": "partner"
+                }
+              },
+              "else": []
+            }
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "form-actions p-field p-grid mrg-t-lg",
+          "value": "p-jc-xs-end p-autolayout"
+        }
+      },
+      "properties": {
+        "view": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Просмотреть",
+              "visible": {
+                "$active-user-has-permission": {
+                  "permission": "event.view"
+                }
+              }
+            },
+            "events": {
+              "click": {
+                "$go": {
+                  "workflow": "event",
+                  "action": "view",
+                  "id": {
+                    "$from-context": {
+                      "path": "@preload.id"
+                    }
+                  }
+                }
+              }
+            },
+            "class": {
+              "value": "mrg-r-sm"
+            }
+          }
+        }
+      }
+    }
+  }
+}

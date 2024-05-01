@@ -1,0 +1,649 @@
+{
+  "meta": {
+    "title": "Филдсет form_set_value"
+  },
+  "schema": {
+    "type": "object",
+    "widget": {
+      "name": "container"
+    },
+    "properties": {
+      "name": {
+        "type": "string",
+        "widget": {
+          "name": "info",
+          "options": {
+            "label": "Наименование"
+          },
+          "class": {
+            "group": "form-item p-field p-grid p-fluid",
+            "label": "form-label p-xs-12 mrg-t-0 p-md-4 p-xl-3",
+            "value": "form-item-element p-xs-12 p-md-6 p-xl-7"
+          }
+        }
+      },
+      "code": {
+        "type": "string",
+        "widget": {
+          "name": "info",
+          "options": {
+            "label": "Код"
+          },
+          "class": {
+            "group": "form-item p-field p-grid p-fluid",
+            "label": "form-label mrg-t-0 p-xs-12 p-md-4 p-xl-3",
+            "value": "form-item-element p-xs-12 p-md-6 p-xl-7"
+          }
+        }
+      },
+      "description": {
+        "type": "string",
+        "widget": {
+          "name": "info",
+          "options": {
+            "label": "Описание",
+            "emptyText": "-"
+          },
+          "class": {
+            "group": "form-item p-field p-grid p-fluid",
+            "label": "form-label mrg-t-0 p-xs-12 p-md-4 p-xl-3",
+            "value": "form-item-element p-xs-12 p-md-6 p-xl-7"
+          }
+        }
+      },
+      "type": {
+        "type": "string",
+        "widget": "hidden"
+      },
+      "typeTitle": {
+        "type": "string",
+        "widget": {
+          "name": "info",
+          "class": {
+            "group": "form-item p-field p-grid p-fluid",
+            "label": "form-label mrg-t-0 p-xs-12 p-md-4 p-xl-3",
+            "value": "form-item-element p-xs-12 p-md-6 p-xl-7"
+          },
+          "options": {
+            "label": "Тип"
+          }
+        }
+      },
+      "settingsType": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "widget": "hidden"
+          }
+        },
+        "widget": {
+          "name": "fieldset"
+        }
+      },
+      "preview": {
+        "type": "object",
+        "widget": "hidden",
+        "properties": {
+          "defaultValue": {
+            "type": "string",
+            "widget": "hidden"
+          }
+        }
+      },
+      "defaultValue": {
+        "type": "object",
+        "widget": "container",
+        "properties": {
+          "boolean": {
+            "type": "number",
+            "widget": "hidden"
+          },
+          "string": {
+            "type": "string",
+            "widget": "hidden"
+          },
+          "number": {
+            "type": "number",
+            "widget": "hidden"
+          },
+          "date": {
+            "type": "string",
+            "widget": "hidden"
+          },
+          "dateTime": {
+            "type": "string",
+            "widget": "hidden"
+          },
+          "file": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string",
+                "widget": "hidden"
+              },
+              "name": {
+                "type": "string",
+                "widget": "hidden"
+              },
+              "create_date": {
+                "type": "string",
+                "widget": "hidden"
+              }
+            },
+            "widget": {
+              "name": "fieldset"
+            }
+          },
+          "object": {
+            "type": "string",
+            "widget": "hidden"
+          }
+        }
+      },
+      "objectType": {
+        "type": "string",
+        "widget": "hidden"
+      },
+      "objectTypeTitle": {
+        "type": "string",
+        "widget": {
+          "name": "info",
+          "options": {
+            "label": "Объект системы",
+            "visible": {
+              "===": {
+                "operand1": {
+                  "$subs": {
+                    "path": "#data.object.type"
+                  }
+                },
+                "operand2": "object"
+              }
+            }
+          },
+          "class": {
+            "group": "form-item p-field p-grid p-fluid",
+            "label": "form-label mrg-t-0 p-xs-12 p-md-4 p-xl-3",
+            "value": "form-item-element p-xs-12 p-md-6 p-xl-7"
+          }
+        }
+      },
+      "defaultViewedValue": {
+        "type": "object",
+        "widget": {
+          "name": "container",
+          "options": {
+            "label": "Значение по умолчанию"
+          },
+          "labelAppend": {
+            "type": "string",
+            "widget": {
+              "name": "html",
+              "options": {
+                "tooltip": "Если значение системной настройки не установлено, то используется значение по умолчанию",
+                "tooltipPosition": "bottom",
+                "appendTo": "body"
+              },
+              "class": {
+                "group": "d-inline-block valign-text-bottom mrg-l-xxs"
+              },
+              "kind": "html-mobile_tooltip_event"
+            },
+            "value": "<i class=\"icon-info icon_secondary d-block\"></i>"
+          },
+          "class": {
+            "group": "form-item p-field p-grid p-fluid",
+            "label": "form-label p-xs-12 mrg-t-0 p-md-4 p-xl-3",
+            "value": "form-item-element p-xs-12 p-md-6 p-xl-7"
+          }
+        },
+        "properties": {
+          "otherType": {
+            "type": "any",
+            "widget": {
+              "name": "info",
+              "options": {
+                "visible": {
+                  "$or": {
+                    "operands": [
+                      {
+                        "!==": {
+                          "operand1": {
+                            "$subs": {
+                              "path": "#data.object.type"
+                            }
+                          },
+                          "operand2": "file"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "emptyText": "-",
+                "viewedValue": {
+                  "$subs": {
+                    "path": "#data.object.preview.defaultValue"
+                  }
+                }
+              }
+            }
+          },
+          "fileInfo": {
+            "type": "object",
+            "model": false,
+            "properties": {
+              "link": {
+                "type": "string",
+                "model": false,
+                "value": {
+                  "$subs": {
+                    "path": "#data.object.defaultValue.file.name"
+                  }
+                },
+                "widget": {
+                  "name": "download-file",
+                  "options": {
+                    "emptyMessage": "-",
+                    "visible": {
+                      "$or": {
+                        "operands": [
+                          {
+                            "===": {
+                              "operand1": {
+                                "$subs": {
+                                  "path": "#data.object.type"
+                                }
+                              },
+                              "operand2": "file"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "methods": {
+                    "getFileAsync": {
+                      "$api-file": {
+                        "type": "get",
+                        "workflow": "settings",
+                        "action": "download",
+                        "fileId": {
+                          "$var": {
+                            "path": "#data.object.defaultValue.file._id"
+                          }
+                        },
+                        "options": {
+                          "responseType": "blob"
+                        }
+                      }
+                    }
+                  },
+                  "class": {
+                    "link": "text-break"
+                  }
+                }
+              }
+            },
+            "widget": {
+              "name": "fieldset"
+            }
+          }
+        }
+      },
+      "value": {
+        "type": "object",
+        "widget": "container",
+        "properties": {
+          "boolean": {
+            "type": "boolean",
+            "widget": {
+              "name": "radio-button",
+              "options": {
+                "label": "Значение",
+                "valueKey": "id",
+                "optionLabel": "label",
+                "visible": {
+                  "===": {
+                    "operand1": {
+                      "$subs": {
+                        "path": "#data.object.type"
+                      }
+                    },
+                    "operand2": "boolean"
+                  }
+                },
+                "valueOptions": [
+                  {
+                    "id": true,
+                    "label": "Да"
+                  },
+                  {
+                    "id": false,
+                    "label": "Нет"
+                  }
+                ]
+              },
+              "class": {
+                "group": "form-item form-item_radio p-field p-grid p-fluid",
+                "label": "form-label mrg-t-0 p-xs-12 p-md-4 p-xl-3",
+                "value": "form-item-element p-xs-12 p-md-6 p-xl-4",
+                "item": "form-item_radio__item"
+              }
+            }
+          },
+          "string": {
+            "type": "string",
+            "widget": {
+              "name": "input",
+              "options": {
+                "label": "Значение",
+                "visible": {
+                  "$and": {
+                    "operands": [
+                      {
+                        "===": {
+                          "operand1": {
+                            "$subs": {
+                              "path": "#data.object.type"
+                            }
+                          },
+                          "operand2": "string"
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "class": {
+                "group": "form-item p-field p-grid p-fluid",
+                "label": "form-label p-xs-12 p-md-4 p-xl-3",
+                "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+              }
+            }
+          },
+          "number": {
+            "type": "number",
+            "widget": {
+              "name": "input",
+              "options": {
+                "label": "Значение",
+                "visible": {
+                  "$or": {
+                    "operands": [
+                      {
+                        "$and": {
+                          "operands": [
+                            {
+                              "===": {
+                                "operand1": {
+                                  "$subs": {
+                                    "path": "#data.object.type"
+                                  }
+                                },
+                                "operand2": "number"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "inputmask": {
+                  "alias": "numeric"
+                }
+              },
+              "class": {
+                "group": "form-item p-field p-grid p-fluid",
+                "label": "form-label p-xs-12 p-md-4 p-xl-3",
+                "value": "form-item-element p-xs-12 p-md-6 p-xl-2"
+              }
+            }
+          },
+          "date": {
+            "type": "date",
+            "widget": {
+              "name": "calendar",
+              "options": {
+                "label": "Значение",
+                "yearNavigator": true,
+                "yearRange": "1950:2100",
+                "monthNavigator": true,
+                "dataType": "string",
+                "visible": {
+                  "$or": {
+                    "operands": [
+                      {
+                        "$and": {
+                          "operands": [
+                            {
+                              "===": {
+                                "operand1": {
+                                  "$subs": {
+                                    "path": "#data.object.type"
+                                  }
+                                },
+                                "operand2": "date"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "class": {
+                "group": "form-item p-field p-grid p-fluid",
+                "label": "form-label p-xs-12 p-md-4 p-xl-3",
+                "value": "form-item-element p-xs-12 p-md-6 p-xl-2"
+              }
+            }
+          },
+          "dateTime": {
+            "type": "datetime",
+            "widget": {
+              "name": "calendar",
+              "options": {
+                "label": "Значение",
+                "yearNavigator": true,
+                "yearRange": "1950:2100",
+                "monthNavigator": true,
+                "dataType": "string",
+                "visible": {
+                  "$or": {
+                    "operands": [
+                      {
+                        "$and": {
+                          "operands": [
+                            {
+                              "===": {
+                                "operand1": {
+                                  "$subs": {
+                                    "path": "#data.object.type"
+                                  }
+                                },
+                                "operand2": "datetime"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "class": {
+                "group": "form-item p-field p-grid p-fluid",
+                "label": "form-label p-xs-12 p-md-4 p-xl-3",
+                "value": "form-item-element p-xs-12 p-md-6 p-xl-2"
+              }
+            }
+          },
+          "file": {
+            "type": "file",
+            "widget": {
+              "name": "file",
+              "options": {
+                "visible": {
+                  "$or": {
+                    "operands": [
+                      {
+                        "$and": {
+                          "operands": [
+                            {
+                              "===": {
+                                "operand1": {
+                                  "$subs": {
+                                    "path": "#data.object.type"
+                                  }
+                                },
+                                "operand2": "file"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "label": "Значение",
+                "enableFilesUpload": true,
+                "displayUploadedFiles": true,
+                "uploadParams": {
+                  "workflow": "settings",
+                  "action": "upload",
+                  "accept": ".doc, .docx, .xls, .xlsx, .txt, .rtf, .zip, .rar, .7z, .jpg, .gif, .png, .pdf, .jpeg, .tif, .tiff, .ico, .svg",
+                  "multiple": false,
+                  "maxFileSize": 62914560,
+                  "chooseLabel": "Выбрать файл"
+                },
+                "displayParams": {
+                  "workflow": "settings",
+                  "action": "download"
+                }
+              },
+              "kind": "file-form-item-file-upload-style"
+            }
+          },
+          "object": {
+            "type": "string",
+            "widget": {
+              "name": "dropdown",
+              "options": {
+                "label": "Значение",
+                "optionLabel": "preview",
+                "dataKey": "_id",
+                "valueKey": "_id",
+                "placeholder": "Выбрать",
+                "visible": {
+                  "$or": {
+                    "operands": [
+                      {
+                        "$and": {
+                          "operands": [
+                            {
+                              "===": {
+                                "operand1": {
+                                  "$subs": {
+                                    "path": "#data.object.type"
+                                  }
+                                },
+                                "operand2": "object"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "valueOptions": {
+                  "$if": {
+                    "condition": {
+                      "$not-empty": {
+                        "data": {
+                          "$subs": {
+                            "path": "#data.object.defaultValue.object"
+                          }
+                        }
+                      }
+                    },
+                    "then": {
+                      "$fetch-object": {
+                        "path": "data.values.items",
+                        "data": {
+                          "$api-data": {
+                            "query": "settings/object_preview",
+                            "id": {
+                              "$if": {
+                                "condition": {
+                                  "$not-empty": {
+                                    "data": {
+                                      "$query-params": {
+                                        "name": "id",
+                                        "filter": false
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "$query-params": {
+                                    "name": "id",
+                                    "filter": false
+                                  }
+                                },
+                                "else": ""
+                              }
+                            },
+                            "variables": {
+                              "objectType": {
+                                "$subs": {
+                                  "path": "#data.object.objectType"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "else": null
+                  }
+                }
+              },
+              "class": {
+                "group": "form-item p-field p-grid p-fluid",
+                "label": "form-label p-xs-12 p-md-4 p-xl-3",
+                "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+              }
+            }
+          }
+        }
+      },
+      "link": {
+        "value": "Установить значение по умолчанию",
+        "type": "string",
+        "model": false,
+        "widget": {
+          "name": "link",
+          "events": {
+            "click": {
+              "$populate": {
+                "path": "#data.object.value",
+                "data": {
+                  "$var": {
+                    "path": "#data.object.defaultValue"
+                  }
+                }
+              }
+            }
+          },
+          "class": {
+            "value": "p-grid p-fluid p-xs-12 p-md-6 pdd-l-0 p-xl-4 p-md-offset-4 p-xl-offset-3 p-xs-offset-0 d-flex flex-nowrap"
+          }
+        }
+      }
+    }
+  }
+}

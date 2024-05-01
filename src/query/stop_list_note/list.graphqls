@@ -1,0 +1,70 @@
+# @title: Получить список всех записей стоп-листа
+
+query (
+  $first: Int!
+  $rows: Int!
+  $search: String
+  $rooms: [String]
+  $dateTimeFrom: DateTime
+  $dateTimeTo: DateTime
+  $sort: [FieldSortStopListNoteInput]
+) {
+  pagination: stopListNotePagination(
+    limit: $rows
+    offset: $first
+    sort: $sort
+    filter: {
+      AND: [
+        {
+          OR: [
+            {
+              _filterRef: {
+                roomId: { _regexp: { field: name, filter: $search } }
+              }
+            }
+            {
+              _filterRef: {
+                roomId: { _regexp: { field: number, filter: $search } }
+              }
+            }
+            {
+              _filterRef: {
+                roomId: {
+                  _filterRef: {
+                    type: { _regexp: { field: name, filter: $search } }
+                  }
+                }
+              }
+            }
+            { _regexp: { field: number, filter: $search } }
+          ]
+        }
+        { _operators: { state: { ne: "deleted" } } }
+        { _operators: { roomId: { in: $rooms } } }
+        {
+          OR: [
+            { _operators: { dateTimeFrom: { gte: $dateTimeFrom } } }
+            { _operators: { dateTimeTo: { lte: $dateTimeTo } } }
+          ]
+        }
+      ]
+    }
+  ) {
+    count
+    items {
+      id: _id
+      roomId
+      room {
+        name
+        _id
+        state
+      }
+      number
+
+      dateTimeFrom
+      dateTimeTo
+      reason
+      state
+    }
+  }
+}

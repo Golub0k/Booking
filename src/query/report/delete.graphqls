@@ -1,0 +1,5 @@
+mutation ($id: [MongoID!]!, $data: UpdateExportEventInput!) {
+  object: exportEventUpdate(_id: $id, record: $data) {
+    numAffected
+  }
+}

@@ -1,0 +1,18 @@
+# @title: Получить экземпляр объекта "Дополнительные услуги по мероприятию"
+query ($eventId: String) {
+  items: additionalFacilitiesGet(
+    filter: {
+      AND: [
+        { _operators: { state: { ne: "deleted" } } }
+        { _operators: { bookingId: { exists: false } } }
+        { eventId: $eventId }
+      ]
+    }
+  ) {
+    id: _id
+    additionalService {
+      name
+    }
+    serviceId
+  }
+}

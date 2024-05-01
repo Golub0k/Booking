@@ -1,0 +1,28 @@
+# @title: Получить список экземпляров объекта "Группа мероприятий"
+
+query ($first: Int, $rows: Int, $search: String) {
+  pagination: eventGroupPagination(
+    limit: $rows
+    offset: $first
+    sort: { field: createdAt, type: DESC }
+    filter: {
+      AND: [
+        { state: "active" }
+        {
+          OR: [
+            { _regexp: { field: number, filter: $search } }
+            { _regexp: { field: name, filter: $search } }
+          ]
+        }
+      ]
+    }
+  ) {
+    count
+    items {
+      id: _id
+      number
+      name
+      comment
+    }
+  }
+}

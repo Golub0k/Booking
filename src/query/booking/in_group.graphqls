@@ -1,0 +1,15 @@
+query ($eventId: [String!]) {
+  bookings: bookingGet(
+    filter: {
+      AND: [
+        { _operators: { eventId: { in: $eventId } } }
+        { state: "in_group" }
+      ]
+    }
+  ) {
+    id: _id
+    rooms {
+      roomId
+    }
+  }
+}

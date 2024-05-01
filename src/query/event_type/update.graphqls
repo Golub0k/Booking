@@ -1,0 +1,7 @@
+# @title: Обновить данные экземпляров объекта "Вид мероприятий"
+
+mutation ($id: [MongoID!], $data: UpdateEventTypeInput!) {
+  object: eventTypeUpdate(_id: $id, record: $data) {
+    numAffected
+  }
+}

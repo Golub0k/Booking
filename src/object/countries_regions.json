@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "title": "Страны и регионы",
+  "properties": {
+    "countryCode": {
+      "type": "string",
+      "trim": true,
+      "required": true,
+      "fieldDescription": "Код"
+    },
+    "countryFullName": {
+      "type": "string",
+      "trim": true,
+      "required": true,
+      "fieldDescription": "Наименование"
+    },
+    "actual": {
+      "type": "boolean",
+      "required": false,
+      "fieldDescription": "Признак актуальности"
+    }
+  }
+}

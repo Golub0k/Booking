@@ -1,0 +1,34 @@
+{
+  "type": "add",
+  "object": "countries_regions",
+  "data": [
+    {
+      "_id": {
+        "$oid": "6498e178e238d1055ba2afcf"
+      },
+      "countryFullName": "Российская Федерация",
+      "actual": true,
+      "state": "active",
+      "countryCode": "643"
+    },
+    {
+      "_id": {
+        "$oid": "6498e24de238d1055ba2afd0"
+      },
+      "countryFullName": "Республика Беларусь",
+      "actual": true,
+      "state": "active",
+      "countryCode": "112"
+    },
+    {
+      "_id": {
+        "$oid": "64990621e238d1055ba2afd1"
+      },
+      "countryFullName": "Республика Казахстан",
+      "actual": true,
+      "state": "active",
+      "countryCode": "398"
+    }
+  ],
+  "enabled": true
+}

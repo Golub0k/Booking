@@ -1,0 +1,824 @@
+{
+  "meta": {
+    "title": "Филдсет form"
+  },
+  "schema": {
+    "type": "object",
+    "widget": {
+      "name": "container"
+    },
+    "properties": {
+      "package": {
+        "type": "string",
+        "widget": {
+          "name": "dropdown",
+          "options": {
+            "label": "Пакет",
+            "dataKey": "code",
+            "valueKey": "code",
+            "optionLabel": "label",
+            "placeholder": "Выбрать",
+            "valueOptions": [
+              {
+                "code": "base",
+                "label": "Base"
+              },
+              {
+                "code": "proq",
+                "label": "ProQ"
+              },
+              {
+                "code": "custom",
+                "label": "Custom"
+              }
+            ]
+          },
+          "class": {
+            "group": "form-item p-field p-grid p-fluid",
+            "label": "form-label form-label_required p-xs-12 p-md-4 p-xl-3",
+            "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+          }
+        },
+        "value": "base",
+        "validation": [
+          {
+            "type": "schema",
+            "params": {
+              "rule": {
+                "$not-empty": {
+                  "data": {
+                    "$var": {
+                      "path": "."
+                    }
+                  }
+                }
+              },
+              "message": "Поле обязательно для заполнения"
+            },
+            "events": [
+              "onBackend",
+              "onUpdate"
+            ]
+          }
+        ]
+      },
+      "code": {
+        "type": "string",
+        "widget": {
+          "name": "input",
+          "options": {
+            "label": "Код",
+            "maxlength": "255"
+          },
+          "class": {
+            "group": "form-item p-field p-grid p-fluid",
+            "label": "form-label form-label_required p-xs-12 p-md-4 p-xl-3",
+            "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+          }
+        },
+        "validation": [
+          {
+            "type": "schema",
+            "params": {
+              "rule": {
+                "$not-empty": {
+                  "data": {
+                    "$match": {
+                      "pattern": "^[^.\\s]*$",
+                      "data": {
+                        "$var": {
+                          "path": "."
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "message": "Нельзя использовать точки и пробелы"
+            },
+            "events": [
+              "onUpdate",
+              "onBackend"
+            ]
+          },
+          {
+            "type": "schema",
+            "params": {
+              "rule": {
+                "$not-empty": {
+                  "data": {
+                    "$var": {
+                      "path": "."
+                    }
+                  }
+                }
+              },
+              "message": "Обязательно для заполнения"
+            },
+            "events": [
+              "onUpdate",
+              "onBackend"
+            ]
+          },
+          {
+            "type": "schema",
+            "params": {
+              "rule": "$ref:rule-validation:snippets/validation/checks/length-255",
+              "message": "Максимум 255 символов"
+            },
+            "events": [
+              "onUpdate",
+              "onBackend"
+            ]
+          },
+          {
+            "type": "schema",
+            "params": {
+              "rule": {
+                "===": {
+                  "operand1": {
+                    "$fetch-object": {
+                      "path": "data.settingExists.exists",
+                      "data": {
+                        "$api-data": {
+                          "query": "settings/code-exists",
+                          "variables": {
+                            "code": {
+                              "$var": {
+                                "path": "."
+                              }
+                            },
+                            "exceptId": {
+                              "$if": {
+                                "condition": {
+                                  "$not-empty": {
+                                    "data": {
+                                      "$query-params": {
+                                        "name": "id"
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "$query-params": {
+                                    "name": "id"
+                                  }
+                                },
+                                "else": null
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "operand2": false
+                }
+              },
+              "message": "Системная настройка с таким кодом уже существует"
+            },
+            "events": [
+              "onBackend"
+            ]
+          }
+        ]
+      },
+      "name": {
+        "type": "string",
+        "widget": {
+          "name": "input",
+          "options": {
+            "label": "Наименование",
+            "maxlength": "255"
+          },
+          "class": {
+            "group": "form-item p-field p-grid p-fluid",
+            "label": "form-label form-label_required p-xs-12 p-md-4 p-xl-3",
+            "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+          }
+        },
+        "validation": [
+          {
+            "type": "schema",
+            "params": {
+              "rule": {
+                "$not-empty": {
+                  "data": {
+                    "$var": {
+                      "path": "."
+                    }
+                  }
+                }
+              },
+              "message": "Поле обязательно для заполнения"
+            },
+            "events": [
+              "onBackend",
+              "onUpdate"
+            ]
+          },
+          {
+            "type": "schema",
+            "params": {
+              "rule": {
+                "<=": {
+                  "operand1": {
+                    "$length": {
+                      "data": {
+                        "$if": {
+                          "condition": {
+                            "$not-empty": {
+                              "data": {
+                                "$var": {
+                                  "path": "."
+                                }
+                              }
+                            }
+                          },
+                          "then": {
+                            "$var": {
+                              "path": "."
+                            }
+                          },
+                          "else": ""
+                        }
+                      }
+                    }
+                  },
+                  "operand2": 255
+                }
+              },
+              "message": "Максимум 255 символов"
+            },
+            "events": [
+              "onBackend",
+              "onUpdate"
+            ]
+          }
+        ]
+      },
+      "description": {
+        "type": "string",
+        "widget": {
+          "name": "textarea",
+          "options": {
+            "label": "Описание",
+            "rows": "2"
+          },
+          "class": {
+            "group": "form-item p-field p-grid p-fluid",
+            "label": "form-label p-xs-12 p-md-4 p-xl-3",
+            "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+          }
+        }
+      },
+      "type": {
+        "type": "string",
+        "widget": {
+          "name": "dropdown",
+          "options": {
+            "label": "Тип",
+            "dataKey": "code",
+            "valueKey": "code",
+            "optionLabel": "name",
+            "placeholder": "Выбрать",
+            "valueOptions": {
+              "$fetch-object": {
+                "path": "data.items",
+                "data": {
+                  "$api-data": {
+                    "id": {
+                      "$if": {
+                        "condition": {
+                          "$not-empty": {
+                            "data": {
+                              "$query-params": {
+                                "name": "id",
+                                "filter": false
+                              }
+                            }
+                          }
+                        },
+                        "then": {
+                          "$query-params": {
+                            "name": "id",
+                            "filter": false
+                          }
+                        },
+                        "else": ""
+                      }
+                    },
+                    "query": "settings/type/dropdown"
+                  }
+                }
+              }
+            }
+          },
+          "class": {
+            "group": "form-item p-field p-grid p-fluid",
+            "label": "form-label form-label_required p-xs-12 p-md-4 p-xl-3",
+            "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+          }
+        },
+        "validation": [
+          {
+            "type": "schema",
+            "params": {
+              "rule": {
+                "$not-empty": {
+                  "data": {
+                    "$var": {
+                      "path": "."
+                    }
+                  }
+                }
+              },
+              "message": "Поле обязательно для заполнения"
+            },
+            "events": [
+              "onBackend",
+              "onUpdate"
+            ]
+          }
+        ]
+      },
+      "objectType": {
+        "type": "string",
+        "widget": {
+          "name": "dropdown",
+          "options": {
+            "label": "Объект",
+            "optionLabel": "title",
+            "dataKey": "title",
+            "valueKey": "objectType",
+            "placeholder": "Выбрать",
+            "visible": {
+              "$or": {
+                "operands": [
+                  {
+                    "===": {
+                      "operand1": {
+                        "$subs": {
+                          "path": "#data.object.type"
+                        }
+                      },
+                      "operand2": "object"
+                    }
+                  }
+                ]
+              }
+            },
+            "valueOptions": {
+              "$object-list": {
+                "onlyObjectsWithPreview": true
+              }
+            }
+          },
+          "class": {
+            "group": "form-item p-field p-grid p-fluid",
+            "label": "form-label form-label_required p-xs-12 p-md-4 p-xl-3",
+            "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+          },
+          "events": {
+            "change": {
+              "$element-option": {
+                "option": "valueOptions",
+                "path": "#data.object.defaultValue.object",
+                "value": {
+                  "$fetch-object": {
+                    "path": "data.values.items",
+                    "data": {
+                      "$api-data": {
+                        "query": "settings/object_preview",
+                        "id": {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$query-params": {
+                                    "name": "id",
+                                    "filter": false
+                                  }
+                                }
+                              }
+                            },
+                            "then": {
+                              "$query-params": {
+                                "name": "id",
+                                "filter": false
+                              }
+                            },
+                            "else": ""
+                          }
+                        },
+                        "variables": {
+                          "objectType": {
+                            "$var": {
+                              "path": "#data.object.objectType"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "defaultValue": {
+        "type": "object",
+        "widget": "container",
+        "properties": {
+          "boolean": {
+            "type": "boolean",
+            "widget": {
+              "name": "radio-button",
+              "options": {
+                "label": "Значение по умолчанию",
+                "valueKey": "id",
+                "optionLabel": "label",
+                "visible": {
+                  "===": {
+                    "operand1": {
+                      "$subs": {
+                        "path": "#data.object.type"
+                      }
+                    },
+                    "operand2": "boolean"
+                  }
+                },
+                "valueOptions": [
+                  {
+                    "id": true,
+                    "label": "Да"
+                  },
+                  {
+                    "id": false,
+                    "label": "Нет"
+                  }
+                ]
+              },
+              "class": {
+                "group": "form-item form-item_radio p-field p-grid p-fluid",
+                "label": "form-label mrg-t-0 p-xs-12 p-md-4 p-xl-3",
+                "value": "form-item-element p-xs-12 p-md-6 p-xl-4",
+                "item": "form-item_radio__item"
+              }
+            }
+          },
+          "string": {
+            "type": "string",
+            "widget": {
+              "name": "input",
+              "options": {
+                "label": "Значение по умолчанию",
+                "visible": {
+                  "$and": {
+                    "operands": [
+                      {
+                        "===": {
+                          "operand1": {
+                            "$subs": {
+                              "path": "#data.object.type"
+                            }
+                          },
+                          "operand2": "string"
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "class": {
+                "group": "form-item p-field p-grid p-fluid",
+                "label": "form-label p-xs-12 p-md-4 p-xl-3",
+                "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+              }
+            }
+          },
+          "number": {
+            "type": "number",
+            "widget": {
+              "name": "input",
+              "options": {
+                "label": "Значение по умолчанию",
+                "visible": {
+                  "$or": {
+                    "operands": [
+                      {
+                        "$and": {
+                          "operands": [
+                            {
+                              "===": {
+                                "operand1": {
+                                  "$subs": {
+                                    "path": "#data.object.type"
+                                  }
+                                },
+                                "operand2": "number"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "inputmask": {
+                  "alias": "numeric"
+                }
+              },
+              "class": {
+                "group": "form-item p-field p-grid p-fluid",
+                "label": "form-label p-xs-12 p-md-4 p-xl-3",
+                "value": "form-item-element p-xs-12 p-md-6 p-xl-2"
+              }
+            }
+          },
+          "date": {
+            "type": "date",
+            "widget": {
+              "name": "calendar",
+              "options": {
+                "label": "Значение по умолчанию",
+                "yearNavigator": true,
+                "yearRange": "1950:2100",
+                "monthNavigator": true,
+                "dataType": "string",
+                "visible": {
+                  "$or": {
+                    "operands": [
+                      {
+                        "$and": {
+                          "operands": [
+                            {
+                              "===": {
+                                "operand1": {
+                                  "$subs": {
+                                    "path": "#data.object.type"
+                                  }
+                                },
+                                "operand2": "date"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "class": {
+                "group": "form-item p-field p-grid p-fluid",
+                "label": "form-label p-xs-12 p-md-4 p-xl-3",
+                "value": "form-item-element p-xs-12 p-md-6 p-xl-2"
+              }
+            }
+          },
+          "dateTime": {
+            "type": "datetime",
+            "widget": {
+              "name": "calendar",
+              "options": {
+                "label": "Значение по умолчанию",
+                "yearNavigator": true,
+                "yearRange": "1950:2100",
+                "monthNavigator": true,
+                "dataType": "string",
+                "visible": {
+                  "$or": {
+                    "operands": [
+                      {
+                        "$and": {
+                          "operands": [
+                            {
+                              "===": {
+                                "operand1": {
+                                  "$subs": {
+                                    "path": "#data.object.type"
+                                  }
+                                },
+                                "operand2": "datetime"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "class": {
+                "group": "form-item p-field p-grid p-fluid",
+                "label": "form-label p-xs-12 p-md-4 p-xl-3",
+                "value": "form-item-element p-xs-12 p-md-6 p-xl-2"
+              }
+            }
+          },
+          "file": {
+            "type": "file",
+            "widget": {
+              "name": "file",
+              "options": {
+                "visible": {
+                  "$or": {
+                    "operands": [
+                      {
+                        "$and": {
+                          "operands": [
+                            {
+                              "===": {
+                                "operand1": {
+                                  "$subs": {
+                                    "path": "#data.object.type"
+                                  }
+                                },
+                                "operand2": "file"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "label": "Значение по умолчанию",
+                "enableFilesUpload": true,
+                "displayUploadedFiles": true,
+                "uploadParams": {
+                  "workflow": "settings",
+                  "action": "upload",
+                  "accept": ".doc, .docx, .xls, .xlsx, .txt, .rtf, .zip, .rar, .7z, .jpg, .gif, .png, .pdf, .jpeg, .tif, .tiff, .ico, .svg",
+                  "multiple": false,
+                  "maxFileSize": 62914560,
+                  "chooseLabel": "Выбрать файл"
+                },
+                "displayParams": {
+                  "workflow": "settings",
+                  "action": "download"
+                }
+              },
+              "kind": "file-form-item-file-upload-style"
+            }
+          },
+          "object": {
+            "type": "string",
+            "widget": {
+              "name": "dropdown",
+              "options": {
+                "label": "Значение по умолчанию",
+                "optionLabel": "preview",
+                "dataKey": "_id",
+                "valueKey": "_id",
+                "placeholder": "Выбрать",
+                "visible": {
+                  "$or": {
+                    "operands": [
+                      {
+                        "$and": {
+                          "operands": [
+                            {
+                              "===": {
+                                "operand1": {
+                                  "$subs": {
+                                    "path": "#data.object.type"
+                                  }
+                                },
+                                "operand2": "object"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "valueOptions": {
+                  "$if": {
+                    "condition": {
+                      "$not-empty": {
+                        "data": {
+                          "$subs": {
+                            "path": "#data.object.defaultValue.object"
+                          }
+                        }
+                      }
+                    },
+                    "then": {
+                      "$fetch-object": {
+                        "path": "data.values.items",
+                        "data": {
+                          "$api-data": {
+                            "query": "settings/object_preview",
+                            "id": {
+                              "$if": {
+                                "condition": {
+                                  "$not-empty": {
+                                    "data": {
+                                      "$query-params": {
+                                        "name": "id",
+                                        "filter": false
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "$query-params": {
+                                    "name": "id",
+                                    "filter": false
+                                  }
+                                },
+                                "else": ""
+                              }
+                            },
+                            "variables": {
+                              "objectType": {
+                                "$subs": {
+                                  "path": "#data.object.objectType"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "else": null
+                  }
+                }
+              },
+              "class": {
+                "group": "form-item p-field p-grid p-fluid",
+                "label": "form-label p-xs-12 p-md-4 p-xl-3",
+                "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+              }
+            }
+          }
+        }
+      },
+      "services": {
+        "type": "object",
+        "widget": {
+          "name": "container"
+        },
+        "properties": {
+          "appView": {
+            "type": "boolean",
+            "widget": {
+              "name": "checkbox",
+              "options": {
+                "label": "Доступность для сервисов",
+                "optionLabel": "Основное приложение - показывать в реестре системных настроек"
+              },
+              "class": {
+                "group": "form-item_checkbox p-field p-grid",
+                "label": "form-label mrg-t-0 p-xs-12 p-md-4 p-xl-3",
+                "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+              }
+            }
+          },
+          "appChangeValue": {
+            "type": "boolean",
+            "widget": {
+              "name": "checkbox",
+              "options": {
+                "optionLabel": "Основное приложение - разрешать устанавливать значение"
+              },
+              "class": {
+                "group": "form-item_checkbox p-field p-grid",
+                "value": "form-item-element form-item-element_checkbox p-xs-12 p-md-6 p-xl-4 p-md-offset-4 p-xl-offset-3 p-xs-offset-0"
+              }
+            }
+          },
+          "notification": {
+            "type": "boolean",
+            "widget": {
+              "name": "checkbox",
+              "options": {
+                "optionLabel": "Сервис уведомлений"
+              },
+              "class": {
+                "group": "form-item_checkbox p-field p-grid",
+                "value": "form-item-element form-item-element_checkbox p-xs-12 p-md-6 p-xl-4 p-md-offset-4 p-xl-offset-3 p-xs-offset-0"
+              }
+            }
+          },
+          "frontend": {
+            "type": "boolean",
+            "widget": {
+              "name": "checkbox",
+              "options": {
+                "optionLabel": "Фронтенд - лэйаут (меню, header, footer)"
+              },
+              "class": {
+                "group": "form-item_checkbox p-field p-grid",
+                "value": "form-item-element form-item-element_checkbox p-xs-12 p-md-6 p-xl-4 p-md-offset-4 p-xl-offset-3 p-xs-offset-0"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

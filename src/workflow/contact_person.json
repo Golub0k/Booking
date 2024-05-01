@@ -1,0 +1,131 @@
+{
+  "version": 2,
+  "objectType": "contact_person",
+  "context": "contact_person/context",
+  "description": "Жизненный цикл объекта контактного лица",
+  "rbac": {
+    "visible": true,
+    "title": "Контактные лица"
+  },
+  "actions": {
+    "initialActions": {
+      "add": {
+        "title": "Добавить",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Добавить контактное лицо"
+          }
+        },
+        "views": {},
+        "functions": [
+          {
+            "$workflow-object-create": {
+              "objectType": "contact_person",
+              "query": "contact_person/create",
+              "variables": {
+                "data": {
+                  "$from-context": {
+                    "path": "data"
+                  }
+                }
+              },
+              "responsePath": "user"
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "active"
+        }
+      }
+    },
+    "globalActions": {},
+    "statesActions": {
+      "view": {
+        "title": "Просмотреть",
+        "grants": {
+          "rbac": {
+            "enabled": false,
+            "visible": false,
+            "title": "Просмотреть экземпляр объекта \"Контактное лицо\""
+          }
+        },
+        "views": {}
+      },
+      "delete": {
+        "title": "Удалить",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Удалить контактное лицо"
+          }
+        },
+        "views": {
+          "availableQueriesInViews": [
+            "contact_person/delete"
+          ]
+        },
+        "results": {
+          "unconditional": "deleted"
+        }
+      },
+      "edit": {
+        "title": "Редактировать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Редактировать контактное лицо"
+          }
+        },
+        "views": {},
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "contact_person/update",
+              "variables": {
+                "id": {
+                  "$from-context": {
+                    "path": "data.id"
+                  }
+                },
+                "data": {
+                  "$exclude": {
+                    "data": {
+                      "$from-context": {
+                        "path": "data"
+                      }
+                    },
+                    "exclude": [
+                      "id"
+                    ]
+                  }
+                }
+              },
+              "responsePath": "user"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "states": {
+    "active": {
+      "title": "Активная",
+      "description": "Активное состояние объекта",
+      "statesActions": [
+        "view",
+        "edit",
+        "delete"
+      ]
+    },
+    "deleted": {
+      "title": "Удалена",
+      "description": "Удаленное состояние объекта",
+      "statesActions": [],
+      "finish": true
+    }
+  }
+}

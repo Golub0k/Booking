@@ -1,0 +1,27 @@
+{
+  "@title": "Страница 403 ошибки",
+  "type": "string",
+  "widget": {
+    "name": "layout-error",
+    "options": {
+      "code": 403,
+      "summary": "Доступ запрещен",
+      "detail": "Возможно, введен некорректный адрес или страница недоступна для просмотра.",
+      "backLink": {
+        "$if": {
+          "condition": {
+            "$not-empty": {
+              "data": {
+                "$active-user": {
+                  "field": "_id"
+                }
+              }
+            }
+          },
+          "then": "/cabinet/event/list",
+          "else": "/"
+        }
+      }
+    }
+  }
+}

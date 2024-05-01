@@ -1,0 +1,466 @@
+{
+  "@title": "Принятие решения по задаче на согласование",
+  "@preload": {
+    "$from-context": {
+      "path": "$response.body.data.object",
+      "data": {
+        "$api-data": {
+          "id": {
+            "$query-params": {
+              "name": "id"
+            }
+          },
+          "options": {
+            "observe": "response"
+          },
+          "variables": {
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            }
+          },
+          "query": "default/approval_task/get_for_resolve"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "model": "#data",
+  "widget": {
+    "name": "container",
+    "options": {
+      "label": {
+        "$replace": {
+          "template": "Принятие решения по процессу \"{{title}}\"",
+          "data": {
+            "title": {
+              "$from-context": {
+                "path": "@preload.stageId.processId.name"
+              }
+            }
+          }
+        }
+      }
+    },
+    "class": {
+      "group": "popup",
+      "label": "h1 mrg-b-lg",
+      "value": "form-group_popup-collapse"
+    }
+  },
+  "properties": {
+    "decision": {
+      "type": "object",
+      "properties": {
+        "solutionName": {
+          "type": "string",
+          "widget": {
+            "name": "hidden"
+          }
+        },
+        "solutionValue": {
+          "type": "string",
+          "widget": {
+            "name": "hidden"
+          }
+        },
+        "solutionScript": {
+          "type": "string",
+          "widget": {
+            "name": "hidden"
+          }
+        }
+      },
+      "value": {
+        "$if": {
+          "condition": {
+            "$has-query-param": {
+              "name": "decision"
+            }
+          },
+          "then": {
+            "$if": {
+              "condition": {
+                "===": {
+                  "operand1": {
+                    "$query-params": {
+                      "name": "decision"
+                    }
+                  },
+                  "operand2": "approve"
+                }
+              },
+              "then": {
+                "solutionName": "Согласовать",
+                "solutionScript": "continue",
+                "solutionValue": "approve"
+              },
+              "else": {
+                "solutionName": "Отказать в согласовании",
+                "solutionScript": "continue",
+                "solutionValue": "refuseApproval"
+              }
+            }
+          },
+          "else": {
+            "solutionName": "Согласовать",
+            "solutionScript": "continue",
+            "solutionValue": "approve"
+          }
+        }
+      },
+      "widget": {
+        "name": "dropdown",
+        "options": {
+          "label": "Решение",
+          "disabled": {
+            "$not-empty": {
+              "data": {
+                "$query-params": {
+                  "name": "decision"
+                }
+              }
+            }
+          },
+          "optionLabel": "solutionName",
+          "filter": false,
+          "dataKey": "solutionValue",
+          "valueOptions": {
+            "$from-context": {
+              "path": "@preload.stageId.solutionsOptions"
+            }
+          }
+        },
+        "class": {
+          "group": "form-item p-field p-grid p-fluid",
+          "label": "form-label p-xs-12 p-md-4 p-xl-3",
+          "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+        }
+      },
+      "validation": [
+        {
+          "type": "schema",
+          "params": {
+            "rule": {
+              "$not-empty": {
+                "data": {
+                  "$var": {
+                    "path": "."
+                  }
+                }
+              }
+            },
+            "message": "Поле обязательно для заполнения"
+          },
+          "events": [
+            "onBackend",
+            "onUpdate"
+          ]
+        }
+      ]
+    },
+    "comment": {
+      "type": "string",
+      "widget": {
+        "name": "textarea",
+        "options": {
+          "label": {
+            "$if": {
+              "condition": {
+                "!==": {
+                  "operand1": {
+                    "$subs": {
+                      "path": "#data.decision.solutionValue"
+                    }
+                  },
+                  "operand2": "approve"
+                }
+              },
+              "then": "Комментарий",
+              "else": "Комментарий (необязательно)"
+            }
+          }
+        },
+        "class": {
+          "group": "form-item p-field p-grid p-fluid",
+          "label": "form-label p-xs-12 p-md-4 p-xl-3",
+          "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+        }
+      },
+      "validation": [
+        {
+          "type": "schema",
+          "params": {
+            "rule": {
+              "$if": {
+                "condition": {
+                  "!==": {
+                    "operand1": {
+                      "$var": {
+                        "path": "#data.decision.solutionValue"
+                      }
+                    },
+                    "operand2": "approve"
+                  }
+                },
+                "then": {
+                  "$not-empty": {
+                    "data": {
+                      "$var": {
+                        "path": "."
+                      }
+                    }
+                  }
+                },
+                "else": true
+              }
+            },
+            "message": "Поле обязательно для заполнения"
+          },
+          "events": [
+            "onBackend",
+            "onUpdate"
+          ]
+        }
+      ]
+    },
+    "sequence": {
+      "type": "string",
+      "widget": {
+        "name": "hidden"
+      },
+      "value": {
+        "$from-context": {
+          "path": "@preload.sequence"
+        }
+      }
+    },
+    "processId": {
+      "type": "string",
+      "widget": {
+        "name": "hidden"
+      },
+      "value": {
+        "$from-context": {
+          "path": "@preload.stageId.process"
+        }
+      }
+    },
+    "file": {
+      "type": "file",
+      "model": "#data.file",
+      "widget": {
+        "name": "file",
+        "options": {
+          "label": "Вложения (необязательно)",
+          "enableFilesUpload": true,
+          "displayUploadedFiles": true,
+          "uploadParams": {
+            "workflow": "approval_task",
+            "action": "add-document-upload",
+            "invalidFileSizeMessageDetail": "Превышен максимально допустимый размер файла: 60Мб",
+            "invalidFileTypeMessageDetail": "Недопустимый формат файла",
+            "accept": ".jpg, .png, .pdf, .jpeg",
+            "multiple": false,
+            "maxFileSize": 62914560,
+            "chooseLabel": "Выбрать"
+          },
+          "displayParams": {
+            "showSize": true,
+            "enableFilesRemove": true,
+            "enableFilesDownload": true
+          },
+          "objectId": {
+            "$query-params": {
+              "name": "id"
+            }
+          }
+        },
+        "class": {
+          "group": "form-item p-field p-grid p-fluid mrg-b-sm",
+          "label": "form-label p-col-12 p-md-4 p-xl-3",
+          "value": "form-item-element p-col-12 p-md-6 p-xl-4"
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "model": false,
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "form-actions p-field p-grid mrg-t-lg",
+          "value": "p-xs-12 p-autolayout"
+        }
+      },
+      "properties": {
+        "accept": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Принять"
+            },
+            "events": {
+              "click": {
+                "$if": {
+                  "condition": {
+                    "$validate": {
+                      "path": "#data"
+                    }
+                  },
+                  "then": [
+                    {
+                      "$var": {
+                        "path": "#data"
+                      }
+                    },
+                    "$ref:operation-frontend:snippets/element/_loading/loading-enable",
+                    {
+                      "$http-code": {
+                        "200": [
+                          "$ref:operation-frontend:snippets/element/_loading/loading-disable",
+                          {
+                            "$if": {
+                              "condition": {
+                                "$in": {
+                                  "value": {
+                                    "$fetch-object": {
+                                      "data": {
+                                        "$workflow-object-state": {
+                                          "objectId": {
+                                            "$from-context": {
+                                              "path": "@preload.stageId.processId.objectId"
+                                            }
+                                          },
+                                          "workflow": {
+                                            "$from-context": {
+                                              "path": "@preload.stageId.processId.objectType"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "path": "code"
+                                    }
+                                  },
+                                  "array": [
+                                    "accepted",
+                                    "rejected"
+                                  ]
+                                }
+                              },
+                              "then": {
+                                "$go": {
+                                  "action": {
+                                    "$switch": {
+                                      "condition": {
+                                        "$session-storage-get": {
+                                          "key": "previousPage"
+                                        }
+                                      },
+                                      "default": "list",
+                                      "cases": [
+                                        {
+                                          "value": "view_new",
+                                          "action": "view"
+                                        },
+                                        {
+                                          "value": "view_new_for_booking",
+                                          "action": "view_for_booking"
+                                        },
+                                        {
+                                          "value": "view_new_for_additional_facilities",
+                                          "action": "view_for_additional_facilities"
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  "workflow": "request",
+                                  "id": {
+                                    "$from-context": {
+                                      "path": "@preload.stageId.processId.objectId"
+                                    }
+                                  }
+                                }
+                              },
+                              "else": [
+                                {
+                                  "$close-popup": null
+                                },
+                                {
+                                  "$event-bus-publish": {
+                                    "type": "reload-table"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "$message": {
+                              "severity": "success",
+                              "summary": "Принятие решения",
+                              "detail": "Решение по задаче на согласование успешно принято"
+                            }
+                          }
+                        ],
+                        "422": [
+                          "$ref:operation-frontend:snippets/element/_loading/loading-disable",
+                          "$ref:operation-frontend:snippets/element/_http_message/http-errors-from-response"
+                        ],
+                        "client": {
+                          "$api-workflow": {
+                            "workflow": "approval_task",
+                            "action": "resolve",
+                            "data": {
+                              "$var": {
+                                "path": "#data"
+                              }
+                            },
+                            "type": "post",
+                            "options": {
+                              "observe": "response"
+                            },
+                            "id": {
+                              "$query-params": {
+                                "name": "id"
+                              }
+                            }
+                          }
+                        },
+                        "default": [
+                          "$ref:operation-frontend:snippets/element/_loading/loading-disable",
+                          "$ref:operation-frontend:snippets/element/_http_message/http-default-error-message-action"
+                        ]
+                      }
+                    }
+                  ],
+                  "else": {
+                    "$form-control-mark": {
+                      "key": "form"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "cancel": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Отменить"
+            },
+            "events": {
+              "click": {
+                "$close-popup": true
+              }
+            },
+            "class": {
+              "value": "button_outline mrg-r-0 mrg-b-0"
+            }
+          }
+        }
+      }
+    }
+  }
+}

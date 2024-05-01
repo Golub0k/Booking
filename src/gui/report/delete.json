@@ -1,0 +1,120 @@
+{
+  "@title": "Подтверждение удаления отчета",
+  "type": "object",
+  "widget": {
+    "name": "container"
+  },
+  "model": "#data",
+  "properties": {
+    "form": {
+      "type": "object",
+      "model": "#data",
+      "widget": {
+        "name": "form"
+      },
+      "properties": {
+        "header": {
+          "model": false,
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "value": "p-autolayout p-jc-between p-ai-center"
+            }
+          },
+          "properties": {
+            "label": {
+              "model": false,
+              "type": "string",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "viewedValue": "Подтверждение удаления"
+                },
+                "class": {
+                  "value": "h3 mrg-b-lg"
+                }
+              }
+            }
+          }
+        },
+        "content": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "group": "popup",
+              "label": "h1 mrg-b-lg",
+              "value": "form-group_popup-collapse"
+            }
+          },
+          "properties": {
+            "text": {
+              "type": "string",
+              "widget": "html",
+              "value": "Вы действительно хотите удалить отчет?"
+            },
+            "actions": {
+              "type": "object",
+              "widget": {
+                "name": "container",
+                "class": {
+                  "group": "form-actions p-field p-grid mrg-t-lg",
+                  "value": "p-jc-xl-end p-autolayout"
+                }
+              },
+              "properties": {
+                "delete": {
+                  "widget": {
+                    "name": "submit-button",
+                    "options": {
+                      "label": "Удалить",
+                      "workflowAction": "report.delete",
+                      "clientValidation": false,
+                      "workflowObjectId": {
+                        "$query-params": {
+                          "name": "id"
+                        }
+                      },
+                      "showSuccessMessage": true,
+                      "successMessageSummary": "Удаление отчета",
+                      "successMessageDetail": "Отчет успешно удален",
+                      "urlInCaseOfSuccess": "/cabinet/report/list",
+                      "showServerValidationErrorMessage": true,
+                      "serverValidationErrorMessageSummary": "Удаление отчета",
+                      "serverValidationErrorMessageDetail": "Форма содержит ошибки",
+                      "showOtherErrorMessageSummary": true,
+                      "otherErrorMessageSummary": "Удаление отчета",
+                      "otherErrorMessageDetail": "Непредвиденная ошибка",
+                      "reloadTable": true,
+                      "closePopup": false
+                    },
+                    "class": {
+                      "value": "mrg-r-sm"
+                    }
+                  }
+                },
+                "cancel": {
+                  "widget": {
+                    "name": "button",
+                    "options": {
+                      "label": "Отмена"
+                    },
+                    "events": {
+                      "click": {
+                        "$close-popup": null
+                      }
+                    },
+                    "class": {
+                      "value": "button_outline mrg-r-0 mrg-b-0"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

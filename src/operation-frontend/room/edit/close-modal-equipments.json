@@ -1,0 +1,12 @@
+{
+  "meta": {
+    "title": "Выражение close-modal-equipments"
+  },
+  "schema": {
+    "$element-option": {
+      "option": "visible",
+      "path": "#modalSelectEquipments",
+      "value": false
+    }
+  }
+}

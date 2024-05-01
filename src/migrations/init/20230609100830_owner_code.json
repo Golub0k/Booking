@@ -1,0 +1,23 @@
+{
+  "type": "init",
+  "object": "owner_code",
+  "data": [
+    {
+      "_id": {
+        "$oid": "6482cf0f77320bfd758ee52d"
+      },
+      "name": "МВЦ",
+      "state": "active",
+      "code": "МВЦ"
+    },
+    {
+      "_id": {
+        "$oid": "6482cfa777320b3c0b8ee52f"
+      },
+      "name": "Поставщик",
+      "state": "active",
+      "code": "П"
+    }
+  ],
+  "enabled": true
+}

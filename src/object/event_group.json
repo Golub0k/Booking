@@ -1,0 +1,35 @@
+{
+  "type": "object",
+  "title": "Группа мероприятий",
+  "properties": {
+    "number": {
+      "type": "string",
+      "index": true,
+      "fieldDescription": "Номер группы",
+      "required": true
+    },
+    "name": {
+      "type": "string",
+      "trim": true,
+      "fieldDescription": "Наименование группы",
+      "required": true
+    },
+    "comment": {
+      "type": "string",
+      "trim": true,
+      "fieldDescription": "Комментарий к группе",
+      "required": false
+    },
+    "events": [
+      {
+        "eventId": {
+          "type": "string",
+          "fieldDescription": "Мероприятие",
+          "ref": "Event",
+          "refAlias": "event",
+          "inversedBy": "eventGroupEvent"
+        }
+      }
+    ]
+  }
+}

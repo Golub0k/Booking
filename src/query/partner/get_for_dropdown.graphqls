@@ -1,0 +1,9 @@
+query {
+  items: partnerGet(
+    sort: { field: name, type: ASC }
+    filter: { _operators: { state: { ne: "deleted" } } }
+  ) {
+    _id
+    name
+  }
+}

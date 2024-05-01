@@ -1,0 +1,33 @@
+# @title: Получить список экземпляров объекта "Тип услуг"
+
+query (
+  $first: Int,
+  $rows: Int,
+  $search: String,
+  $name: String,
+  $sort: [FieldSortServicesTypeInput]
+) {
+  pagination: servicesTypePagination (
+    limit: $rows,
+    offset: $first,
+    sort: $sort,
+    filter: {
+      AND: [
+        { _operators: { state: { ne: "deleted" } } }
+        { _regexp: { field: name, filter: $name } }
+        {
+          OR: [
+            { _regexp: { field: name, filter: $search } }
+          ]
+        }
+      ]
+    }
+  ) {
+    count
+    items {
+      id: _id
+        name
+				state
+    }
+  }
+}

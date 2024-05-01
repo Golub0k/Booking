@@ -1,0 +1,350 @@
+{
+  "@title": "Редактирование роли",
+  "type": "object",
+  "model": "/",
+  "widget": {
+    "name": "container"
+  },
+  "properties": {
+    "breadcrumbs": {
+      "type": "object",
+      "widget": {
+        "name": "breadcrumb",
+        "mobileItems": [
+          {
+            "label": "Роли пользователей",
+            "routerLink": "/cabinet/user-role/list"
+          }
+        ],
+        "items": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          },
+          {
+            "label": "Роли пользователей",
+            "routerLink": "/cabinet/user-role/list"
+          },
+          {
+            "label": "Редактирование роли"
+          }
+        ],
+        "kind": "breadcrumb-breadcrumbs-container-style"
+      }
+    },
+    "form": {
+      "type": "object",
+      "model": "#data",
+      "widget": {
+        "name": "form",
+        "options": {
+          "label": "Редактирование роли"
+        },
+        "kind": "form-form-group-with-h1-style"
+      },
+      "value": {
+        "$http-code": {
+          "200": {
+            "$from-context": {
+              "path": "$response.body.data.object"
+            }
+          },
+          "client": {
+            "$api-data": {
+              "workflow": "user-role",
+              "action": "edit",
+              "query": "role/get",
+              "id": {
+                "$query-params": {
+                  "name": "id"
+                }
+              },
+              "options": {
+                "observe": "response"
+              },
+              "variables": {
+                "id": {
+                  "$query-params": {
+                    "name": "id"
+                  }
+                }
+              }
+            }
+          },
+          "default": "$ref:operation-frontend:snippets/element/_http_message/http-default-error-message-load"
+        }
+      },
+      "properties": {
+        "name": {
+          "type": "string",
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$not-empty": {
+                    "data": {
+                      "$var": {
+                        "path": "."
+                      }
+                    }
+                  }
+                },
+                "message": "Обязательно для заполнения"
+              },
+              "events": [
+                "onUpdate",
+                "onBackend"
+              ]
+            },
+            {
+              "type": "schema",
+              "params": {
+                "rule": "$ref:rule-validation:snippets/validation/checks/length-255",
+                "message": "Максимум 255 символов"
+              },
+              "events": [
+                "onUpdate",
+                "onBackend"
+              ]
+            },
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "===": {
+                    "operand1": 0,
+                    "operand2": {
+                      "$fetch-object": {
+                        "path": "data.count",
+                        "data": {
+                          "$api-data": {
+                            "query": "role/role_exists",
+                            "variables": {
+                              "except": {
+                                "$query-params": {
+                                  "name": "id",
+                                  "filter": false
+                                }
+                              },
+                              "name": {
+                                "$var": {
+                                  "path": "."
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "message": "Роль с таким наименованием уже добавлена в Систему"
+              },
+              "events": [
+                "onBackend"
+              ]
+            }
+          ],
+          "widget": {
+            "name": "input",
+            "options": {
+              "label": "Наименование"
+            },
+            "kind": "input-text-input-required-style"
+          }
+        },
+        "permissions": {
+          "type": "any",
+          "value": [],
+          "widget": {
+            "name": "tree",
+            "options": {
+              "label": "Привилегии",
+              "valueKey": "label",
+              "selectionMode": "checkbox",
+              "key": "id",
+              "valueOptions": {
+                "$fetch-object": {
+                  "path": "data.tree",
+                  "data": {
+                    "$api-data": {
+                      "workflow": "user-role",
+                      "action": "add",
+                      "query": "role/permissions"
+                    }
+                  }
+                }
+              }
+            },
+            "class": {
+              "group": "form-item p-field p-grid p-fluid",
+              "label": "form-label form-label_required p-xs-12 p-md-4 p-xl-3",
+              "value": "p-xl-9 p-xs-12"
+            }
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  ">": {
+                    "operand1": {
+                      "$length": {
+                        "data": {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$var": {
+                                    "path": "#data.permissions"
+                                  }
+                                }
+                              }
+                            },
+                            "then": {
+                              "$var": {
+                                "path": "#data.permissions"
+                              }
+                            },
+                            "else": []
+                          }
+                        }
+                      }
+                    },
+                    "operand2": 0
+                  }
+                },
+                "message": "Необходимо выбрать хотя бы одну привилегию"
+              },
+              "events": [
+                "onUpdate"
+              ]
+            }
+          ]
+        },
+        "actions": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "group": "form-actions p-field p-grid mrg-t-lg",
+              "value": "p-jc-xs-end p-autolayout"
+            }
+          },
+          "properties": {
+            "save": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Сохранить"
+                },
+                "events": {
+                  "click": {
+                    "$if": {
+                      "condition": {
+                        "$validate": {
+                          "path": "/"
+                        }
+                      },
+                      "then": {
+                        "$waterfall": {
+                          "arrayFunctions": [
+                            "$ref:operation-frontend:snippets/element/_loading/onclick-loading-enable",
+                            {
+                              "$http-code": {
+                                "200": [
+                                  {
+                                    "$navigate-by-url": {
+                                      "url": "/cabinet/user-role/list"
+                                    }
+                                  },
+                                  {
+                                    "$message": {
+                                      "severity": "success",
+                                      "summary": "Редактирование роли",
+                                      "detail": "Роль успешно изменена"
+                                    }
+                                  }
+                                ],
+                                "422": [
+                                  "$ref:operation-frontend:snippets/element/_loading/onclick-loading-disable",
+                                  "$ref:operation-frontend:snippets/element/_http_message/http-errors-from-response"
+                                ],
+                                "client": {
+                                  "$api-workflow": {
+                                    "workflow": "user-role",
+                                    "action": "edit",
+                                    "data": {
+                                      "$var": {
+                                        "path": "#data"
+                                      }
+                                    },
+                                    "type": "post",
+                                    "options": {
+                                      "observe": "response"
+                                    },
+                                    "id": {
+                                      "$if": {
+                                        "condition": {
+                                          "$not-empty": {
+                                            "data": {
+                                              "$query-params": {
+                                                "name": "id",
+                                                "filter": false
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": {
+                                          "$query-params": {
+                                            "name": "id",
+                                            "filter": false
+                                          }
+                                        },
+                                        "else": ""
+                                      }
+                                    }
+                                  }
+                                },
+                                "default": [
+                                  "$ref:operation-frontend:snippets/element/_loading/onclick-loading-disable",
+                                  "$ref:operation-frontend:snippets/element/_http_message/http-default-error-message-action"
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "else": {
+                        "$form-control-mark": {
+                          "key": "form"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "cancel": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Отмена"
+                },
+                "events": {
+                  "click": {
+                    "$navigate-by-url": {
+                      "url": "/cabinet/user-role/list"
+                    }
+                  }
+                },
+                "kind": "button-btn-outline-last-style"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "name": "@et-lowcode/booking",
+  "version": "1.2.2-rc.0",
+  "title": "Пакет под заказчика",
+  "description": "Содержит реализацию функционала под заказчика",
+  "devDependencies": {
+    "@et-lowcode/approval": "2.0.3-rc.4"
+  },
+  "apps": [
+    {
+      "name": "uiremote",
+      "version": "1.1.1",
+      "codeSource": {
+        "type": "git",
+        "params": {
+          "dsn": "git@git.effective-team.ru:lowcode/projects/kazan-expo/ui-remote.git"
+        }
+      },
+      "chartSource": {
+        "dsn": "",
+        "name": "et/et/ui-remote",
+        "version": "0.0.4"
+      }
+    },
+    {
+      "name": "nsi",
+      "version": "0.1.7",
+      "codeSource": {
+        "type": "git",
+        "params": {
+          "dsn": "git@git.effective-team.ru:et/et/nsi.git"
+        }
+      },
+      "chartSource": {
+        "dsn": "",
+        "name": "et/et/nsi",
+        "version": "1.0.1"
+      }
+    }
+  ],
+  "scripts": {
+    "lint:fix": "./node_modules/.bin/lint-fix"
+  }
+}

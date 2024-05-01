@@ -1,0 +1,351 @@
+{
+  "meta": {
+    "title": "Филдсет desktop_search"
+  },
+  "schema": {
+    "type": "object",
+    "model": "#desktop-search",
+    "widget": {
+      "name": "container",
+      "options": {
+        "visible": {
+          "$is-between": {
+            "value": {
+              "$to-pixel": {
+                "value": {
+                  "$get-window-breakpoint": {
+                    "subscriptionMode": true
+                  }
+                }
+              }
+            },
+            "lower_value": {
+              "$to-pixel": {
+                "value": "xxl"
+              }
+            }
+          }
+        }
+      },
+      "class": {
+        "group": "p-xxl-3 filters-block d-xxl-flex d-none",
+        "value": "filters-block_wrapper d-block"
+      }
+    },
+    "properties": {
+      "header": {
+        "model": false,
+        "type": "object",
+        "widget": {
+          "name": "container",
+          "class": {
+            "value": "p-autolayout p-jc-between p-ai-center"
+          }
+        },
+        "properties": {
+          "label": {
+            "model": false,
+            "type": "string",
+            "widget": {
+              "name": "info",
+              "options": {
+                "viewedValue": "Фильтр"
+              },
+              "class": {
+                "value": "h4"
+              }
+            }
+          }
+        }
+      },
+      "content": {
+        "model": false,
+        "type": "object",
+        "widget": {
+          "name": "container"
+        },
+        "properties": {
+          "objectType": {
+            "type": "any",
+            "bindRouter": true,
+            "widget": {
+              "name": "multiselect",
+              "options": {
+                "label": "Тип объекта",
+                "placeholder": "Выбрать тип объекта",
+                "useEllipsisWhenDisplayFieldOverflows": false,
+                "optionLabel": "title",
+                "valueKey": "objectType",
+                "dataKey": "objectType",
+                "valueOptions": {
+                  "$object-list": {
+                    "onlyObjectsWithPreview": false
+                  }
+                }
+              },
+              "kind": "multiselect-search-form-expanded-input-full-line-style"
+            }
+          },
+          "organization": {
+            "type": "any",
+            "bindRouter": true,
+            "widget": {
+              "name": "multiselect",
+              "options": {
+                "label": "Организация пользователя",
+                "placeholder": "Выбрать организацию",
+                "useEllipsisWhenDisplayFieldOverflows": false,
+                "optionLabel": "name",
+                "valueKey": "id",
+                "dataKey": "id",
+                "valueOptions": {
+                  "$fetch-object": {
+                    "path": "data.items",
+                    "data": {
+                      "$api-data": {
+                        "query": "organization/list_names"
+                      }
+                    }
+                  }
+                }
+              },
+              "kind": "multiselect-search-form-expanded-input-full-line-style"
+            }
+          },
+          "user": {
+            "type": "any",
+            "bindRouter": true,
+            "widget": {
+              "name": "multiselect",
+              "options": {
+                "label": "Пользователь",
+                "placeholder": "Выбрать пользователя",
+                "useEllipsisWhenDisplayFieldOverflows": false,
+                "optionLabel": "fullName",
+                "valueKey": "_id",
+                "dataKey": "_id",
+                "valueOptions": {
+                  "$fetch-object": {
+                    "path": "data.items",
+                    "data": {
+                      "$api-data": {
+                        "query": "user/get_for_dropdown",
+                        "variables": {
+                          "organization": {
+                            "$subs": {
+                              "path": "#desktop-search.organization"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "kind": "multiselect-search-form-expanded-input-full-line-style"
+            }
+          },
+          "ip": {
+            "type": "string",
+            "bindRouter": true,
+            "widget": {
+              "name": "input",
+              "options": {
+                "label": "ip-адрес устройства",
+                "maxlength": 255,
+                "placeholder": "Ввести значение"
+              },
+              "kind": "input-search-form-expanded-input-full-line-style"
+            }
+          },
+          "login": {
+            "type": "string",
+            "bindRouter": true,
+            "widget": {
+              "name": "input",
+              "options": {
+                "label": "Логин пользователя",
+                "maxlength": 255,
+                "placeholder": "Ввести значение"
+              },
+              "kind": "input-search-form-expanded-input-full-line-style"
+            }
+          },
+          "createdAt": {
+            "model": false,
+            "type": "object",
+            "widget": {
+              "name": "container",
+              "options": {
+                "label": "Дата и время события"
+              },
+              "kind": "container-search-form-expanded-input-full-style"
+            },
+            "properties": {
+              "createdAtFrom": {
+                "type": "datetime",
+                "widget": {
+                  "name": "calendar",
+                  "options": {
+                    "dataType": "string"
+                  },
+                  "class": {
+                    "group": "form-item-element calendar-range_start p-xs-12 mrg-b-sm"
+                  },
+                  "kind": "calendar-active-user-timezone-offset"
+                }
+              },
+              "createdAtTo": {
+                "type": "datetime",
+                "widget": {
+                  "name": "calendar",
+                  "options": {
+                    "dataType": "string"
+                  },
+                  "class": {
+                    "group": "form-item-element calendar-range_end p-xs-12"
+                  },
+                  "kind": "calendar-active-user-timezone-offset"
+                }
+              }
+            }
+          }
+        }
+      },
+      "buttons": {
+        "type": "object",
+        "widget": {
+          "name": "container",
+          "kind": "container-search-form-panel-buttons-center-style"
+        },
+        "properties": {
+          "search-button": {
+            "widget": {
+              "name": "button",
+              "options": {
+                "label": "Применить"
+              },
+              "events": {
+                "click": {
+                  "$if": {
+                    "condition": {
+                      "$validate": {
+                        "path": "/"
+                      }
+                    },
+                    "then": {
+                      "$grid": {
+                        "action": "lazyLoad",
+                        "path": "#data",
+                        "filters": {
+                          "$merge": {
+                            "data": [
+                              {
+                                "$var": {
+                                  "path": "#desktop-search"
+                                }
+                              },
+                              {
+                                "createdAtFrom": {
+                                  "$formatter": {
+                                    "data": {
+                                      "$formatter": {
+                                        "format": "datetime:\"YYYY-MM-DDT00:00:00+00:00\"",
+                                        "data": {
+                                          "$var": {
+                                            "path": "#desktop-search.createdAtFrom"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "format": {
+                                      "$replace": {
+                                        "template": "datetime:\"YYYY-MM-DD HH:mm:ss\":\"{{0}}\":\"true\"",
+                                        "data": [
+                                          {
+                                            "$active-user": {
+                                              "field": "timezone.offset"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                },
+                                "createdAtTo": {
+                                  "$formatter": {
+                                    "data": {
+                                      "$formatter": {
+                                        "format": "datetime:\"YYYY-MM-DDT23:59:59+00:00\"",
+                                        "data": {
+                                          "$var": {
+                                            "path": "#desktop-search.createdAtTo"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "format": {
+                                      "$replace": {
+                                        "template": "datetime:\"YYYY-MM-DD HH:mm:ss\":\"{{0}}\":\"true\"",
+                                        "data": [
+                                          {
+                                            "$active-user": {
+                                              "field": "timezone.offset"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    "else": {}
+                  }
+                }
+              }
+            }
+          },
+          "clear-button": {
+            "widget": {
+              "name": "button",
+              "options": {
+                "label": "Сбросить"
+              },
+              "class": {
+                "value": "button_link"
+              },
+              "events": {
+                "click": [
+                  {
+                    "$populate": {
+                      "path": "#desktop-search",
+                      "data": {}
+                    }
+                  },
+                  {
+                    "$populate": {
+                      "path": "#mobile-search",
+                      "data": {}
+                    }
+                  },
+                  {
+                    "$grid": {
+                      "action": "lazyLoad",
+                      "path": "#data",
+                      "filters": {}
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

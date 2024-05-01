@@ -1,0 +1,111 @@
+# @title: Получить экземпляр объекта "Бронь помещения" в статусе Заполнено
+
+query ($eventId: MongoID) {
+  withDiscountOrMarkup: bookingGet(
+    filter: {
+      AND: [
+        { _filterRef: { eventId: { _id: $eventId } } }
+        { _operators: { discountOrMarkupFlag: { in: [discount, markup] } } }
+        { state: "filled" }
+      ]
+    }
+  ) {
+    rooms {
+      roomId
+    }
+    name
+    configuration
+    minDate
+    maxDate
+    seatingTypeId
+    numberOfPeople
+    comment
+    installationDates {
+      startTime
+      endTime
+    }
+    eventDates {
+      startTime
+      endTime
+    }
+    deinstallationDates {
+      startTime
+      endTime
+    }
+    partial
+    allSquare
+    file {
+      _id
+      name
+      size
+      create_date
+    }
+    allPriceMeter
+    allPrice
+    additionalFacilities(filter: { state: "filled" }) {
+      bookingPeriod
+      type
+      serviceId
+      equipmentId
+      furnitureId
+      bookingComment
+      quantity
+      unitPrice
+      totalPrice
+    }
+  }
+
+  noDiscountOrMarkup: bookingGet(
+    filter: {
+      AND: [
+        { _filterRef: { eventId: { _id: $eventId } } }
+        { discountOrMarkupFlag: no }
+        { state: "filled" }
+      ]
+    }
+  ) {
+    rooms {
+      roomId
+    }
+    name
+    configuration
+    minDate
+    maxDate
+    seatingTypeId
+    numberOfPeople
+    comment
+    installationDates {
+      startTime
+      endTime
+    }
+    eventDates {
+      startTime
+      endTime
+    }
+    deinstallationDates {
+      startTime
+      endTime
+    }
+    partial
+    allSquare
+    file {
+      _id
+      name
+      size
+      create_date
+    }
+    allPriceMeter
+    allPrice
+    additionalFacilities(filter: { state: "filled" }) {
+      bookingPeriod
+      type
+      serviceId
+      equipmentId
+      furnitureId
+      bookingComment
+      quantity
+      unitPrice
+      totalPrice
+    }
+  }
+}

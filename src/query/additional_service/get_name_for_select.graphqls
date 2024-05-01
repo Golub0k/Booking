@@ -1,0 +1,10 @@
+# @title: Получить данные экземпляров объекта "Дополнительная услуга"
+
+query ($ids: [MongoID!]) {
+  items: additionalServiceGet(
+    filter: { AND: [{ _operators: { state: { ne: "deleted" } } }, { _operators: { _id: { in: $ids } } }] }
+  ) {
+    id: _id
+    name
+  }
+}

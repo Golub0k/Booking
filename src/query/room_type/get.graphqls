@@ -1,0 +1,10 @@
+# @title: Получить данные экземпляров объекта "Тип помещения"
+
+query ($id: [MongoID!], $filter: FilterGetRoomTypeInput) {
+  items: roomTypeGet(_id: $id, filter: $filter) {
+    id: _id
+    preview
+    state
+    name
+  }
+}

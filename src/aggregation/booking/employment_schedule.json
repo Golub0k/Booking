@@ -1,0 +1,561 @@
+[
+  {
+    "$match": {
+      "state": "filled"
+    }
+  },
+  {
+    "$lookup": {
+      "from": "event",
+      "let": {
+        "eventId": "$eventId"
+      },
+      "pipeline": [
+        {
+          "$match": {
+            "$expr": {
+              "$eq": [
+                {
+                  "$toString": "$_id"
+                },
+                "$$eventId"
+              ]
+            }
+          }
+        }
+      ],
+      "as": "events"
+    }
+  },
+  {
+    "$unwind": {
+      "path": "$events",
+      "preserveNullAndEmptyArrays": true
+    }
+  },
+  {
+    "$match": {
+      "$and": [
+        {
+          "events.actual": {
+            "$ne": false
+          }
+        },
+        {
+          "$expr": {
+            "$not": {
+              "$in": [
+                "$events.state",
+                [
+                  "new",
+                  "draft",
+                  "canceled",
+                  "deleted"
+                ]
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "$unwind": {
+      "path": "$rooms",
+      "preserveNullAndEmptyArrays": true
+    }
+  },
+  {
+    "$addFields": {
+      "roomId": "$rooms.roomId"
+    }
+  },
+  {
+    "$unwind": {
+      "path": "$events.organizers",
+      "preserveNullAndEmptyArrays": true
+    }
+  },
+  {
+    "$lookup": {
+      "from": "partner",
+      "let": {
+        "partnerId": "$events.organizers.organizerId"
+      },
+      "pipeline": [
+        {
+          "$match": {
+            "$expr": {
+              "$eq": [
+                {
+                  "$toString": "$_id"
+                },
+                "$$partnerId"
+              ]
+            }
+          }
+        }
+      ],
+      "as": "partners"
+    }
+  },
+  {
+    "$unwind": {
+      "path": "$partners",
+      "preserveNullAndEmptyArrays": true
+    }
+  },
+  {
+    "$addFields": {
+      "partnerId": "$partners._id"
+    }
+  },
+  {
+    "$unwind": {
+      "path": "$eventDates"
+    }
+  },
+  {
+    "$unwind": {
+      "path": "$installationDates",
+      "preserveNullAndEmptyArrays": true
+    }
+  },
+  {
+    "$unwind": {
+      "path": "$deinstallationDates",
+      "preserveNullAndEmptyArrays": true
+    }
+  },
+  {
+    "$project": {
+      "_id": 1,
+      "eventId": 1,
+      "eventState": "$events.state",
+      "roomId": 1,
+      "installationStart": "$installationDates.startTime",
+      "installationEnd": "$installationDates.endTime",
+      "eventStart": "$eventDates.startTime",
+      "eventEnd": "$eventDates.endTime",
+      "deinstallationStart": "$deinstallationDates.startTime",
+      "deinstallationEnd": "$deinstallationDates.endTime",
+      "partnerId": {
+        "$toString": "$partnerId"
+      }
+    }
+  },
+  {
+    "$facet": {
+      "installationStage": [
+        {
+          "$match": {
+            "$and": [
+              {
+                "$expr": {
+                  "$ifNull": [
+                    "$installationStart",
+                    false
+                  ]
+                }
+              },
+              {
+                "$expr": {
+                  "$ifNull": [
+                    "$installationEnd",
+                    false
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "$project": {
+            "_id": 1,
+            "eventId": 1,
+            "roomId": 1,
+            "stage": "montage",
+            "booked": {
+              "$cond": {
+                "if": {
+                  "$eq": [
+                    "$eventState",
+                    "pre_booking"
+                  ]
+                },
+                "then": true,
+                "else": false
+              }
+            },
+            "start": "$installationStart",
+            "end": "$installationEnd",
+            "partnerId": "$partnerId"
+          }
+        }
+      ],
+      "eventStage": [
+        {
+          "$match": {
+            "$and": [
+              {
+                "$expr": {
+                  "$ifNull": [
+                    "$eventStart",
+                    false
+                  ]
+                }
+              },
+              {
+                "$expr": {
+                  "$ifNull": [
+                    "$eventEnd",
+                    false
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "$project": {
+            "_id": 1,
+            "eventId": 1,
+            "roomId": 1,
+            "stage": "event",
+            "booked": {
+              "$cond": {
+                "if": {
+                  "$eq": [
+                    "$eventState",
+                    "pre_booking"
+                  ]
+                },
+                "then": true,
+                "else": false
+              }
+            },
+            "start": "$eventStart",
+            "end": "$eventEnd",
+            "partnerId": "$partnerId"
+          }
+        }
+      ],
+      "deinstallationStage": [
+        {
+          "$match": {
+            "$and": [
+              {
+                "$expr": {
+                  "$ifNull": [
+                    "$deinstallationStart",
+                    false
+                  ]
+                }
+              },
+              {
+                "$expr": {
+                  "$ifNull": [
+                    "$deinstallationEnd",
+                    false
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "$project": {
+            "_id": 1,
+            "eventId": 1,
+            "roomId": 1,
+            "stage": "demontage",
+            "booked": {
+              "$cond": {
+                "if": {
+                  "$eq": [
+                    "$eventState",
+                    "pre_booking"
+                  ]
+                },
+                "then": true,
+                "else": false
+              }
+            },
+            "start": "$deinstallationStart",
+            "end": "$deinstallationEnd",
+            "partnerId": "$partnerId"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "$project": {
+      "result": {
+        "$concatArrays": [
+          "$installationStage",
+          "$eventStage",
+          "$deinstallationStage"
+        ]
+      }
+    }
+  },
+  {
+    "$unwind": "$result"
+  },
+  {
+    "$replaceRoot": {
+      "newRoot": "$result"
+    }
+  },
+  {
+    "$group": {
+      "_id": {
+        "_id": "$_id",
+        "eventId": "$eventId",
+        "roomId": "$roomId",
+        "stage": "$stage",
+        "booked": "$booked",
+        "start": "$start",
+        "end": "$end"
+      },
+      "partners": {
+        "$addToSet": "$partnerId"
+      }
+    }
+  },
+  {
+    "$group": {
+      "_id": {
+        "partners": "$partners",
+        "eventId": "$_id.eventId",
+        "roomId": "$_id.roomId",
+        "stage": "$_id.stage",
+        "booked": "$_id.booked",
+        "start": "$_id.start",
+        "end": "$_id.end"
+      }
+    }
+  },
+  {
+    "$replaceRoot": {
+      "newRoot": "$_id"
+    }
+  },
+  {
+    "$match": {
+      "$expr": {
+        "$or": [
+          {
+            "$and": [
+              {
+                "$cond": {
+                  "if": {
+                    "$eq": [
+                                          $startParam,
+                      null
+                    ]
+                  },
+                  "then": true,
+                  "else": {
+                    "$gte": [
+                      "$start",
+                      {
+                        "$toDate": $startParam
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "$cond": {
+                  "if": {
+                    "$eq": [
+                                          $endParam,
+                      null
+                    ]
+                  },
+                  "then": true,
+                  "else": {
+                    "$lte": [
+                      "$start",
+                      {
+                        "$toDate": $endParam
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "$and": [
+              {
+                "$cond": {
+                  "if": {
+                    "$eq": [
+                                          $startParam,
+                      null
+                    ]
+                  },
+                  "then": true,
+                  "else": {
+                    "$gte": [
+                      "$end",
+                      {
+                        "$toDate": $startParam
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "$cond": {
+                  "if": {
+                    "$eq": [
+                                          $endParam,
+                      null
+                    ]
+                  },
+                  "then": true,
+                  "else": {
+                    "$lte": [
+                      "$end",
+                      {
+                        "$toDate": $endParam
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "$and": [
+              {
+                "$cond": {
+                  "if": {
+                    "$eq": [
+                                          $startParam,
+                      null
+                    ]
+                  },
+                  "then": true,
+                  "else": {
+                    "$lte": [
+                      "$start",
+                      {
+                        "$toDate": $startParam
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "$cond": {
+                  "if": {
+                    "$eq": [
+                                          $endParam,
+                      null
+                    ]
+                  },
+                  "then": true,
+                  "else": {
+                    "$gte": [
+                      "$end",
+                      {
+                        "$toDate": $endParam
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "$addFields": {
+      "partnersArr": $partnersParam
+    }
+  },
+  {
+    "$unwind": {
+      "path": "$partnersArr",
+      "preserveNullAndEmptyArrays": true
+    }
+  },
+  {
+    "$addFields": {
+      "eventsArr": $eventsParam
+    }
+  },
+  {
+    "$match": {
+      "$or": [
+        {
+          "$and": [
+            {
+              "$expr": {
+                "$in": [
+                  "$partnersArr",
+                  "$partners"
+                ]
+              }
+            },
+            {
+              "$expr": {
+                "$in": [
+                  "$eventId",
+                  "$eventsArr"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "$expr": {
+                "$eq": [
+                  "all",
+                  $partnersSelectParam
+                ]
+              }
+            },
+            {
+              "$expr": {
+                "$in": [
+                  "$eventId",
+                  "$eventsArr"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "$project": {
+      "eventId": 1,
+      "roomId": 1,
+      "stage": 1,
+      "booked": 1,
+      "start": 1,
+      "end": 1
+    }
+  },
+  {
+    "$group": {
+      "_id": "$$ROOT"
+    }
+  },
+  {
+    "$replaceRoot": {
+      "newRoot": "$_id"
+    }
+  }
+]

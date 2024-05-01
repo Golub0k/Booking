@@ -1,0 +1,7 @@
+# @title: Обновить данные экземпляров объекта "Адрес контрагента"
+
+mutation ($id: MongoID!, $data: UpdateByIdPartnerAddressInput!) {
+  result: partnerAddressUpdateById(_id: $id, record: $data) {
+    _id
+  }
+}

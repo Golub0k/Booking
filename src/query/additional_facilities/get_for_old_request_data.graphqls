@@ -1,0 +1,13 @@
+query ($id: MongoID) {
+  object: additionalFacilitiesOne(filter: { _id: $id }) {
+    bookingPeriod
+    bookingComment
+    quantity
+    discountOrMarkupFlag
+    discountOrMarkup
+    unitPrice
+    unitPriceWithDiscountOrMarkup
+    totalPrice
+    totalPriceWithDiscountOrMarkup
+  }
+}

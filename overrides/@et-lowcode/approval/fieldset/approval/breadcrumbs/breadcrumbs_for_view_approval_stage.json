@@ -1,0 +1,55 @@
+{
+  "meta": {
+    "title": "Филдсет навигационной цепочки на форме просмотра этапа"
+  },
+  "schema": {
+    "type": "object",
+    "widget": {
+      "name": "breadcrumb",
+      "mobileItems": [
+        {
+          "label": "Рабочий стол",
+          "routerLink": "/cabinet/user/index"
+        }
+      ],
+      "items": [
+        {
+          "label": "Рабочий стол",
+          "routerLink": "/cabinet/user/index"
+        },
+        {
+          "label": "Реестр заявок",
+          "routerLink": "/cabinet/request/list"
+        },
+        {
+          "label": "Просмотр заявки",
+          "routerLink": {
+            "$replace": {
+              "template": "/cabinet/request/{{0}}",
+              "data": [
+                {
+                  "$session-storage-get": {
+                    "key": "previousPage"
+                  }
+                }
+              ]
+            }
+          },
+          "queryParams": {
+            "id": {
+              "$from-context": {
+                "path": "@preload.stage.process.objectId"
+              }
+            }
+          }
+        },
+        {
+          "label": " Просмотр этапа"
+        }
+      ],
+      "class": {
+        "group": "p-xs-auto mrg-lg-b-xl mrg-b-md"
+      }
+    }
+  }
+}

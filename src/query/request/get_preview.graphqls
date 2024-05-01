@@ -1,0 +1,9 @@
+# @title: Получить данные экземпляров объекта "Заявка"
+
+query ($id: [MongoID!]) {
+  items: requestGet(_id: $id) {
+    preview
+    state
+    type
+  }
+}

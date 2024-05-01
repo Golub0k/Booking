@@ -1,0 +1,17 @@
+query ($start: DateTime, $end: DateTime) {
+  items: EventCalendar(
+    collection: "Event"
+    aggregation: {
+      query: "event/calendar"
+      params: { startParam: $start, endParam: $end }
+    }
+  ) {
+    id: _id
+    type: elementType
+    color: elementColor
+    title: elementTitle
+    start: elementStart
+    end: elementEnd
+    description: elementDescription
+  }
+}

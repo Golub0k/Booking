@@ -1,0 +1,20 @@
+variables:
+  PROJECT_NAME: booking
+  DEFAULT_DOMAIN: booking.lowcode.eftech
+  STUDIO_ENABLED: "false"
+  VALIDATION_ENABLED: "true"
+  TRACING_ENABLED: "false"
+  CICD_REF: &CICD_REF 13.6.x/release
+
+include:
+  - project: effectivex/cicd
+    ref: *CICD_REF
+    file: cd/project/gitlab-ci.yml
+
+prepare-infrastructure:production:
+  rules:
+    - when: never
+
+deployToEnv:production:
+  tags:
+    - ${RESOURCES_RUNNER_TAG}

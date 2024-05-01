@@ -1,0 +1,9 @@
+# @title: Получить данные экземпляров объекта "Вид мероприятий"
+
+query ($id: [MongoID!], $filter: FilterGetEventTypeInput) {
+  items: eventTypeGet(_id: $id, filter: $filter) {
+    id: _id
+    name
+    description
+  }
+}

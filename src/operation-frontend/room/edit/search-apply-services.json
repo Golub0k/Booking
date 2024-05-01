@@ -1,0 +1,16 @@
+{
+  "meta": {
+    "title": "Выражение search-apply-services"
+  },
+  "schema": {
+    "$grid": {
+      "action": "lazyLoad",
+      "path": "#selectorServices",
+      "filters": {
+        "$var": {
+          "path": "#searchServices"
+        }
+      }
+    }
+  }
+}

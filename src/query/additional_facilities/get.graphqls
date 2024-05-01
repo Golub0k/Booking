@@ -1,0 +1,68 @@
+# @title: Получить экземпляр объекта "Бронь оснащения"
+
+query ($id: [MongoID]) {
+  items: additionalFacilitiesGet(filter: { _operators: { _id: { in: $id } } }) {
+    id: _id
+    eventId
+    event {
+      name
+      state
+      name
+    }
+    bookingId
+    booking {
+      name
+      maxDate
+      minDate
+      installationDates {
+        startTime
+      }
+      eventDates {
+        startTime
+      }
+      deinstallationDates {
+        startTime
+      }
+      state
+    }
+    additionalService {
+      name
+      serviceTypeId
+      servicesType {
+        name
+      }
+      comment
+      unit
+      unitPrice
+    }
+    equipment {
+      name
+      nomenclatureNumber
+      comment
+      unitPrice
+      availableQuantity
+    }
+    furniture {
+      name
+      nomenclatureNumber
+      comment
+      unitPrice
+      availableQuantity
+    }
+    serviceId
+    equipmentId
+    furnitureId
+    type
+    serviceId
+    bookingPeriod
+    bookingComment
+    quantity
+    discountOrMarkupFlag
+    discountOrMarkup
+    unitPrice
+    unitPriceWithDiscountOrMarkup
+    totalPrice
+    totalPriceWithDiscountOrMarkup
+    state
+  }
+}

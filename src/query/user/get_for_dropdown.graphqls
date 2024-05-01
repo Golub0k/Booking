@@ -1,0 +1,9 @@
+query {
+  items: userGet(
+    sort: { field: lastName, type: ASC }
+    filter: { _operators: { state: { ne: "deleted" } } }
+  ) {
+    _id
+    fullName
+  }
+}

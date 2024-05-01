@@ -1,0 +1,25 @@
+# @title: Получить данные экземпляров объекта "Контактное лицо"
+
+query ($id: [MongoID!]) {
+  items: contactPersonGet(_id: $id) {
+    id: _id
+    preview
+    state
+    lastName
+    firstName
+    middleName
+    phone {
+      prefix
+      num
+    }
+    email
+    partnerId
+    partner {
+      _id
+      preview
+    }
+    main
+    fullName
+    phoneView
+  }
+}

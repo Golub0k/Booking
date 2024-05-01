@@ -1,0 +1,175 @@
+{
+  "@preload": {
+    "$api-data": {
+      "id": {
+        "$query-params": {
+          "name": "id"
+        }
+      },
+      "options": {
+        "observe": "body"
+      },
+      "variables": {
+        "id": {
+          "$query-params": {
+            "name": "id"
+          }
+        }
+      },
+      "query": "notification_template_settings/get"
+    }
+  },
+  "type": "object",
+  "model": "#data",
+  "widget": {
+    "name": "form",
+    "options": {
+      "label": "Подтверждение активации"
+    },
+    "kind": "form-popup-with-h1-style"
+  },
+  "properties": {
+    "object": {
+      "widget": {
+        "name": "info",
+        "options": {
+          "viewedValue": {
+            "$replace": {
+              "template": "Вы действительно хотите активировать шаблон \"{{0}}\"?",
+              "data": [
+                {
+                  "$from-context": {
+                    "path": "@preload.data.object.templateInfo.templateVisualName"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "form-actions p-field p-grid mrg-t-lg",
+          "value": "p-jc-xs-end p-autolayout"
+        }
+      },
+      "properties": {
+        "save": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Активировать"
+            },
+            "events": {
+              "click": {
+                "$if": {
+                  "condition": {
+                    "$validate": {
+                      "path": "/"
+                    }
+                  },
+                  "then": {
+                    "$waterfall": {
+                      "arrayFunctions": [
+                        "$ref:operation-frontend:snippets/element/_loading/onclick-loading-enable",
+                        {
+                          "$http-code": {
+                            "200": [
+                              {
+                                "$event-bus-publish": {
+                                  "type": "reload-table"
+                                }
+                              },
+                              {
+                                "$close-popup": null
+                              },
+                              {
+                                "$message": {
+                                  "severity": "success",
+                                  "summary": "Активация шаблона",
+                                  "detail": "Шаблон успешно активирован"
+                                }
+                              }
+                            ],
+                            "422": [
+                              "$ref:operation-frontend:snippets/element/_loading/onclick-loading-disable",
+                              {
+                                "$validate": {
+                                  "errors": {
+                                    "$from-context": {
+                                      "path": "$response.error.errors"
+                                    }
+                                  }
+                                }
+                              }
+                            ],
+                            "client": {
+                              "$api-workflow": {
+                                "type": "post",
+                                "options": {
+                                  "observe": "response"
+                                },
+                                "id": {
+                                  "$if": {
+                                    "condition": {
+                                      "$not-empty": {
+                                        "data": {
+                                          "$query-params": {
+                                            "name": "id",
+                                            "filter": false
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "then": {
+                                      "$query-params": {
+                                        "name": "id",
+                                        "filter": false
+                                      }
+                                    },
+                                    "else": ""
+                                  }
+                                }
+                              }
+                            },
+                            "default": [
+                              "$ref:operation-frontend:snippets/element/_loading/onclick-loading-disable",
+                              "$ref:operation-frontend:snippets/element/_http_message/http-default-error-message-action"
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "else": {
+                    "$form-control-mark": {
+                      "key": "form"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "cancel": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Отменить"
+            },
+            "events": {
+              "click": {
+                "$close-popup": null
+              }
+            },
+            "kind": "button-btn-outline-last-style"
+          }
+        }
+      }
+    }
+  }
+}

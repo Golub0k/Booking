@@ -1,0 +1,237 @@
+{
+  "version": 2,
+  "objectType": "event_group",
+  "context": "event_group/context",
+  "description": "Жизненный цикл группы мероприятий",
+  "rbac": {
+    "visible": true,
+    "title": "Группы мероприятий"
+  },
+  "actions": {
+    "initialActions": {
+      "add": {
+        "title": "Добавить",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Добавить группу мероприятий"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "event_group/add",
+            "mode": "form",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "event/list_for_add_group"
+          ]
+        },
+        "functions": [
+          {
+            "$workflow-object-create": {
+              "objectType": "event_group",
+              "query": "event_group/create",
+              "variables": {
+                "data": {
+                  "name": {
+                    "$from-context": {
+                      "path": "data.name"
+                    }
+                  },
+                  "comment": {
+                    "$from-context": {
+                      "path": "data.comment"
+                    }
+                  },
+                  "number": {
+                    "$sum": {
+                      "terms": [
+                        1,
+                        {
+                          "$api-data-query": {
+                            "query": "event_group/get_actual",
+                            "responsePath": "count"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "events": {
+                    "$from-context": {
+                      "path": "data.eventArr"
+                    }
+                  }
+                }
+              },
+              "responsePath": "items"
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "active"
+        }
+      }
+    },
+    "globalActions": {
+      "list": {
+        "title": "Реестр групп мероприятий",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Просмотреть реестр групп мероприятий"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "event_group/list",
+            "mode": "form",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "event_group/list"
+          ]
+        }
+      }
+    },
+    "statesActions": {
+      "delete": {
+        "title": "Удалить",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Удалить группу мероприятий"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "event_group/delete",
+            "layout": "cabinet",
+            "mode": "popup"
+          }
+        },
+        "results": {
+          "unconditional": "deleted"
+        }
+      },
+      "view": {
+        "title": "Просмотреть",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Просмотреть группу мероприятий"
+          },
+          "includeInActionsList": {
+            "availableForViews": "onlyFor",
+            "views": []
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "event_group/view",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "event/list_for_add_group"
+          ]
+        }
+      },
+      "view-in-calendar": {
+        "title": "Просмотреть",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "permissionCode": "event.calendar"
+          },
+          "includeInActionsList": {
+            "availableForViews": "notForAny",
+            "views": []
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "event_group/view_in_calendar",
+            "mode": "popup",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": []
+        }
+      },
+      "edit": {
+        "title": "Редактировать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Редактировать группу мероприятий"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "event_group/edit",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "event/list_for_add_group"
+          ]
+        },
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "event_group/update",
+              "variables": {
+                "data": {
+                  "name": {
+                    "$from-context": {
+                      "path": "data.name"
+                    }
+                  },
+                  "comment": {
+                    "$from-context": {
+                      "path": "data.comment"
+                    }
+                  },
+                  "events": {
+                    "$from-context": {
+                      "path": "data.eventArr"
+                    }
+                  }
+                },
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "object"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "states": {
+    "active": {
+      "title": "Активна",
+      "description": "Активное состояние группы мероприятий",
+      "statesActions": [
+        "edit",
+        "view",
+        "view-in-calendar",
+        "delete"
+      ]
+    },
+    "deleted": {
+      "title": "Удален",
+      "description": "Удаленное состояние группы мероприятий",
+      "displaySettingsInLists": {
+        "hidden": true
+      },
+      "finish": true
+    }
+  }
+}

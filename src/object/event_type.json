@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "title": "Вид мероприятий",
+  "properties": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "maxLength": 255,
+      "index": true,
+      "trim": true,
+      "fieldDescription": "Наименование"
+    },
+    "description": {
+      "type": "string",
+      "required": false,
+      "fieldDescription": "Описание"
+    }
+  }
+}

@@ -1,0 +1,67 @@
+# @title: Получить экземпляр объекта "Бронь оснащения" для конкретного оборудования/мебели, исключая текущую бронь
+
+query (
+  $first: Int
+  $rows: Int
+  $equipmentOrFurniture: String
+  $except: MongoID
+  $minDate: DateTime
+  $maxDate: DateTime
+) {
+  pagination: additionalFacilitiesPagination(
+    limit: $rows
+    offset: $first
+    filter: {
+      AND: [
+        { _operators: { _id: { ne: $except } } }
+        { state: "filled" }
+        { OR: [{ equipmentId: $equipmentOrFurniture }, { furnitureId: $equipmentOrFurniture }] }
+        {
+          _filterRef: {
+            eventId: {
+              _operators: {
+                state: { nin: ["new", "draft", "deleted", "canceled", "check_out"] }
+                actual: { ne: false }
+              }
+            }
+          }
+        }
+        {
+          _filterRef: {
+            bookingId: {
+              OR: [
+                {
+                  AND: [{ _operators: { minDate: { gte: $minDate } } }, { _operators: { minDate: { lte: $maxDate } } }]
+                }
+                {
+                  AND: [{ _operators: { maxDate: { gte: $minDate } } }, { _operators: { maxDate: { lte: $maxDate } } }]
+                }
+                {
+                  AND: [{ _operators: { maxDate: { gte: $maxDate } } }, { _operators: { minDate: { lte: $minDate } } }]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ) {
+    count
+    items {
+      id: _id
+      eventId
+      event {
+        name
+        actual
+        state
+      }
+      bookingId
+      booking {
+        name
+        minDate
+        maxDate
+      }
+      quantity
+    }
+  }
+}

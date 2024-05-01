@@ -1,0 +1,11 @@
+/.vscode
+.idea
+.env
+artifacts/
+
+/.env
+/artifacts
+/dist
+node_modules
+/*.log
+/.et-workspace

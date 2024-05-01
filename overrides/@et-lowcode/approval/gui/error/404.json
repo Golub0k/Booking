@@ -1,0 +1,27 @@
+{
+  "@title": "Страница 404 ошибки",
+  "type": "string",
+  "widget": {
+    "name": "layout-error",
+    "options": {
+      "code": 404,
+      "summary": "Страница не найдена",
+      "detail": "Возможно, введен некорректный адрес или страница была удалена.",
+      "backLink": {
+        "$if": {
+          "condition": {
+            "$not-empty": {
+              "data": {
+                "$active-user": {
+                  "field": "_id"
+                }
+              }
+            }
+          },
+          "then": "/cabinet/event/list",
+          "else": "/"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "type": "object",
+  "title": "Дополнительная услуга",
+  "properties": {
+    "serviceTypeId": {
+      "type": "string",
+      "required": true,
+      "index": true,
+      "fieldDescription": "Тип услуги",
+      "ref": "ServicesType",
+      "refAlias": "servicesType",
+      "inversedBy": "servicesAddService"
+    },
+    "name": {
+      "type": "string",
+      "required": true,
+      "index": true,
+      "fieldDescription": "Наименование услуги"
+    },
+    "unit": {
+      "type": "string",
+      "required": false,
+      "fieldDescription": "Единица измерения"
+    },
+    "unitPrice": {
+      "type": "number",
+      "required": true,
+      "index": true,
+      "fieldDescription": "Цена за единицу услуги"
+    },
+    "comment": {
+      "type": "string",
+      "required": false,
+      "fieldDescription": "Примечание"
+    }
+  }
+}

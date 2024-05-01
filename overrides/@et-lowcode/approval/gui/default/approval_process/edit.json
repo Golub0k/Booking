@@ -1,0 +1,999 @@
+{
+  "@title": "Редактирование черновика процесса согласования",
+  "@preload": {
+    "$from-context": {
+      "path": "$response.body.data.items.0",
+      "data": {
+        "$api-data": {
+          "id": {
+            "$query-params": {
+              "name": "id"
+            }
+          },
+          "options": {
+            "observe": "response"
+          },
+          "variables": {
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            }
+          },
+          "query": "default/approval_process/get_for_edit"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "model": "#data",
+  "widget": {
+    "name": "form"
+  },
+  "value": {
+    "$json-model": {
+      "alias": "#data",
+      "data": {
+        "$assign-object": {
+          "object": {
+            "$from-context": {
+              "path": "@preload"
+            }
+          },
+          "path": "stages",
+          "data": {
+            "$array-map": {
+              "array": {
+                "$from-context": {
+                  "path": "@preload.stages"
+                }
+              },
+              "map": {
+                "$assign-object": {
+                  "object": {
+                    "$from-context": {
+                      "path": "$data"
+                    }
+                  },
+                  "path": "tasks",
+                  "data": {
+                    "$array-map": {
+                      "array": {
+                        "$from-context": {
+                          "path": "$data.tasks"
+                        }
+                      },
+                      "map": {
+                        "$exclude": {
+                          "data": {
+                            "$assign-object": {
+                              "object": {
+                                "$from-context": {
+                                  "path": "$data.1"
+                                }
+                              },
+                              "path": "",
+                              "data": {
+                                "fullName": {
+                                  "$from-context": {
+                                    "path": "$data.1.user.fullName"
+                                  }
+                                },
+                                "position": {
+                                  "$from-context": {
+                                    "path": "$data.1.user.position"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "exclude": [
+                            "user"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "properties": {
+    "breadcrumbs": {
+      "type": "object",
+      "model": false,
+      "widget": {
+        "name": "breadcrumb",
+        "mobileItems": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          }
+        ],
+        "items": {
+          "$switch": {
+            "condition": {
+              "$from-context": {
+                "path": "@preload.objectType"
+              }
+            },
+            "default": [
+              {
+                "label": "Главная",
+                "routerLink": "/cabinet/event/list"
+              },
+              {
+                "label": "Настройка процесса согласования"
+              }
+            ],
+            "cases": [
+              {
+                "value": "request",
+                "action": [
+                  {
+                    "label": "Главная",
+                    "routerLink": "/cabinet/event/list"
+                  },
+                  {
+                    "label": "Заявки",
+                    "routerLink": "/cabinet/request/list"
+                  },
+                  {
+                    "label": "Просмотр заявки",
+                    "routerLink": {
+                      "$replace": {
+                        "template": "/cabinet/request/{{0}}",
+                        "data": [
+                          {
+                            "$session-storage-get": {
+                              "key": "previousPage"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "queryParams": {
+                      "id": {
+                        "$from-context": {
+                          "path": "@preload.objectId"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "label": "Настройка процесса согласования"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "class": {
+          "group": "p-xs-auto mrg-lg-b-xl mrg-b-md"
+        }
+      }
+    },
+    "header": {
+      "type": "string",
+      "model": false,
+      "widget": {
+        "name": "info",
+        "options": {
+          "label": "Настройка процесса совместного согласования"
+        },
+        "class": {
+          "label": "h1 mrg-b-lg"
+        }
+      }
+    },
+    "template_info": {
+      "type": "object",
+      "model": false,
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "flex-row p-grid p-nogutter p-col-8 p-col-7 p-xxl-7 attention-block attention-block-info mrg-b-md",
+          "value": "info-block"
+        }
+      },
+      "properties": {
+        "text": {
+          "type": "string",
+          "model": false,
+          "widget": {
+            "name": "html",
+            "class": {
+              "group": "p-jc-start p-autolayout p-xs-9 p-xl-9",
+              "value": "form-item-element form-item-element_checkbox form-item-element_label-html p-autolayout"
+            }
+          },
+          "value": {
+            "$replace": {
+              "template": "Процесс был создан на базе шаблона &nbsp;<a href=\"{{link}}\" target=\"_blank\">\"{{linkName}}\"</a>",
+              "data": {
+                "link": {
+                  "$replace": {
+                    "template": "/cabinet/approval_template/view?id={{0}}",
+                    "data": [
+                      {
+                        "$from-context": {
+                          "path": "@preload.template._id"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "linkName": {
+                  "$from-context": {
+                    "path": "@preload.template.name"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "select_template": {
+          "type": "string",
+          "model": false,
+          "widget": {
+            "name": "html",
+            "class": {
+              "group": "p-autolayout p-jc-end p-xs-3 p-xl-3",
+              "value": "p-jc-xl-end"
+            }
+          },
+          "value": {
+            "$replace": {
+              "template": "<a href=\"{{link}}\">+ Выбрать другой шаблон</a>",
+              "data": {
+                "link": {
+                  "$replace": {
+                    "template": "/cabinet/approval_process/edit?id={{0}}#/approval_template/select?objectId={{1}}&objectType={{2}}",
+                    "data": [
+                      {
+                        "$from-context": {
+                          "path": "@preload.id"
+                        }
+                      },
+                      {
+                        "$from-context": {
+                          "path": "@preload.objectId"
+                        }
+                      },
+                      {
+                        "$from-context": {
+                          "path": "@preload.objectType"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "object": {
+      "type": "object",
+      "model": false,
+      "widget": {
+        "name": "container"
+      },
+      "properties": {
+        "process_header": {
+          "type": "object",
+          "model": false,
+          "widget": {
+            "options": {
+              "label": "Процесс согласования"
+            },
+            "class": {
+              "group": "flex-row p-grid mrg-b-lg mrg-t-0 p-nogutter p-col-8 p-col-7 p-xxl-7",
+              "label": "h2 p-xs-12 p-md-4 p-xl-4 pdd-tb-0 mrg-md-b-md",
+              "value": "p-xs-12 p-md-8 p-xl-8 pdd-tb-0 p-autolayout p-jc-end"
+            },
+            "name": "container"
+          }
+        },
+        "name": {
+          "type": "string",
+          "widget": {
+            "name": "input",
+            "options": {
+              "label": "Наименование"
+            },
+            "class": {
+              "group": "form-item p-field p-grid p-fluid",
+              "label": "form-label p-xs-12 p-md-4 p-xl-3",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$not-empty": {
+                    "data": {
+                      "$var": {
+                        "path": "."
+                      }
+                    }
+                  }
+                },
+                "message": "Поле обязательно для заполнения"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            }
+          ]
+        },
+        "comment": {
+          "type": "string",
+          "widget": {
+            "name": "textarea",
+            "options": {
+              "label": "Комментарий (необязательно)"
+            },
+            "class": {
+              "group": "form-item p-field p-grid p-fluid",
+              "label": "form-label p-xs-12 p-md-4 p-xl-3",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          }
+        },
+        "editProcess": {
+          "type": "boolean",
+          "model": "#editProcess",
+          "value": {
+            "$from-context": {
+              "path": "@preload.initiatorPrivileges.editProcess"
+            }
+          },
+          "widget": {
+            "name": "hidden"
+          }
+        },
+        "template_stages_container": {
+          "type": "object",
+          "model": false,
+          "widget": {
+            "name": "container",
+            "options": {
+              "label": "Этапы"
+            },
+            "class": {
+              "group": "form-item p-grid p-nogutter p-col-7 p-xxl-7",
+              "label": "h2 p-xs-12 p-md-4 p-xl-3 pdd-tb-0 mrg-b-md"
+            }
+          },
+          "properties": {
+            "stages": {
+              "type": "array",
+              "model": "#data.stages",
+              "widget": {
+                "name": "dataview",
+                "options": {
+                  "lazy": false,
+                  "paginator": false,
+                  "emptyMessage": ""
+                },
+                "subscriptions": {
+                  "reload-table": {
+                    "$element-event": {
+                      "event": "reload",
+                      "value": true
+                    }
+                  }
+                },
+                "events": {
+                  "reload": {
+                    "$reload": null
+                  }
+                }
+              },
+              "items": {
+                "type": "object",
+                "widget": {
+                  "name": "container",
+                  "class": {
+                    "group": "p-xs-12 dataview_container_block pdd-md"
+                  }
+                },
+                "properties": {
+                  "usersBlock": {
+                    "type": "object",
+                    "model": false,
+                    "widget": {
+                      "name": "fieldset",
+                      "options": {
+                        "toggleable": true,
+                        "collapsed": {
+                          "!==": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "$rowData.number"
+                              }
+                            },
+                            "operand2": 1
+                          }
+                        },
+                        "label": " ",
+                        "visible": {
+                          ">": {
+                            "operand1": {
+                              "$length": {
+                                "data": {
+                                  "$subs": {
+                                    "path": "#data.stages[].tasks"
+                                  }
+                                }
+                              }
+                            },
+                            "operand2": 0
+                          }
+                        }
+                      },
+                      "labelAppend": {
+                        "type": "object",
+                        "widget": {
+                          "name": "container",
+                          "class": {
+                            "value": "p-ai-center"
+                          }
+                        },
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "widget": {
+                              "name": "info",
+                              "class": {
+                                "group": "d-inline-block mrg-l-sm mrg-r-auto p-col-auto",
+                                "value": "p-autolayout h4"
+                              }
+                            },
+                            "value": {
+                              "$subs": {
+                                "path": "#data.stages[].name"
+                              }
+                            }
+                          },
+                          "iconCount": {
+                            "type": "string",
+                            "widget": {
+                              "class": {
+                                "group": "d-inline-block p-col-auto mrg-l-md",
+                                "icon": "icon-users-approval"
+                              },
+                              "name": "icon",
+                              "options": {
+                                "title": "Количество участников"
+                              }
+                            }
+                          },
+                          "count": {
+                            "type": "string",
+                            "widget": {
+                              "name": "info",
+                              "class": {
+                                "group": "d-inline-block p-col-auto mrg-l-xs",
+                                "value": "p-autolayout"
+                              }
+                            },
+                            "value": {
+                              "$length": {
+                                "data": {
+                                  "$subs": {
+                                    "path": "#data.stages[].tasks"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "iconType": {
+                            "type": "string",
+                            "widget": {
+                              "class": {
+                                "group": "d-inline-block p-col-auto mrg-l-md",
+                                "value": "icon-process-type"
+                              },
+                              "name": "icon",
+                              "options": {
+                                "title": "Тип процесса"
+                              }
+                            }
+                          },
+                          "processType": {
+                            "type": "string",
+                            "widget": {
+                              "name": "info",
+                              "class": {
+                                "group": "d-inline-block valign-text-bottom mrg-l-xxs p-col-auto",
+                                "value": "p-autolayout"
+                              }
+                            },
+                            "value": {
+                              "$if": {
+                                "condition": {
+                                  "===": {
+                                    "operand1": "consistent",
+                                    "operand2": {
+                                      "$subs": {
+                                        "path": "#data.stages[].processType"
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": "Последовательный",
+                                "else": "Параллельный"
+                              }
+                            }
+                          },
+                          "actionsBlock": {
+                            "type": "object",
+                            "widget": {
+                              "name": "container",
+                              "options": {
+                                "visible": {
+                                  "$not": {
+                                    "data": {
+                                      "$var": {
+                                        "path": "#editProcess"
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "class": {
+                                "group": "p-xs-2 p-md-1 mrg-l-md p-text-right",
+                                "value": "p-d-inline-flex mrg-0"
+                              }
+                            },
+                            "properties": {
+                              "action": {
+                                "type": "array",
+                                "model": false,
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "title": {
+                                      "type": "string",
+                                      "widget": "hidden"
+                                    }
+                                  },
+                                  "widget": {
+                                    "name": "fieldset"
+                                  }
+                                },
+                                "widget": {
+                                  "options": {
+                                    "labelKey": "title"
+                                  },
+                                  "class": {
+                                    "toggle": "actions-button",
+                                    "value": "p-justify-end p-autolayout p-jc-end",
+                                    "group": "p-grid p-col-12 p-nogutter"
+                                  },
+                                  "name": "menu-button",
+                                  "items": [
+                                    {
+                                      "title": "Редактировать",
+                                      "visible": {
+                                        "$active-user-has-permission": {
+                                          "permission": "approval_stage.edit.await_approval"
+                                        }
+                                      },
+                                      "command": {
+                                        "$go": {
+                                          "workflow": "approval_stage",
+                                          "action": "edit",
+                                          "id": {
+                                            "$subs": {
+                                              "path": "#data.stages[].id"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "title": "Удалить",
+                                      "visible": {
+                                        "$active-user-has-permission": {
+                                          "permission": "approval_stage.delete.await_approval"
+                                        }
+                                      },
+                                      "command": {
+                                        "$open-popup": {
+                                          "workflow": "approval_stage",
+                                          "action": "delete",
+                                          "id": {
+                                            "$subs": {
+                                              "path": "#data.stages[].id"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "class": {
+                        "label": "p-col-12 approval-template__fieldset_label",
+                        "group": "approval-template__fieldset"
+                      }
+                    },
+                    "properties": {
+                      "tasks": {
+                        "type": "array",
+                        "widget": {
+                          "name": "table",
+                          "options": {
+                            "sortField": "userNumber",
+                            "sortOrder": 1,
+                            "paginator": false,
+                            "scrollable": false,
+                            "routerOptions": []
+                          },
+                          "class": {
+                            "group": "approval-template__table"
+                          }
+                        },
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "userId": {
+                              "type": "string",
+                              "widget": {
+                                "name": "table-column",
+                                "options": {
+                                  "visible": false
+                                }
+                              }
+                            },
+                            "userNumber": {
+                              "type": "number",
+                              "widget": {
+                                "name": "table-column",
+                                "options": {
+                                  "visible": false
+                                }
+                              }
+                            },
+                            "fullName": {
+                              "type": "string",
+                              "widget": {
+                                "name": "table-column",
+                                "options": {
+                                  "visible": false
+                                }
+                              }
+                            },
+                            "fullNameVisible": {
+                              "type": "object",
+                              "model": false,
+                              "widget": {
+                                "name": "table-column",
+                                "options": {
+                                  "label": "Участники"
+                                }
+                              },
+                              "properties": {
+                                "fullName": {
+                                  "type": "string",
+                                  "model": false,
+                                  "value": {
+                                    "$replace": {
+                                      "template": "<span class=\"user-name\">{{0}}<br/><span class=\"fwn\">{{1}}</span></span>",
+                                      "data": [
+                                        {
+                                          "$from-context": {
+                                            "path": "$rowData.fullName"
+                                          }
+                                        },
+                                        {
+                                          "$if": {
+                                            "condition": {
+                                              "$empty": {
+                                                "data": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.position"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "then": "",
+                                            "else": {
+                                              "$from-context": {
+                                                "path": "$rowData.position"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  "widget": {
+                                    "name": "html",
+                                    "class": {
+                                      "value": "user-state_offline"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "position": {
+                              "type": "string",
+                              "widget": {
+                                "name": "table-column",
+                                "options": {
+                                  "label": "Должность",
+                                  "visible": false
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "id": {
+                    "type": "string",
+                    "widget": "hidden"
+                  },
+                  "number": {
+                    "type": "number",
+                    "widget": "hidden"
+                  },
+                  "description": {
+                    "type": "string",
+                    "widget": "hidden"
+                  },
+                  "name": {
+                    "type": "string",
+                    "widget": "hidden"
+                  },
+                  "processType": {
+                    "type": "string",
+                    "widget": {
+                      "name": "hidden"
+                    }
+                  },
+                  "completionConditions": {
+                    "type": "object",
+                    "widget": {
+                      "name": "hidden"
+                    },
+                    "properties": {
+                      "getAllDecisions": {
+                        "type": "boolean"
+                      }
+                    }
+                  },
+                  "finalDecision": {
+                    "type": "string",
+                    "widget": {
+                      "name": "hidden"
+                    }
+                  },
+                  "numberOfPeopleOrPercentage": {
+                    "type": "number",
+                    "widget": {
+                      "name": "hidden"
+                    }
+                  },
+                  "unsuccessfulOutcome": {
+                    "type": "string",
+                    "widget": {
+                      "name": "hidden"
+                    }
+                  }
+                }
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$not-empty": {
+                        "data": {
+                          "$var": {
+                            "path": "."
+                          }
+                        }
+                      }
+                    },
+                    "message": "Необходимо добавить хотя бы 1 этап"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            },
+            "stages_add": {
+              "widget": {
+                "options": {
+                  "label": "Новый этап",
+                  "icon": "icon-plus",
+                  "visible": {
+                    "$and": {
+                      "operands": [
+                        {
+                          "$not": {
+                            "data": {
+                              "$var": {
+                                "path": "#editProcess"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "$active-user-has-permission": {
+                            "permission": "approval_stage.add"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "name": "button",
+                "events": {
+                  "click": {
+                    "$go": {
+                      "workflow": "approval_stage",
+                      "action": "add",
+                      "query": {
+                        "processId": {
+                          "$query-params": {
+                            "name": "id"
+                          }
+                        },
+                        "number": {
+                          "$sum": {
+                            "terms": [
+                              {
+                                "$length": {
+                                  "data": {
+                                    "$var": {
+                                      "path": "#data.stages"
+                                    }
+                                  }
+                                }
+                              },
+                              1
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "class": {
+                  "group": "p-grid p-nogutter p-col-11 p-col-12 p-xxl-12",
+                  "value": "p-autolayout button_link mrg-t-md button_text button_text-branded"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "form-actions p-field p-grid mrg-t-lg",
+          "value": "p-xs-12 p-autolayout"
+        }
+      },
+      "properties": {
+        "save": {
+          "widget": {
+            "name": "submit-button",
+            "options": {
+              "label": "Начать согласование",
+              "clientValidation": true,
+              "dataForClientValidation": "/",
+              "showClientValidationErrorsForElement": "form",
+              "showClientValidationErrorMessage": true,
+              "clientValidationErrorMessageSummary": "Ошибка",
+              "clientValidationErrorMessageDetail": "Одно или несколько полей заполнены некорректно",
+              "workflowAction": "request.submit_for_approval",
+              "workflowObjectId": {
+                "$from-context": {
+                  "path": "@preload.objectId"
+                }
+              },
+              "dataForSubmit": {
+                "processId": {
+                  "$query-params": {
+                    "name": "id"
+                  }
+                },
+                "process": {
+                  "$var": {
+                    "path": "#data"
+                  }
+                }
+              },
+              "showSuccessMessage": true,
+              "successMessageSummary": "Совместное согласование заявки",
+              "successMessageDetail": "Заявка успешно отправлена на согласование",
+              "urlInCaseOfSuccess": {
+                "$replace": {
+                  "template": "/cabinet/request/{{view}}?id={{id}}",
+                  "data": {
+                    "view": {
+                      "$session-storage-get": {
+                        "key": "previousPage"
+                      }
+                    },
+                    "id": {
+                      "$from-context": {
+                        "path": "@preload.objectId"
+                      }
+                    }
+                  }
+                }
+              },
+              "showServerValidationErrorMessage": true,
+              "serverValidationErrorMessageSummary": "Совместное согласование заявки",
+              "serverValidationErrorMessageDetail": "Форма содержит ошибки",
+              "showOtherErrorMessageSummary": true,
+              "otherErrorMessageSummary": "Совместное согласование заявки",
+              "otherErrorMessageDetail": "Непредвиденная ошибка"
+            },
+            "class": {
+              "value": "mrg-r-sm"
+            }
+          }
+        },
+        "cancel": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Отменить"
+            },
+            "events": {
+              "click": {
+                "$go": {
+                  "workflow": {
+                    "$from-context": {
+                      "path": "@preload.objectType"
+                    }
+                  },
+                  "action": {
+                    "$session-storage-get": {
+                      "key": "previousPage"
+                    }
+                  },
+                  "id": {
+                    "$from-context": {
+                      "path": "@preload.objectId"
+                    }
+                  }
+                }
+              }
+            },
+            "class": {
+              "value": "button_outline mrg-r-0 mrg-b-0"
+            }
+          }
+        }
+      }
+    }
+  }
+}

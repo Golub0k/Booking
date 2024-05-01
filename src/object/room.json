@@ -1,0 +1,109 @@
+{
+  "type": "object",
+  "title": "Помещение",
+  "properties": {
+    "name": {
+      "type": "string",
+      "trim": true,
+      "fieldDescription": "Наименование помещения",
+      "required": true
+    },
+    "number": {
+      "type": "string",
+      "trim": true,
+      "fieldDescription": "Номер помещения",
+      "required": true
+    },
+    "floor": {
+      "type": "string",
+      "trim": true,
+      "fieldDescription": "Этаж помещения",
+      "required": true
+    },
+    "square": {
+      "type": "number",
+      "trim": true,
+      "fieldDescription": "Площадь",
+      "required": true
+    },
+    "roomLength": {
+      "type": "number",
+      "trim": true,
+      "fieldDescription": "Длина",
+      "required": true
+    },
+    "width": {
+      "type": "number",
+      "trim": true,
+      "fieldDescription": "Ширина",
+      "required": true
+    },
+    "height": {
+      "type": "number",
+      "trim": true,
+      "fieldDescription": "Высота",
+      "required": false
+    },
+    "type": {
+      "type": "string",
+      "required": true,
+      "index": true,
+      "fieldDescription": "Тип помещения",
+      "ref": "RoomType",
+      "refAlias": "roomType",
+      "inversedBy": "roomTypeRoom"
+    },
+    "roominess": {
+      "type": "number",
+      "trim": true,
+      "fieldDescription": "Вместительность",
+      "required": true
+    },
+    "maxOrganizers": {
+      "type": "number",
+      "trim": true,
+      "fieldDescription": "Максимальное количество организаторов",
+      "required": true
+    },
+    "transformation": {
+      "type": "boolean",
+      "fieldDescription": "Флаг возможности трансформации",
+      "required": true
+    },
+    "configuration": {
+      "type": "boolean",
+      "fieldDescription": "Флаг возможности конфигурации",
+      "required": true
+    },
+    "additional_services": [
+      {
+        "serviceId": {
+          "type": "string",
+          "fieldDescription": "Дополнительная услуга",
+          "ref": "AdditionalService",
+          "refAlias": "additionalService"
+        }
+      }
+    ],
+    "equipments": [
+      {
+        "equipmentId": {
+          "type": "string",
+          "fieldDescription": "Оборудование",
+          "ref": "Equipment",
+          "refAlias": "equipment"
+        }
+      }
+    ],
+    "furniture": [
+      {
+        "furnitureId": {
+          "type": "string",
+          "fieldDescription": "Мебель",
+          "ref": "Furniture",
+          "refAlias": "furniture"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+# @title: Создать экземпляры объекта "Мебель"
+
+mutation ($data: [CreateFurnitureInput!]!) {
+  object: furnitureCreate(records: $data) {
+    id: recordIds
+  }
+}

@@ -1,0 +1,458 @@
+{
+  "@title": "Просмотр этапа согласования",
+  "@preload": {
+    "object": "$ref:fieldset:approval/breadcrumbs/get_object_info",
+    "stage": {
+      "$from-context": {
+        "path": "$response.body.data.items.0",
+        "data": {
+          "$api-data": {
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            },
+            "options": {
+              "observe": "response"
+            },
+            "variables": {
+              "id": {
+                "$query-params": {
+                  "name": "id"
+                }
+              }
+            },
+            "query": "default/approval_stage/get"
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "model": "#stage",
+  "widget": {
+    "name": "form"
+  },
+  "properties": {
+    "breadcrumbs": "$ref:fieldset:approval/breadcrumbs/breadcrumbs_for_view_approval_stage",
+    "headerStage": {
+      "type": "string",
+      "model": false,
+      "widget": {
+        "name": "info",
+        "options": {
+          "label": {
+            "$replace": {
+              "template": "Этап \"{{name}}\"",
+              "data": {
+                "name": {
+                  "$subs": {
+                    "path": "#stage.name"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "class": {
+          "label": "h1 mrg-b-lg"
+        }
+      }
+    },
+    "stage_base_container": {
+      "type": "object",
+      "model": false,
+      "widget": {
+        "name": "container",
+        "options": {
+          "label": "Общие данные"
+        },
+        "class": {
+          "label": "h2 mrg-b-md",
+          "value": "mrg-b-xl"
+        }
+      },
+      "properties": {
+        "name": {
+          "type": "string",
+          "model": "#stage.name",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Наименование"
+            },
+            "class": {
+              "group": "form-item p-field p-grid p-fluid",
+              "label": "form-label p-xs-12 p-md-4 p-xl-3",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          },
+          "value": {
+            "$from-context": {
+              "path": "@preload.stage.name"
+            }
+          }
+        },
+        "description": {
+          "type": "string",
+          "model": "#stage.description",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Описание"
+            },
+            "class": {
+              "group": "form-item p-field p-grid p-fluid",
+              "label": "form-label p-xs-12 p-md-4 p-xl-3",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          },
+          "value": {
+            "$from-context": {
+              "path": "@preload.stage.description"
+            }
+          }
+        },
+        "processType": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Порядок согласования на этапе"
+            },
+            "class": {
+              "group": "form-item p-field p-grid p-fluid",
+              "label": "form-label p-xs-12 p-md-4 p-xl-3",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          },
+          "value": {
+            "$switch": {
+              "condition": {
+                "$from-context": {
+                  "path": "@preload.stage.processType"
+                }
+              },
+              "default": "",
+              "cases": [
+                {
+                  "value": "consistent",
+                  "action": "Последовательный"
+                },
+                {
+                  "value": "parallel",
+                  "action": "Параллельный"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "completionConditions": {
+      "type": "object",
+      "model": "#stage.completionConditions",
+      "widget": {
+        "name": "container",
+        "options": {
+          "label": "Условия завершения этапа"
+        },
+        "class": {
+          "label": "h2 mrg-b-md",
+          "value": "mrg-b-xl"
+        }
+      },
+      "properties": {
+        "getAllDecisions": {
+          "type": "boolean",
+          "widget": {
+            "name": "checkbox",
+            "options": {
+              "label": "Автоматически завершать этап при  выполнении условий",
+              "optionLabel": "Получены решения от всех участников этапа",
+              "disabled": true
+            },
+            "class": {
+              "group": "form-item p-field p-grid p-fluid",
+              "label": "form-label p-xs-12 p-md-4 p-xl-3",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          },
+          "value": true
+        }
+      }
+    },
+    "final_container": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "options": {
+          "label": "Итоговое решение по этапу"
+        },
+        "class": {
+          "label": "h2 mrg-b-md",
+          "value": "mrg-b-xl"
+        }
+      },
+      "properties": {
+        "finalDecision": {
+          "type": "string",
+          "model": "#stage.finalDecision",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Этап переходит в статус \"Согласован\", если:"
+            },
+            "class": {
+              "group": "form-item p-field p-grid p-fluid",
+              "label": "form-label p-xs-12 p-md-4 p-xl-3",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          },
+          "value": {
+            "$if": {
+              "condition": {
+                "===": {
+                  "operand1": "allPositiveDecisions",
+                  "operand2": {
+                    "$from-context": {
+                      "path": "@preload.stage.finalDecision"
+                    }
+                  }
+                }
+              },
+              "then": "Получены положительные решения от всех участников этапа",
+              "else": {
+                "$if": {
+                  "condition": {
+                    "===": {
+                      "operand1": {
+                        "$from-context": {
+                          "path": "@preload.stage.finalDecision"
+                        }
+                      },
+                      "operand2": "leastNumberPositiveDecisions"
+                    }
+                  },
+                  "then": {
+                    "$replace": {
+                      "template": "Получены положительные решения минимум от {{0}} участника(ов)",
+                      "data": [
+                        {
+                          "$from-context": {
+                            "path": "@preload.stage.numberOfPeopleOrPercentage"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "else": {
+                    "$replace": {
+                      "template": "Доля положительных решений не менее {{0}}% от всех участников этапа",
+                      "data": [
+                        {
+                          "$from-context": {
+                            "path": "@preload.stage.numberOfPeopleOrPercentage"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "unsuccessfulOutcome": {
+          "type": "string",
+          "model": "#stage.unsuccessfulOutcome",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Если этап перешел в статус \"Не согласован\", необходимо:"
+            },
+            "class": {
+              "group": "form-item p-field p-grid p-fluid",
+              "label": "form-label p-xs-12 p-md-4 p-xl-3",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          },
+          "value": {
+            "$if": {
+              "condition": {
+                "===": {
+                  "operand1": "continueProcess",
+                  "operand2": {
+                    "$from-context": {
+                      "path": "@preload.stage.unsuccessfulOutcome"
+                    }
+                  }
+                }
+              },
+              "then": "Перейти к следующему этапу",
+              "else": "Прекратить процесс согласования"
+            }
+          }
+        }
+      }
+    },
+    "users_header": {
+      "type": "object",
+      "widget": {
+        "options": {
+          "label": "Участники"
+        },
+        "class": {
+          "group": "flex-row p-grid mrg-b-lg mrg-t-0 p-nogutter p-col-11 p-col-12 p-xxl-12",
+          "label": "h2 p-xs-12 p-md-4 p-xl-3 pdd-tb-0 mrg-md-b-md",
+          "value": "p-xs-12 p-md-8 p-xl-9 pdd-tb-0"
+        },
+        "name": "container"
+      }
+    },
+    "stage_users": {
+      "type": "array",
+      "model": "#stage.usersBlock.users",
+      "widget": {
+        "name": "table",
+        "options": {
+          "paginator": false,
+          "sortField": "userNumber",
+          "sortOrder": 1
+        },
+        "class": {
+          "group": "form-item form-item-element p-xs-12 p-md-10 p-xl-7",
+          "value": "form-item form-item-element"
+        }
+      },
+      "items": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            }
+          },
+          "userNumber": {
+            "type": "number",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "label": "Очередность",
+                "visible": {
+                  "===": {
+                    "operand1": {
+                      "$subs": {
+                        "path": "#stage.processType"
+                      }
+                    },
+                    "operand2": "Последовательный"
+                  }
+                }
+              }
+            }
+          },
+          "fullName": {
+            "type": "string",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "label": "Участник"
+              }
+            }
+          },
+          "position": {
+            "type": "string",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "label": "Должность"
+              }
+            }
+          }
+        }
+      },
+      "value": {
+        "$array-map": {
+          "array": {
+            "$from-context": {
+              "path": "@preload.stage.tasks"
+            }
+          },
+          "map": {
+            "$exclude": {
+              "data": {
+                "$assign-object": {
+                  "object": {
+                    "$from-context": {
+                      "path": "$data"
+                    }
+                  },
+                  "path": "",
+                  "data": {
+                    "fullName": {
+                      "$from-context": {
+                        "path": "$data.user.fullName"
+                      }
+                    },
+                    "position": {
+                      "$from-context": {
+                        "path": "$data.user.position"
+                      }
+                    }
+                  }
+                }
+              },
+              "exclude": [
+                "user"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "back": {
+      "widget": {
+        "name": "button",
+        "options": {
+          "label": "Назад"
+        },
+        "events": {
+          "click": {
+            "$go": {
+              "workflow": {
+                "$from-context": {
+                  "path": "@preload.stage.process.objectType"
+                }
+              },
+              "action": {
+                "$session-storage-get": {
+                  "key": "previousPage"
+                }
+              },
+              "id": {
+                "$from-context": {
+                  "path": "@preload.stage.process.objectId"
+                }
+              },
+              "query": {
+                "widgets_options": {
+                  "tabs": {
+                    "selectedKey": "commonInfo"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "class": {
+          "value": "button_outline mrg-r-0 mrg-b-0"
+        }
+      }
+    }
+  }
+}

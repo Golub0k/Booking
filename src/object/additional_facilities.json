@@ -1,0 +1,98 @@
+{
+  "type": "object",
+  "title": "Бронь оснащения",
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "fieldDescription": "Ссылка на мероприятие, к которому привязана бронь оснащения",
+      "ref": "Event",
+      "refAlias": "event",
+      "inversedBy": "additionalFacilities"
+    },
+    "bookingId": {
+      "type": "string",
+      "fieldDescription": "Ссылка на бронь помещения, к которой привязана бронь оснащения",
+      "ref": "Booking",
+      "refAlias": "booking",
+      "inversedBy": "additionalFacilities"
+    },
+    "bookingPeriod": [
+      {
+        "type": "string",
+        "fieldDescription": "Период бронирования оснащения",
+        "enum": [
+          "installation",
+          "event",
+          "deinstallation"
+        ]
+      }
+    ],
+    "type": {
+      "type": "string",
+      "required": true,
+      "enum": [
+        "additional_service",
+        "equipment",
+        "furniture"
+      ]
+    },
+    "serviceId": {
+      "type": "string",
+      "fieldDescription": "Дополнительная услуга",
+      "ref": "AdditionalService",
+      "refAlias": "additionalService"
+    },
+    "equipmentId": {
+      "type": "string",
+      "fieldDescription": "Оборудование",
+      "ref": "Equipment",
+      "refAlias": "equipment"
+    },
+    "furnitureId": {
+      "type": "string",
+      "fieldDescription": "Мебель",
+      "ref": "Furniture",
+      "refAlias": "furniture"
+    },
+    "bookingComment": {
+      "type": "string",
+      "trim": true,
+      "fieldDescription": "Текстовый комментарий с информацией об оснащении"
+    },
+    "quantity": {
+      "type": "number",
+      "fieldDescription": "Необходимое количество"
+    },
+    "unitPrice": {
+      "type": "number",
+      "fieldDescription": "Цена за единицу оснащения"
+    },
+    "totalPrice": {
+      "type": "number",
+      "fieldDescription": "Общая стоимость оснащения"
+    },
+    "discountOrMarkupFlag": {
+      "type": "string",
+      "fieldDescription": "Признак применения скидки или наценки",
+      "required": true,
+      "default": "no",
+      "enum": [
+        "no",
+        "discount",
+        "markup"
+      ]
+    },
+    "discountOrMarkup": {
+      "type": "number",
+      "fieldDescription": "Размер скидки или наценки в процентах"
+    },
+    "unitPriceWithDiscountOrMarkup": {
+      "type": "number",
+      "fieldDescription": "Цена за единицу оснащения со скидкой/наценкой"
+    },
+    "totalPriceWithDiscountOrMarkup": {
+      "type": "number",
+      "fieldDescription": "Общая стоимость оснащения со скидкой/наценкой"
+    }
+  }
+}

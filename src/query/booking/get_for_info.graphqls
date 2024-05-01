@@ -1,0 +1,35 @@
+# @title: Получить экземпляр объекта "Бронь помещения" для конкретного помещения, исключая текущую бронь
+
+query ($first: Int!, $rows: Int!, $except: MongoID, $minDate: DateTime, $maxDate: DateTime, $roomsArr: [String]) {
+  pagination: BookingInfoPagination(
+    collection: "Booking"
+    aggregation: {
+      query: "booking/booking_info"
+      params: { roomsArrParam: $roomsArr, maxDateParam: $maxDate, minDateParam: $minDate, exceptParam: $except }
+    }
+    limit: $rows
+    offset: $first
+  ) {
+    count
+    items {
+      id: _id
+      eventId
+      event {
+        name
+        state
+      }
+      name
+      minDate
+      maxDate
+      allSquare
+      configuration
+      rooms {
+        roomId
+        room {
+          name
+          square
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,231 @@
+{
+  "@title": "Подтверждение отмены мероприятия",
+  "@preload": {
+    "event": {
+      "$from-context": {
+        "path": "$response.body.data.items.0",
+        "data": {
+          "$api-data": {
+            "query": "event/get_name",
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            },
+            "options": {
+              "observe": "response"
+            },
+            "variables": {
+              "id": {
+                "$query-params": {
+                  "name": "id"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "widget": {
+    "name": "container"
+  },
+  "model": "/",
+  "properties": {
+    "form": {
+      "type": "object",
+      "model": "#data",
+      "widget": {
+        "name": "form",
+        "options": {
+          "label": "Подтверждение отмены"
+        },
+        "kind": "form-popup-with-h1-style"
+      },
+      "properties": {
+        "text": {
+          "type": "string",
+          "model": false,
+          "widget": {
+            "name": "html",
+            "class": {
+              "value": "mrg-b-lg"
+            }
+          },
+          "value": {
+            "$replace": {
+              "template": "<p>Вы действительно хотите отменить мероприятие \"{{0}}\"?</p>",
+              "data": [
+                {
+                  "$from-context": {
+                    "path": "@preload.event.name"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "cancelReason": {
+          "type": "string",
+          "widget": {
+            "name": "dropdown",
+            "options": {
+              "label": "Причина отмены",
+              "placeholder": "Выбрать",
+              "optionLabel": "name",
+              "dataKey": "name",
+              "valueKey": "name",
+              "filter": true,
+              "valueOptions": [
+                {
+                  "name": "Выбрали другой город"
+                },
+                {
+                  "name": "Выбрали другую площадку"
+                },
+                {
+                  "name": "Не прошли по бюджету"
+                },
+                {
+                  "name": "Ошибочное добавление"
+                },
+                {
+                  "name": "Отмена мероприятия заказчиком"
+                },
+                {
+                  "name": "Форс мажор"
+                },
+                {
+                  "name": "Отмена по инициативе площадки"
+                },
+                {
+                  "name": "Нет свободных помещений"
+                },
+                {
+                  "name": "Тендер"
+                },
+                {
+                  "name": "Перенесено или отложено на неопределённый срок"
+                }
+              ]
+            },
+            "class": {
+              "group": "form-item p-field p-grid p-fluid",
+              "label": "form-label_required form-label p-xs-12 p-md-4 p-xl-3",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$not-empty": {
+                    "data": {
+                      "$var": {
+                        "path": "."
+                      }
+                    }
+                  }
+                },
+                "message": "Обязательно для заполнения"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            }
+          ]
+        },
+        "hasPermission": {
+          "type": "boolean",
+          "value": {
+            "$active-user-has-permission": {
+              "permission": "request.accept.new"
+            }
+          },
+          "widget": {
+            "name": "hidden"
+          }
+        },
+        "actions": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "group": "form-actions p-field p-grid mrg-t-lg",
+              "value": "p-jc-xs-end p-autolayout"
+            }
+          },
+          "properties": {
+            "accept": {
+              "widget": {
+                "name": "submit-button",
+                "options": {
+                  "label": "Подтвердить",
+                  "clientValidation": true,
+                  "dataForClientValidation": "/",
+                  "showClientValidationErrorsForElement": "form",
+                  "showClientValidationErrorMessage": true,
+                  "clientValidationErrorMessageSummary": "Ошибка",
+                  "clientValidationErrorMessageDetail": "Одно или несколько полей заполнены некорректно",
+                  "workflowAction": "event.cancel",
+                  "workflowObjectId": {
+                    "$query-params": {
+                      "name": "id"
+                    }
+                  },
+                  "dataForSubmit": {
+                    "$var": {
+                      "path": "#data"
+                    }
+                  },
+                  "showSuccessMessage": true,
+                  "successMessageSummary": "Отмена мероприятия",
+                  "successMessageDetail": {
+                    "$if": {
+                      "condition": {
+                        "$active-user-has-permission": {
+                          "permission": "request.accept.new"
+                        }
+                      },
+                      "then": "Мероприятие успешно отменено",
+                      "else": "Заявка на отмену мероприятия успешно отправлена"
+                    }
+                  },
+                  "urlInCaseOfSuccess": "/cabinet/event/list",
+                  "showServerValidationErrorMessage": true,
+                  "serverValidationErrorMessageSummary": "Отмена мероприятия",
+                  "serverValidationErrorMessageDetail": "Форма содержит ошибки",
+                  "showOtherErrorMessageSummary": true,
+                  "otherErrorMessageSummary": "Отмена мероприятия",
+                  "otherErrorMessageDetail": "Непредвиденная ошибка",
+                  "reloadTable": true,
+                  "closePopup": false
+                },
+                "class": {
+                  "value": "mrg-r-sm"
+                }
+              }
+            },
+            "cancel": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Отмена"
+                },
+                "events": {
+                  "click": {
+                    "$close-popup": null
+                  }
+                },
+                "kind": "button-btn-outline-last-style"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

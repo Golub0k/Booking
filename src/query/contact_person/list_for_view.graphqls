@@ -1,0 +1,37 @@
+# @title: Получить список экземпляров объекта "Заявка на потребность" для конкретной потребности
+
+query ($first: Int, $rows: Int, $partnerId: String!) {
+  pagination: contactPersonPagination(
+    limit: $rows
+    offset: $first
+    sort: [{ field: lastName, type: ASC }]
+    filter: {
+      AND: [
+        { _regexp: { field: partnerId, filter: $partnerId } }
+        { _operators: { state: { ne: "deleted" } } }
+      ]
+    }
+  ) {
+    count
+    items {
+      id: _id
+
+      lastName
+      firstName
+      middleName
+      phone {
+        prefix
+        num
+      }
+      email
+      partnerId
+      partner {
+        _id
+        preview
+      }
+      main
+      fullName
+      phoneView
+    }
+  }
+}

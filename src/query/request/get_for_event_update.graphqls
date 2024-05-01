@@ -1,0 +1,48 @@
+query ($id: [MongoID!]) {
+  items: requestGet(_id: $id) {
+    id: _id
+    number
+    type
+    bookingId
+    changeBookingId
+    bookingMain {
+      eventId
+      event {
+        discountOrMarkupFlag
+        discountOrMarkup
+        totalEventCost
+        totalEventCostWithDiscountOrMarkup
+      }
+      discountOrMarkupFlag
+      allPrice
+      allPriceWithDiscountOrMarkup
+    }
+    bookingOld {
+      discountOrMarkupFlag
+      discountOrMarkup
+      allPrice
+      allPriceWithDiscountOrMarkup
+    }
+    facilitiesId
+    changeFacilitiesId
+    additionalFacilitiesMain {
+      eventId
+      event {
+        discountOrMarkupFlag
+        discountOrMarkup
+        totalEventCost
+        totalEventCostWithDiscountOrMarkup
+      }
+      discountOrMarkupFlag
+      discountOrMarkup
+      totalPrice
+      totalPriceWithDiscountOrMarkup
+    }
+    additionalFacilitiesOld {
+      discountOrMarkupFlag
+      discountOrMarkup
+      totalPrice
+      totalPriceWithDiscountOrMarkup
+    }
+  }
+}

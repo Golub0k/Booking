@@ -1,0 +1,13 @@
+{
+  "type": "object",
+  "title": "Тип рассадки",
+  "properties": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "maxLength": 255,
+      "index": true,
+      "fieldDescription": "Наименование рассадки"
+    }
+  }
+}

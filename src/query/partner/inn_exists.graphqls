@@ -1,0 +1,11 @@
+query ($inn: String!, $except: MongoID) {
+  count: partnerCount(
+    filter: {
+      AND: [
+        { inn: $inn }
+        { _operators: { _id: { ne: $except } } }
+        { _operators: { state: { in: ["active", "blocked"] } } }
+      ]
+    }
+  )
+}

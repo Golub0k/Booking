@@ -1,0 +1,9 @@
+# @title: Кол-во связей объекта "Тип услуг" с доп. услугами
+
+query ($name: String!) {
+  count: servicesTypeGet(filter: { name: $name }) {
+    servicesAddServiceCount(
+      filter: { _operators: { state: { ne: "deleted" } } }
+    )
+  }
+}

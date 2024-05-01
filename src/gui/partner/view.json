@@ -1,0 +1,900 @@
+{
+  "@title": "Просмотр информации о конрагенте",
+  "@preload": {
+    "$from-context": {
+      "path": "$response.body.data.items.0",
+      "data": {
+        "$api-data": {
+          "id": {
+            "$query-params": {
+              "name": "id"
+            }
+          },
+          "options": {
+            "observe": "response"
+          },
+          "variables": {
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            }
+          },
+          "query": "partner/get"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "model": "#data",
+  "widget": {
+    "name": "form",
+    "events": {
+      "init": [
+        {
+          "$session-storage-set": {
+            "key": "previousPage",
+            "value": "view"
+          }
+        }
+      ]
+    }
+  },
+  "properties": {
+    "breadcrumbs": {
+      "type": "object",
+      "widget": {
+        "name": "breadcrumb",
+        "mobileItems": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          }
+        ],
+        "items": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          },
+          {
+            "label": "Контрагенты",
+            "routerLink": "/cabinet/partner/list"
+          },
+          {
+            "label": {
+              "$from-context": {
+                "path": "@preload.name"
+              }
+            }
+          }
+        ],
+        "class": {
+          "group": "p-xs-auto mrg-lg-b-xl mrg-b-md"
+        }
+      }
+    },
+    "header-with-status": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "options": {
+          "label": {
+            "$from-context": {
+              "path": "@preload.name"
+            }
+          }
+        },
+        "class": {
+          "group": "header-badge-container mrg-b-lg",
+          "label": "h1 width-fit-content",
+          "value": "width-fit-content"
+        }
+      },
+      "properties": {
+        "badge": {
+          "type": "string",
+          "widget": "html",
+          "value": {
+            "$replace": {
+              "template": "<span class=\"badge badge_{{code}}\">{{name}}</span>",
+              "data": {
+                "$workflow-object-state": {
+                  "objectId": {
+                    "$query-params": {
+                      "name": "id"
+                    }
+                  },
+                  "workflow": "partner"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "object": {
+      "type": "object",
+      "widget": {
+        "name": "container"
+      },
+      "properties": {
+        "mainInfo": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "options": {
+              "emptyText": "Не указано",
+              "label": "Общие данные"
+            },
+            "class": {
+              "group": "form-section",
+              "label": "h2 mrg-b-xl"
+            }
+          },
+          "properties": {
+            "container_partner_view": {
+              "type": "object",
+              "widget": {
+                "name": "container",
+                "options": {
+                  "label": "Вид контрагента"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid p-fluid",
+                  "label": "form-label p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+                }
+              },
+              "properties": {
+                "isClient": {
+                  "type": "boolean",
+                  "value": {
+                    "$from-context": {
+                      "path": "@preload.isClient"
+                    }
+                  },
+                  "widget": {
+                    "name": "checkbox",
+                    "options": {
+                      "optionLabel": "Клиент",
+                      "disabled": true
+                    },
+                    "class": {
+                      "value": "form-item-element form-item-element_checkbox form-item-element_label-html"
+                    }
+                  }
+                },
+                "isSupplier": {
+                  "type": "boolean",
+                  "value": {
+                    "$from-context": {
+                      "path": "@preload.isSupplier"
+                    }
+                  },
+                  "widget": {
+                    "name": "checkbox",
+                    "options": {
+                      "optionLabel": "Поставщик",
+                      "disabled": true
+                    },
+                    "class": {
+                      "value": "form-item-element form-item-element_checkbox form-item-element_label-html"
+                    }
+                  }
+                }
+              }
+            },
+            "type": {
+              "type": "string",
+              "value": {
+                "$switch": {
+                  "condition": {
+                    "$from-context": {
+                      "path": "@preload.type"
+                    }
+                  },
+                  "default": "",
+                  "cases": [
+                    {
+                      "value": "ur",
+                      "action": "Юридическое лицо"
+                    },
+                    {
+                      "value": "fz",
+                      "action": "Физическое лицо"
+                    },
+                    {
+                      "value": "ip",
+                      "action": "Индивидуальный предприниматель"
+                    },
+                    {
+                      "value": "sm",
+                      "action": "Самозанятый"
+                    }
+                  ]
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "emptyText": "Не указано",
+                  "label": "Тип организации",
+                  "valueKey": "code",
+                  "optionLabel": "title",
+                  "valueOptions": [
+                    {
+                      "code": "ur",
+                      "title": "Юридическое лицо"
+                    },
+                    {
+                      "code": "ip",
+                      "title": "Индивидуальный предприниматель"
+                    },
+                    {
+                      "code": "fz",
+                      "title": "Физическое лицо"
+                    },
+                    {
+                      "code": "sm",
+                      "title": "Самозанятый"
+                    }
+                  ]
+                },
+                "class": {
+                  "group": "form-item form-item_radio p-field p-grid p-fluid",
+                  "label": "form-label form-label mrg-t-0 p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element p-xs-12 p-md-6 p-xl-4 d-block",
+                  "item": "form-item_radio__item width-100"
+                }
+              }
+            },
+            "name": {
+              "type": "string",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.name"
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "emptyText": "Не указано",
+                  "label": {
+                    "$if": {
+                      "condition": {
+                        "$or": {
+                          "operands": [
+                            {
+                              "===": {
+                                "operand1": {
+                                  "$from-context": {
+                                    "path": "@preload.type"
+                                  }
+                                },
+                                "operand2": "ur"
+                              }
+                            },
+                            {
+                              "===": {
+                                "operand1": {
+                                  "$from-context": {
+                                    "path": "@preload.type"
+                                  }
+                                },
+                                "operand2": "ip"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "then": "Полное наименование организации",
+                      "else": "ФИО (полностью)"
+                    }
+                  }
+                },
+                "class": {
+                  "group": "form-item p-field p-grid p-fluid",
+                  "label": "form-label p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+                }
+              }
+            },
+            "inn": {
+              "type": "string",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.inn"
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "emptyText": "Не указано",
+                  "label": {
+                    "$if": {
+                      "condition": {
+                        "===": {
+                          "operand1": {
+                            "$from-context": {
+                              "path": "@preload.country.code"
+                            }
+                          },
+                          "operand2": "643"
+                        }
+                      },
+                      "then": "ИНН",
+                      "else": "Аналог ИНН (в вашей стране)"
+                    }
+                  }
+                },
+                "class": {
+                  "group": "form-item p-field p-grid p-fluid",
+                  "label": "form-label p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+                }
+              }
+            },
+            "kpp": {
+              "type": "string",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.kpp"
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "emptyText": "Не указано",
+                  "label": "КПП",
+                  "visible": {
+                    "===": {
+                      "operand1": {
+                        "$from-context": {
+                          "path": "@preload.type"
+                        }
+                      },
+                      "operand2": "ur"
+                    }
+                  }
+                },
+                "class": {
+                  "group": "form-item p-field p-grid p-fluid",
+                  "label": "form-label p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+                }
+              }
+            },
+            "ogrn": {
+              "type": "string",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.ogrn"
+                }
+              },
+              "widget": {
+                "emptyText": "Не указано",
+                "name": "info",
+                "options": {
+                  "label": {
+                    "$if": {
+                      "condition": {
+                        "===": {
+                          "operand1": {
+                            "$from-context": {
+                              "path": "@preload.type"
+                            }
+                          },
+                          "operand2": "ur"
+                        }
+                      },
+                      "then": "ОГРН",
+                      "else": "ОГРНИП"
+                    }
+                  },
+                  "visible": {
+                    "$or": {
+                      "operands": [
+                        {
+                          "===": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "@preload.type"
+                              }
+                            },
+                            "operand2": "ur"
+                          }
+                        },
+                        {
+                          "===": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "@preload.type"
+                              }
+                            },
+                            "operand2": "ip"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "class": {
+                  "group": "form-item p-field p-grid p-fluid",
+                  "label": "form-label p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+                }
+              }
+            },
+            "websiteAddress": {
+              "type": "string",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.websiteAddress"
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "emptyText": "Не указано",
+                  "label": "Адрес сайта"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid p-fluid",
+                  "label": "form-label p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+                }
+              }
+            }
+          }
+        },
+        "address": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "options": {
+              "label": "Адрес организации"
+            },
+            "class": {
+              "group": "form-section",
+              "label": "h2 mrg-b-xl"
+            }
+          },
+          "properties": {
+            "country": {
+              "type": "string",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.country.fullName"
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "emptyText": "Не указано",
+                  "label": "Страна"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid p-fluid",
+                  "label": "form-label p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+                }
+              }
+            },
+            "legal": {
+              "type": "string",
+              "value": {
+                "$if": {
+                  "condition": {
+                    "===": {
+                      "operand1": {
+                        "$from-context": {
+                          "path": "@preload.addressPartnerId.0.type"
+                        }
+                      },
+                      "operand2": "legal"
+                    }
+                  },
+                  "then": {
+                    "$from-context": {
+                      "path": "@preload.addressPartnerId.0.address"
+                    }
+                  },
+                  "else": {
+                    "$from-context": {
+                      "path": "@preload.addressPartnerId.1.address"
+                    }
+                  }
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "emptyText": "Не указано",
+                  "label": "Юридический адрес"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid p-fluid",
+                  "label": "form-label p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+                }
+              }
+            },
+            "mail": {
+              "type": "string",
+              "value": {
+                "$if": {
+                  "condition": {
+                    "===": {
+                      "operand1": {
+                        "$from-context": {
+                          "path": "@preload.addressPartnerId.0.type"
+                        }
+                      },
+                      "operand2": "mail"
+                    }
+                  },
+                  "then": {
+                    "$from-context": {
+                      "path": "@preload.addressPartnerId.0.address"
+                    }
+                  },
+                  "else": {
+                    "$from-context": {
+                      "path": "@preload.addressPartnerId.1.address"
+                    }
+                  }
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "emptyText": "Не указано",
+                  "label": "Почтовый адрес"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid p-fluid",
+                  "label": "form-label p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+                }
+              }
+            },
+            "container_sameAsLegal": {
+              "type": "object",
+              "widget": {
+                "name": "container",
+                "options": {
+                  "label": " "
+                },
+                "class": {
+                  "group": "form-item p-field p-grid p-fluid",
+                  "label": "form-label p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+                }
+              },
+              "properties": {
+                "sameAsLegal": {
+                  "type": "boolean",
+                  "value": {
+                    "$if": {
+                      "condition": {
+                        "===": {
+                          "operand1": {
+                            "$from-context": {
+                              "path": "@preload.addressPartnerId.0.type"
+                            }
+                          },
+                          "operand2": "mail"
+                        }
+                      },
+                      "then": {
+                        "$from-context": {
+                          "path": "@preload.addressPartnerId.0.sameAsLegal"
+                        }
+                      },
+                      "else": {
+                        "$from-context": {
+                          "path": "@preload.addressPartnerId.1.sameAsLegal"
+                        }
+                      }
+                    }
+                  },
+                  "widget": {
+                    "name": "checkbox",
+                    "options": {
+                      "optionLabel": "",
+                      "optionLabelHTML": "Совпадает с юридическим",
+                      "disabled": true
+                    },
+                    "class": {
+                      "value": "form-item-element form-item-element_checkbox form-item-element_label-html"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "contactList": {
+          "type": "object",
+          "widget": {
+            "name": "container"
+          },
+          "properties": {
+            "header": {
+              "type": "object",
+              "widget": {
+                "name": "container",
+                "options": {
+                  "label": "Контактные лица"
+                },
+                "class": {
+                  "group": "flex-row p-grid mrg-b-lg mrg-t-0",
+                  "label": "h2  p-xs-12 p-md-4 p-xl-3 pdd-tb-0 mrg-md-b-md",
+                  "value": "p-xs-12 p-md-8 p-xl-9 pdd-tb-0"
+                }
+              }
+            },
+            "table": {
+              "type": "array",
+              "model": "#data.contact",
+              "value": {
+                "$api-table-workflow-data": {
+                  "model": "#data.contact",
+                  "query": "contact_person/list_for_view",
+                  "id": {
+                    "$query-params": {
+                      "name": "id"
+                    }
+                  },
+                  "variables": {
+                    "$assign-object": {
+                      "path": "partnerId",
+                      "data": {
+                        "$query-params": {
+                          "name": "id"
+                        }
+                      },
+                      "object": {
+                        "$graphql-event-variables": {
+                          "data": {
+                            "$element-event": {
+                              "event": "lazyLoad"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "errors": {
+                    "default": {
+                      "$message": {
+                        "severity": "error",
+                        "summary": "Ошибка",
+                        "detail": "При загрузке данных произошла ошибка, повторите попытку позднее"
+                      }
+                    }
+                  }
+                }
+              },
+              "widget": {
+                "name": "table-lazy",
+                "options": {
+                  "responsive": false,
+                  "first": 0,
+                  "lazy": true,
+                  "paginatorLeft": {
+                    "type": "string",
+                    "widget": "info",
+                    "value": {
+                      "$grid": {
+                        "action": "rows-per-page",
+                        "path": "#data.contact"
+                      }
+                    }
+                  },
+                  "rows": 10,
+                  "rowsPerPageOptions": [
+                    10,
+                    20,
+                    50
+                  ],
+                  "routerOptions": [
+                    "first",
+                    "rows"
+                  ]
+                },
+                "events": {
+                  "lazyLoad": {
+                    "$element-option": {
+                      "path": "#data",
+                      "option": "loading",
+                      "value": true
+                    }
+                  }
+                }
+              },
+              "items": {
+                "type": "object",
+                "properties": {
+                  "lastName": {
+                    "type": "string",
+                    "widget": {
+                      "name": "hidden",
+                      "options": {
+                        "visible": false
+                      }
+                    }
+                  },
+                  "lastNameView": {
+                    "type": "object",
+                    "widget": {
+                      "name": "table-column",
+                      "options": {
+                        "label": "Фамилия"
+                      }
+                    },
+                    "properties": {
+                      "lastNameText": {
+                        "type": "string",
+                        "widget": {
+                          "name": "html",
+                          "class": {
+                            "value": {
+                              "$if": {
+                                "condition": {
+                                  "$from-context": {
+                                    "path": "$rowData.main"
+                                  }
+                                },
+                                "then": "user-state_online",
+                                "else": "user-state_offline"
+                              }
+                            }
+                          }
+                        },
+                        "value": {
+                          "$from-context": {
+                            "path": "$rowData.lastName"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "firstName": {
+                    "type": "string",
+                    "widget": {
+                      "name": "table-column",
+                      "options": {
+                        "label": "Имя"
+                      }
+                    }
+                  },
+                  "middleName": {
+                    "type": "string",
+                    "widget": {
+                      "name": "table-column",
+                      "options": {
+                        "label": "Отчество"
+                      }
+                    }
+                  },
+                  "phone": {
+                    "type": "object",
+                    "widget": {
+                      "name": "table-column",
+                      "options": {
+                        "visible": false
+                      }
+                    },
+                    "properties": {
+                      "prefix": {
+                        "type": "string",
+                        "widget": {
+                          "name": "hidden"
+                        }
+                      },
+                      "num": {
+                        "type": "string",
+                        "widget": {
+                          "name": "hidden"
+                        }
+                      }
+                    }
+                  },
+                  "phoneView": {
+                    "type": "string",
+                    "widget": {
+                      "name": "table-column",
+                      "options": {
+                        "label": "Телефон"
+                      }
+                    }
+                  },
+                  "main": {
+                    "type": "boolean",
+                    "widget": {
+                      "name": "table-column",
+                      "options": {
+                        "visible": false
+                      }
+                    }
+                  },
+                  "email": {
+                    "type": "string",
+                    "widget": {
+                      "name": "table-column",
+                      "options": {
+                        "label": "Почта"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "model": false,
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "form-actions mrg-t-lg",
+          "value": "p-jc-xl-end mrg-t-md p-autolayout"
+        }
+      },
+      "properties": {
+        "edit": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Редактировать"
+            },
+            "events": {
+              "click": {
+                "$navigate": {
+                  "commands": [
+                    "/cabinet/partner/edit"
+                  ],
+                  "extras": {
+                    "queryParams": {
+                      "id": {
+                        "$query-params": {
+                          "name": "id"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "class": {
+              "value": "mrg-r-sm"
+            }
+          }
+        },
+        "messageList": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Вернуться в реестр"
+            },
+            "events": {
+              "click": {
+                "$go": {
+                  "workflow": "partner",
+                  "action": "list"
+                }
+              }
+            },
+            "class": {
+              "value": "button_outline mrg-r-0 mrg-b-0"
+            }
+          }
+        }
+      }
+    }
+  }
+}

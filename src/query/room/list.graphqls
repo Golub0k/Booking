@@ -1,0 +1,68 @@
+# @title: Получить список всех помещений
+
+query (
+  $first: Int!
+  $rows: Int!
+  $search: String
+  $type: [String!]
+  $floor: [String]
+  $squareFrom: Float
+  $squareTo: Float
+  $roominessFrom: Float
+  $roominessTo: Float
+  $sort: [FieldSortRoomInput]
+) {
+  pagination: roomPagination(
+    limit: $rows
+    offset: $first
+    sort: $sort
+    filter: {
+      AND: [
+        {
+          OR: [
+            { _regexp: { field: name, filter: $search } }
+            { _regexp: { field: number, filter: $search } }
+            {
+              _filterRef: {
+                type: { _regexp: { field: name, filter: $search } }
+              }
+            }
+          ]
+        }
+        { _operators: { type: { in: $type } } }
+        { _operators: { floor: { in: $floor } } }
+        { _operators: { state: { ne: "deleted" } } }
+        {
+          AND: [
+            { _operators: { square: { gte: $squareFrom } } }
+            { _operators: { square: { lte: $squareTo } } }
+          ]
+        }
+        {
+          AND: [
+            { _operators: { roominess: { gte: $roominessFrom } } }
+            { _operators: { roominess: { lte: $roominessTo } } }
+          ]
+        }
+      ]
+    }
+  ) {
+    count
+    items {
+      id: _id
+      name
+      type
+      roomType {
+        id: _id
+        name
+      }
+      number
+      floor
+      square
+      roominess
+      transformation
+      configuration
+      state
+    }
+  }
+}

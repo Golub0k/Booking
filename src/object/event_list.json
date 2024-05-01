@@ -1,0 +1,31 @@
+{
+  "type": "aggregation",
+  "options": {
+    "mode": "pagination",
+    "extends": "event"
+  },
+  "properties": {
+    "state": {
+      "type": "string",
+      "fieldDescription": "Текущий статус"
+    },
+    "requests": [
+      {
+        "_id": {
+          "type": "string",
+          "fieldDescription": "Несогласованная заявка по мероприятию"
+        }
+      }
+    ],
+    "eventGroup": [
+      {
+        "_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    ]
+  }
+}

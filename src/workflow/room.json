@@ -1,0 +1,604 @@
+{
+  "version": 2,
+  "objectType": "room",
+  "context": "room/context",
+  "description": "Жизненный цикл помещения",
+  "rbac": {
+    "visible": true,
+    "title": "Помещения"
+  },
+  "actions": {
+    "initialActions": {
+      "add": {
+        "title": "Добавить",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Добавить помещение"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "room/add",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "room_type/get_for_dropdown",
+            "additional_service/get_for_select",
+            "equipment/get_for_select",
+            "furniture/get_for_select"
+          ]
+        },
+        "functions": [
+          {
+            "$assign-context": {
+              "path": "$additional_services",
+              "data": {
+                "$from-context": {
+                  "path": "data.additional_services"
+                }
+              }
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$equipments",
+              "data": {
+                "$from-context": {
+                  "path": "data.equipments"
+                }
+              }
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$furniture",
+              "data": {
+                "$from-context": {
+                  "path": "data.furniture"
+                }
+              }
+            }
+          },
+          {
+            "$if": {
+              "condition": {
+                "$not-empty": {
+                  "data": {
+                    "$from-context": {
+                      "path": "data.height"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "$exclude": {
+                  "data": {
+                    "$from-context": {
+                      "path": "data"
+                    }
+                  },
+                  "exclude": [
+                    "additional_services",
+                    "equipments",
+                    "furniture"
+                  ]
+                }
+              },
+              "else": {
+                "$exclude": {
+                  "data": {
+                    "$from-context": {
+                      "path": "data"
+                    }
+                  },
+                  "exclude": [
+                    "additional_services",
+                    "equipments",
+                    "furniture",
+                    "height"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "$assign-object": {
+              "path": "additional_services",
+              "data": {
+                "$array-map": {
+                  "array": {
+                    "$from-context": {
+                      "path": "$additional_services"
+                    }
+                  },
+                  "map": {
+                    "serviceId": {
+                      "$from-context": {
+                        "path": "$data.serviceId"
+                      }
+                    }
+                  }
+                }
+              },
+              "object": {
+                "$from-context": {
+                  "path": "data"
+                }
+              }
+            }
+          },
+          {
+            "$assign-object": {
+              "path": "equipments",
+              "data": {
+                "$array-map": {
+                  "array": {
+                    "$from-context": {
+                      "path": "$equipments"
+                    }
+                  },
+                  "map": {
+                    "equipmentId": {
+                      "$from-context": {
+                        "path": "$data.equipmentId"
+                      }
+                    }
+                  }
+                }
+              },
+              "object": {
+                "$from-context": {
+                  "path": "data"
+                }
+              }
+            }
+          },
+          {
+            "$assign-object": {
+              "path": "furniture",
+              "data": {
+                "$array-map": {
+                  "array": {
+                    "$from-context": {
+                      "path": "$furniture"
+                    }
+                  },
+                  "map": {
+                    "furnitureId": {
+                      "$from-context": {
+                        "path": "$data.furnitureId"
+                      }
+                    }
+                  }
+                }
+              },
+              "object": {
+                "$from-context": {
+                  "path": "data"
+                }
+              }
+            }
+          },
+          {
+            "$workflow-object-create": {
+              "objectType": "room",
+              "query": "room/add",
+              "variables": {
+                "data": {
+                  "$from-context": {
+                    "path": "data"
+                  }
+                }
+              },
+              "responsePath": "room"
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "active"
+        }
+      }
+    },
+    "globalActions": {
+      "list": {
+        "title": "Просмотреть реестр помещений",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Просмотреть реестр помещений"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "room/list",
+            "mode": "form",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "room/list",
+            "room_type/get_for_dropdown"
+          ]
+        }
+      }
+    },
+    "statesActions": {
+      "view": {
+        "title": "Просмотреть",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Просмотреть карточку помещения"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "room/view",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "room/get"
+          ]
+        }
+      },
+      "edit": {
+        "title": "Редактировать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Редактировать помещение"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "room/edit",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "room/get",
+            "room_type/get_for_dropdown",
+            "additional_service/get_for_select",
+            "equipment/get_for_select",
+            "furniture/get_for_select"
+          ]
+        },
+        "functions": [
+          {
+            "$assign-context": {
+              "path": "$additional_services",
+              "data": {
+                "$from-context": {
+                  "path": "data.additional_services"
+                }
+              }
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$equipments",
+              "data": {
+                "$from-context": {
+                  "path": "data.equipments"
+                }
+              }
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$furniture",
+              "data": {
+                "$from-context": {
+                  "path": "data.furniture"
+                }
+              }
+            }
+          },
+          {
+            "$exclude": {
+              "data": {
+                "$from-context": {
+                  "path": "data"
+                }
+              },
+              "exclude": [
+                "additional_services",
+                "equipments",
+                "furniture"
+              ]
+            }
+          },
+          {
+            "$assign-object": {
+              "path": "additional_services",
+              "data": {
+                "$array-map": {
+                  "array": {
+                    "$from-context": {
+                      "path": "$additional_services"
+                    }
+                  },
+                  "map": {
+                    "serviceId": {
+                      "$from-context": {
+                        "path": "$data.serviceId"
+                      }
+                    }
+                  }
+                }
+              },
+              "object": {
+                "$from-context": {
+                  "path": "data"
+                }
+              }
+            }
+          },
+          {
+            "$assign-object": {
+              "path": "equipments",
+              "data": {
+                "$array-map": {
+                  "array": {
+                    "$from-context": {
+                      "path": "$equipments"
+                    }
+                  },
+                  "map": {
+                    "equipmentId": {
+                      "$from-context": {
+                        "path": "$data.equipmentId"
+                      }
+                    }
+                  }
+                }
+              },
+              "object": {
+                "$from-context": {
+                  "path": "data"
+                }
+              }
+            }
+          },
+          {
+            "$assign-object": {
+              "path": "furniture",
+              "data": {
+                "$array-map": {
+                  "array": {
+                    "$from-context": {
+                      "path": "$furniture"
+                    }
+                  },
+                  "map": {
+                    "furnitureId": {
+                      "$from-context": {
+                        "path": "$data.furnitureId"
+                      }
+                    }
+                  }
+                }
+              },
+              "object": {
+                "$from-context": {
+                  "path": "data"
+                }
+              }
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "room/update",
+              "variables": {
+                "$assign-object": {
+                  "path": "data",
+                  "data": {
+                    "$from-context": {
+                      "path": "data"
+                    }
+                  },
+                  "object": {
+                    "id": {
+                      "$from-context": {
+                        "path": "objectId"
+                      }
+                    }
+                  }
+                }
+              },
+              "responsePath": "object"
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "active"
+        }
+      },
+      "archive": {
+        "title": "Перенести в архив",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Перенести помещение в архив"
+          },
+          "includeInActionsList": {
+            "availableForViews": "onlyFor",
+            "views": [
+              "room/list"
+            ]
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "room/archive",
+            "layout": "cabinet",
+            "mode": "popup"
+          }
+        },
+        "results": {
+          "unconditional": "archived"
+        }
+      },
+      "extract_from_archive": {
+        "title": "Вернуть из архива",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Вернуть помещение из архива"
+          },
+          "includeInActionsList": {
+            "availableForViews": "onlyFor",
+            "views": [
+              "room/list"
+            ]
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "room/extract_from_archive",
+            "layout": "cabinet",
+            "mode": "popup"
+          }
+        },
+        "results": {
+          "unconditional": "active"
+        }
+      },
+      "delete": {
+        "title": "Удалить",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Удалить помещение"
+          },
+          "includeInActionsList": {
+            "availableForViews": "onlyFor",
+            "views": [
+              "room/list"
+            ]
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "room/delete",
+            "layout": "cabinet",
+            "mode": "popup"
+          }
+        },
+        "results": {
+          "unconditional": "deleted"
+        }
+      },
+      "add_to_stop_list": {
+        "title": "Занести в стоп-лист",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Занести помещение в стоп-лист"
+          },
+          "includeInActionsList": {
+            "availableForViews": "onlyFor",
+            "views": [
+              "room/list"
+            ]
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "room/add_to_stop_list",
+            "layout": "cabinet",
+            "mode": "popup"
+          },
+          "availableQueriesInViews": [
+            "booking/get_to_check"
+          ]
+        },
+        "functions": [
+          {
+            "$assign-context": {
+              "path": "data.roomId",
+              "data": {
+                "$from-context": {
+                  "path": "objectId"
+                }
+              }
+            }
+          },
+          {
+            "$workflow-run": {
+              "workflowName": "stop_list_note",
+              "action": "add_from_room",
+              "data": {
+                "$from-context": {
+                  "path": "data"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "view-daily-schedule": {
+        "title": "Просмотреть расписание на день для помещения",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "permissionCode": "event.list-employment-schedule"
+          },
+          "includeInActionsList": {
+            "availableForViews": "notForAny",
+            "views": []
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "event/view_daily_schedule",
+            "mode": "popup",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "booking/get_for_views_daily_schedule"
+          ]
+        }
+      }
+    }
+  },
+  "states": {
+    "active": {
+      "title": "Активно",
+      "description": "Активное состояние помещения",
+      "statesActions": [
+        "view",
+        "edit",
+        "add_to_stop_list",
+        "archive",
+        "delete",
+        "view-daily-schedule"
+      ]
+    },
+    "archived": {
+      "title": "В архиве",
+      "description": "Архивированное состояние помещения",
+      "statesActions": [
+        "view",
+        "extract_from_archive",
+        "delete",
+        "view-daily-schedule"
+      ]
+    },
+    "deleted": {
+      "title": "Удалено",
+      "description": "Удаленное состояние помещения",
+      "displaySettingsInLists": {
+        "hidden": true
+      },
+      "finish": true
+    }
+  }
+}

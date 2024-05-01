@@ -1,0 +1,16 @@
+{
+  "meta": {
+    "title": "Выражение search-apply-equipments"
+  },
+  "schema": {
+    "$grid": {
+      "action": "lazyLoad",
+      "path": "#selectorEquipments",
+      "filters": {
+        "$var": {
+          "path": "#searchEquipments"
+        }
+      }
+    }
+  }
+}

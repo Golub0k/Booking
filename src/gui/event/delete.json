@@ -1,0 +1,168 @@
+{
+  "@title": "Подтверждение удаления мероприятия",
+  "@preload": {
+    "event": {
+      "$from-context": {
+        "path": "$response.body.data.items.0",
+        "data": {
+          "$api-data": {
+            "query": "event/get_name",
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            },
+            "options": {
+              "observe": "response"
+            },
+            "variables": {
+              "id": {
+                "$query-params": {
+                  "name": "id"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "widget": {
+    "name": "container"
+  },
+  "model": "#data",
+  "properties": {
+    "form": {
+      "type": "object",
+      "model": "#data",
+      "widget": {
+        "name": "form"
+      },
+      "properties": {
+        "header": {
+          "model": false,
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "value": "p-autolayout p-jc-between p-ai-center"
+            }
+          },
+          "properties": {
+            "label": {
+              "model": false,
+              "type": "string",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "viewedValue": "Подтверждение удаления"
+                },
+                "class": {
+                  "value": "h3 mrg-b-lg"
+                }
+              }
+            }
+          }
+        },
+        "content": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "group": "popup",
+              "label": "h1 mrg-b-lg",
+              "value": "form-group_popup-collapse"
+            }
+          },
+          "properties": {
+            "text": {
+              "type": "string",
+              "widget": "html",
+              "value": {
+                "$replace": {
+                  "template": "<p>Вы действительно хотите удалить мероприятие \"{{0}}\"?</p>",
+                  "data": [
+                    {
+                      "$from-context": {
+                        "path": "@preload.event.name"
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "actions": {
+              "type": "object",
+              "widget": {
+                "name": "container",
+                "class": {
+                  "group": "form-actions p-field p-grid mrg-t-lg",
+                  "value": "p-jc-xl-end p-autolayout"
+                }
+              },
+              "properties": {
+                "delete": {
+                  "widget": {
+                    "name": "submit-button",
+                    "options": {
+                      "label": "Удалить",
+                      "clientValidation": true,
+                      "dataForClientValidation": "/",
+                      "showClientValidationErrorsForElement": "form",
+                      "showClientValidationErrorMessage": true,
+                      "clientValidationErrorMessageSummary": "Ошибка",
+                      "clientValidationErrorMessageDetail": "Одно или несколько полей заполнены некорректно",
+                      "workflowAction": "event.delete",
+                      "workflowObjectId": {
+                        "$query-params": {
+                          "name": "id"
+                        }
+                      },
+                      "dataForSubmit": {
+                        "$var": {
+                          "path": "#data"
+                        }
+                      },
+                      "showSuccessMessage": true,
+                      "successMessageSummary": "Удаление мероприятия",
+                      "successMessageDetail": "Мероприятие успешно удалено",
+                      "urlInCaseOfSuccess": "/cabinet/event/list",
+                      "showServerValidationErrorMessage": true,
+                      "serverValidationErrorMessageSummary": "Удаление мероприятия",
+                      "serverValidationErrorMessageDetail": "Форма содержит ошибки",
+                      "showOtherErrorMessageSummary": true,
+                      "otherErrorMessageSummary": "Удаление мероприятия",
+                      "otherErrorMessageDetail": "Непредвиденная ошибка",
+                      "reloadTable": true,
+                      "closePopup": false
+                    },
+                    "class": {
+                      "value": "mrg-r-sm"
+                    }
+                  }
+                },
+                "cancel": {
+                  "widget": {
+                    "name": "button",
+                    "options": {
+                      "label": "Отмена"
+                    },
+                    "events": {
+                      "click": {
+                        "$close-popup": null
+                      }
+                    },
+                    "class": {
+                      "value": "button_outline mrg-r-0 mrg-b-0"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

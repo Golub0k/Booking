@@ -1,0 +1,37 @@
+{
+  "access-control": [
+    {
+      "description": "Пользователь создан не из Active Directory",
+      "rules": {
+        "!==": {
+          "operand1": {
+            "$fetch-object": {
+              "path": "data.user.userAD",
+              "throwable": false,
+              "data": {
+                "$api-data": {
+                  "query": "user/is_ad_user",
+                  "variables": {
+                    "id": {
+                      "$from-context": {
+                        "path": "$actionContext.id"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "operand2": true
+        }
+      },
+      "error": {
+        "status": 403,
+        "message": "Запрещено"
+      },
+      "states": [
+        "active"
+      ]
+    }
+  ]
+}

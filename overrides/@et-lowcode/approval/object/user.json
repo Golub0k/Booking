@@ -1,0 +1,133 @@
+{
+  "type": "object",
+  "title": "Пользователь",
+  "properties": {
+    "login": {
+      "type": "string",
+      "trim": true,
+      "index": true,
+      "fieldDescription": "Логин",
+      "required": true
+    },
+    "email": {
+      "type": "string",
+      "lowercase": true,
+      "trim": true,
+      "index": true,
+      "fieldDescription": "Email",
+      "required": true
+    },
+    "lastName": {
+      "type": "string",
+      "trim": true,
+      "fieldDescription": "Фамилия",
+      "required": true
+    },
+    "firstName": {
+      "type": "string",
+      "trim": true,
+      "fieldDescription": "Имя",
+      "required": true
+    },
+    "middleName": {
+      "type": "string",
+      "trim": true,
+      "fieldDescription": "Отчество",
+      "required": false
+    },
+    "position": {
+      "type": "string",
+      "trim": true,
+      "fieldDescription": "Должность",
+      "required": false
+    },
+    "phone": {
+      "fieldDescription": "Телефон",
+      "prefix": {
+        "type": "string",
+        "fieldDescription": "Код страны",
+        "required": false
+      },
+      "num": {
+        "type": "string",
+        "trim": true,
+        "fieldDescription": "Номер",
+        "required": false
+      },
+      "ext": {
+        "type": "string",
+        "trim": true,
+        "fieldDescription": "Добавочный номер",
+        "required": false
+      }
+    },
+    "roles": [
+      {
+        "id": {
+          "type": "string",
+          "ref": "Role",
+          "fieldDescription": "Роль пользователя",
+          "refAlias": "role"
+        },
+        "fieldDescription": "Роли пользователя"
+      }
+    ],
+    "organizationId": {
+      "type": "string",
+      "index": true,
+      "ref": "Organization",
+      "fieldDescription": "Организация",
+      "refAlias": "organization"
+    },
+    "blockReasonId": {
+      "type": "objectId",
+      "ref": "UserBlockReason",
+      "fieldDescription": "Причина блокировки",
+      "refAlias": "blockReason"
+    },
+    "userSettingsId": {
+      "type": "string",
+      "fieldDescription": "Идентификатор справочной информации пользователя",
+      "required": false,
+      "ref": "UserSettings",
+      "refAlias": "userSettings"
+    },
+    "userAD": {
+      "type": "boolean",
+      "fieldDescription": "Идентификатор пользователя, зарегистрированного через Active Directory",
+      "required": false
+    },
+    "timezone": {
+      "offset": {
+        "type": "string",
+        "trim": true,
+        "required": true
+      },
+      "name": {
+        "type": "string",
+        "trim": true,
+        "required": true
+      }
+    }
+  },
+  "additionalFields": {
+    "fullName": {
+      "type": "string",
+      "fieldDescription": "ФИО",
+      "resolve": "${object.lastName} ${object.firstName} ${object.middleName ? object.middleName : ''}"
+    },
+    "userName": {
+      "type": "string",
+      "fieldDescription": "Полное имя",
+      "resolve": "${object.firstName} ${object.middleName ? object.middleName : '' }"
+    },
+    "phoneView": {
+      "type": "string",
+      "fieldDescription": "Телефон полностью",
+      "resolve": "${object.phone.num ? (object.phone.prefix + ' ' + object.phone.num + (object.phone.ext ? ' доб. ' + object.phone.ext : '')) : ''}"
+    }
+  },
+  "settings": {
+    "preview": "fullName"
+  }
+}

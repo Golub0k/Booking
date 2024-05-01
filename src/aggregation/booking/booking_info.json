@@ -1,0 +1,275 @@
+[
+    {
+        "$match": {
+            "$and": [
+                {
+                    "state": "filled"
+                },
+                {
+                    "$expr": {
+                        "$ne": [
+                            {
+                                "$toString": "$_id"
+                            }, $exceptParam
+                        ]
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "$lookup": {
+            "from": "event",
+            "let": {
+                "eventId": "$eventId"
+            },
+            "pipeline": [
+                {
+                    "$match": {
+                        "$expr": {
+                            "$eq": [
+                                {
+                                    "$toString": "$_id"
+                                },
+                                "$$eventId"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "as": "event"
+        }
+    },
+    {
+        "$unwind": {
+            "path": "$event",
+            "preserveNullAndEmptyArrays": false
+        }
+    },
+    {
+        "$match": {
+            "$and": [
+                {
+                    "event.actual": {
+                        "$ne": false
+                    }
+                },
+                {
+                    "$expr": {
+                        "$not": {
+                            "$in": [
+                                "$event.state",
+                                [
+                                    "new",
+                                    "draft",
+                                    "canceled",
+                                    "deleted",
+                                    "check_out"
+                                ]
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "$addFields": {
+            "start": $minDateParam
+        }
+    },
+    {
+        "$addFields": {
+            "end": $maxDateParam
+        }
+    },
+    {
+        "$match": {
+            "$expr": {
+                "$or": [
+                    {
+                        "$and": [
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            "$start",
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$gte": [
+                                            "$minDate",
+                                            {
+                                                "$toDate": "$start"
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            "$end",
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$lte": [
+                                            "$minDate",
+                                            {
+                                                "$toDate": "$end"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "$and": [
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            "$start",
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$gte": [
+                                            "$maxDate",
+                                            {
+                                                "$toDate": "$start"
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            "$end",
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$lte": [
+                                            "$maxDate",
+                                            {
+                                                "$toDate": "$end"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "$and": [
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            "$start",
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$lte": [
+                                            "$minDate",
+                                            {
+                                                "$toDate": "$start"
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            "$end",
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$gte": [
+                                            "$maxDate",
+                                            {
+                                                "$toDate": "$end"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "$unwind": {
+            "path": "$rooms",
+            "preserveNullAndEmptyArrays": true
+        }
+    },
+    {
+        "$addFields": {
+            "roomId": "$rooms.roomId"
+        }
+    },
+    {
+        "$addFields": {
+            "roomsArr": $roomsArrParam
+        }
+    },
+    {
+        "$match": {
+            "$expr": {
+                "$in": [
+                    "$roomId",
+                    "$roomsArr"
+                ]
+            }
+        }
+    },
+    {
+        "$group": {
+            "_id": "$_id",
+            "eventId": {
+                "$first": "$eventId"
+            },
+            "event": {
+                "$first": "$event"
+            },
+            "name": {
+                "$first": "$name"
+            },
+            "minDate": {
+                "$first": "$minDate"
+            },
+            "maxDate": {
+                "$first": "$maxDate"
+            },
+            "allSquare": {
+                "$first": "$allSquare"
+            },
+            "configuration": {
+                "$first": "$configuration"
+            },
+            "rooms": {
+                "$push": "$rooms"
+            }
+        }
+    }
+]

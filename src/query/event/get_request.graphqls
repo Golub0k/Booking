@@ -1,0 +1,8 @@
+query ($id: [MongoID!]) {
+  items: eventGet(_id: $id) {
+    id: _id
+    requests(filter: { _operators: { state: { in: ["new", "on_approve"] } } }) {
+      _id
+    }
+  }
+}

@@ -1,0 +1,1838 @@
+{
+  "@title": "UIKit",
+  "type": "object",
+  "widget": {
+    "name": "container",
+    "options": {
+      "label": "UI kit приложения"
+    },
+    "class": {
+      "label": "h1 mrg-b-xl"
+    }
+  },
+  "properties": {
+    "container_info_1": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "options": {
+          "label": "1. Поля вывода данных"
+        },
+        "class": {
+          "label": "h2 mrg-b-xl mrg-t-xl"
+        }
+      },
+      "properties": {
+        "description_1_1": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br><br> // Заголовок с бэйджем статуса"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element form-item-element_view"
+            }
+          }
+        },
+        "header-with-bage_1_1": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "options": {
+              "label": "Заголовок"
+            },
+            "class": {
+              "group": "header-badge-container mrg-b-lg",
+              "label": "h1 width-fit-content",
+              "value": "width-fit-content"
+            }
+          },
+          "properties": {
+            "badge": {
+              "type": "string",
+              "widget": "html",
+              "value": {
+                "$replace": {
+                  "template": "<span class=\"badge badge_primary badge_{{code}}\">{{name}}</span>",
+                  "data": {
+                    "code": "new",
+                    "name": "Статус"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description_1_1_2": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "// Заголовок без бэйджа статуса"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element form-item-element_view"
+            }
+          }
+        },
+        "header-with-bage_1_1_2": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "options": {
+              "label": "Заголовок"
+            },
+            "class": {
+              "label": "h1 mrg-b-lg d-block",
+              "value": "mrg-b-xl d-block"
+            }
+          }
+        },
+        "description_1_2": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "// Блок формы с данными"
+            }
+          }
+        },
+        "container_1_2": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "options": {
+              "label": "Наименование блока с данными"
+            },
+            "class": {
+              "label": "h2 mrg-b-md",
+              "value": "mrg-b-xl"
+            }
+          },
+          "properties": {
+            "description_1_2": {
+              "type": "string",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "<br>// Инфо-поле с заголовком в две строки (для модальных окон)<br>"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view",
+                  "value": "form-item-element form-item-element_view"
+                }
+              }
+            },
+            "info_1_2": {
+              "type": "string",
+              "value": "Контент",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Заголовок"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4",
+                  "value": "form-item-element form-item-element_view"
+                }
+              }
+            },
+            "description_1_3": {
+              "type": "string",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "<br>// Дата с заголовком в две строки (для модальных окон)<br>"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view",
+                  "value": "form-item-element form-item-element_view"
+                }
+              }
+            },
+            "info_1_3": {
+              "type": "string",
+              "value": "2023-02-10T10:46:19.681+00:00",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Дата",
+                  "formatter": "datetime:\"DD.MM.YYYY HH:mm\""
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4",
+                  "value": "form-item-element form-item-element_view"
+                }
+              }
+            },
+            "description_1_4": {
+              "type": "string",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "<br>// Инфо-поле с заголовком в одну строку<br>"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            },
+            "info_1_4": {
+              "type": "string",
+              "value": "Контент",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Заголовок"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-8"
+                }
+              }
+            },
+            "description_1_5": {
+              "type": "string",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "<br>// Дата с заголовком<br>"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view",
+                  "value": "form-item-element form-item-element_view"
+                }
+              }
+            },
+            "info_date_1_5": {
+              "type": "string",
+              "value": "2023-02-10T10:46:19.681+00:00",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Дата",
+                  "formatter": "datetime:\"DD.MM.YYYY HH:mm\""
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-8"
+                }
+              }
+            },
+            "description_1_6": {
+              "type": "string",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "<br>// Инфо-поле с заголовком с выводом ссылки <br>"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view",
+                  "value": "form-item-element form-item-element_view"
+                }
+              }
+            },
+            "info_link_1_6": {
+              "type": "string",
+              "widget": {
+                "name": "link",
+                "options": {
+                  "label": "Заголовок"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-8"
+                }
+              },
+              "value": "Ссылка"
+            }
+          }
+        }
+      }
+    },
+    "container_input_2": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "options": {
+          "label": "2. Поля ввода данных"
+        },
+        "class": {
+          "label": "h2 mrg-b-xl mrg-t-xl"
+        }
+      },
+      "properties": {
+        "description_2_1": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br><br>// Поле ввода с кнопкой без заголовка <br>"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element form-item-element_view"
+            }
+          }
+        },
+        "container_input-group-button_2_1": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "group": "mrg-b-md search-with-filters",
+              "value": "p-autolayout"
+            }
+          },
+          "properties": {
+            "search": {
+              "type": "string",
+              "widget": {
+                "name": "input-group-button",
+                "options": {
+                  "placeholder": "Поиск",
+                  "actionButtonIconMobile": "icon-search",
+                  "actionButtonLabel": "Найти",
+                  "enableClearButton": true
+                },
+                "class": {
+                  "group": "form-item form-item_last height-fit-content flex-1 d-xl-flex",
+                  "value": "form-item-element"
+                }
+              }
+            }
+          }
+        },
+        "description_2_2": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "<br>// Поле ввода с заголовком (для модальных окон) <br>"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element form-item-element_view"
+            }
+          }
+        },
+        "input_2_2": {
+          "type": "string",
+          "widget": {
+            "name": "input",
+            "options": {
+              "placeholder": "Введите значение",
+              "label": "Заголовок"
+            },
+            "class": {
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          }
+        },
+        "description_2_3": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "<br>// Обязательное поле ввода с заголовком (для модальных окон)<br>"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element form-item-element_view"
+            }
+          }
+        },
+        "input_2_3": {
+          "type": "string",
+          "widget": {
+            "name": "input",
+            "options": {
+              "placeholder": "Введите значение",
+              "label": "Заголовок"
+            },
+            "class": {
+              "label": "form-label form-label_required",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          }
+        },
+        "description_2_18": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "<br>// Многострочное поле ввода (для модальных окон)<br>"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element form-item-element_view"
+            }
+          }
+        },
+        "input_textarea_2_18": {
+          "type": "string",
+          "widget": {
+            "name": "textarea",
+            "options": {
+              "label": "Заголовок"
+            },
+            "class": {
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          }
+        },
+        "description_2_19": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "<br>// Обязательное многострочное поле ввода с заголовком (для модальных окон)<br>"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element form-item-element_view"
+            }
+          }
+        },
+        "input_textarea_2_19": {
+          "type": "string",
+          "widget": {
+            "name": "textarea",
+            "options": {
+              "label": "Заголовок"
+            },
+            "class": {
+              "label": "form-label form-label_required",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          }
+        },
+        "description_2_4": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "<br>// Ввод даты с заголовком для (модальных окон) <br>"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element form-item-element_view"
+            }
+          }
+        },
+        "input_date_2_4": {
+          "type": "datetime",
+          "value": "2023-02-10T10:46:19.681+00:00",
+          "widget": {
+            "name": "calendar",
+            "options": {
+              "dataType": "string",
+              "label": "Заголовок"
+            },
+            "class": {
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          }
+        },
+        "description_2_5": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "<br>// Группа радиокнопок с заголовком (модальных окон) <br>"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element form-item-element_view"
+            }
+          }
+        },
+        "container_radio-button_2_5": {
+          "type": "object",
+          "widget": {
+            "options": {
+              "label": "Заголовок"
+            },
+            "name": "fieldset",
+            "class": {
+              "group": "form-item p-field p-grid p-fluid",
+              "label": "form-label p-xs-12 p-md-4 p-xl-3",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          },
+          "properties": {
+            "radiobuttons": {
+              "type": "string",
+              "widget": {
+                "name": "radio-button",
+                "options": {
+                  "valueKey": "code",
+                  "optionLabel": "title",
+                  "valueOptions": [
+                    {
+                      "code": "case1",
+                      "title": "Варианта №1"
+                    },
+                    {
+                      "code": "case2",
+                      "title": "Вариант №2"
+                    }
+                  ]
+                },
+                "class": {
+                  "value": "inline-radiobuttons"
+                }
+              }
+            }
+          }
+        },
+        "description_2_6": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "<br>// Обязательный ввод даты с заголовком (модальных окон) <br>"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element form-item-element_view"
+            }
+          }
+        },
+        "input_date_2_6": {
+          "type": "datetime",
+          "widget": {
+            "name": "calendar",
+            "value": "2023-02-10T10:46:19.681+00:00",
+            "options": {
+              "dataType": "string",
+              "label": "Заголовок"
+            },
+            "class": {
+              "label": "form-label form-label_required",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          }
+        },
+        "description_2_7": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "<br>// Поле ввода с заголовком в одну строку <br>"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element form-item-element_view"
+            }
+          }
+        },
+        "input_2_7": {
+          "type": "string",
+          "widget": {
+            "name": "input",
+            "options": {
+              "placeholder": "Введите значение",
+              "label": "Заголовок"
+            },
+            "kind": "input-text-input-style"
+          }
+        },
+        "description_2_8": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "<br>// Обязательное поле ввода с заголовком в одну строку <br>"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element form-item-element_view"
+            }
+          }
+        },
+        "input_2_8": {
+          "type": "string",
+          "widget": {
+            "name": "input",
+            "options": {
+              "placeholder": "Введите значение",
+              "label": "Заголовок"
+            },
+            "kind": "input-text-input-required-style"
+          }
+        },
+        "description_2_9": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "<br>// Ввод даты с заголовком <br>"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element form-item-element_view"
+            }
+          }
+        },
+        "input_date_2_9": {
+          "type": "datetime",
+          "value": "2023-02-10T10:46:19.681+00:00",
+          "widget": {
+            "name": "calendar",
+            "options": {
+              "dataType": "string",
+              "label": "Заголовок"
+            },
+            "kind": "calendar-dropdown-input-style"
+          }
+        },
+        "description_2_10": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "<br>// Обязательный ввод даты с заголовком<br>"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element form-item-element_view"
+            }
+          }
+        },
+        "input_date_2_10": {
+          "type": "datetime",
+          "widget": {
+            "name": "calendar",
+            "value": "2023-02-10T10:46:19.681+00:00",
+            "options": {
+              "dataType": "string",
+              "label": "Заголовок"
+            },
+            "kind": "calendar-dropdown-input-required-style"
+          }
+        },
+        "description_2_11": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "<br>// Многострочное поле ввода<br>"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element form-item-element_view"
+            }
+          }
+        },
+        "input_textarea_2_11": {
+          "type": "string",
+          "widget": {
+            "name": "textarea",
+            "options": {
+              "label": "Заголовок"
+            },
+            "class": {
+              "group": "form-item p-field p-grid p-fluid",
+              "label": "form-label mrg-t-0 p-xs-12 p-md-4 p-xl-3",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          }
+        },
+        "description_2_12": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "<br>// Обязательное многострочное поле ввода с заголовком <br>"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element form-item-element_view"
+            }
+          }
+        },
+        "input_textarea_2_12": {
+          "type": "string",
+          "widget": {
+            "name": "textarea",
+            "options": {
+              "label": "Заголовок"
+            },
+            "class": {
+              "group": "form-item p-field p-grid p-fluid",
+              "label": "form-label form-label_required mrg-t-0 p-xs-12 p-md-4 p-xl-3",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          }
+        },
+        "description_2_13": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "<br>// Выпадающий список значений<br>"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element form-item-element_view"
+            }
+          }
+        },
+        "input_group_button_2_13": {
+          "type": "string",
+          "widget": {
+            "name": "dropdown",
+            "options": {
+              "label": "Заголовок",
+              "valueOptions": [
+                {
+                  "code": "001",
+                  "value": "Значение №1"
+                },
+                {
+                  "code": "002",
+                  "value": "Значение №2"
+                },
+                {
+                  "code": "003",
+                  "value": "Значение №3"
+                }
+              ]
+            },
+            "kind": "dropdown-dropdown-input-style"
+          }
+        },
+        "description_2_14": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "<br>// Обязательный выпадающий список значений <br>"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element form-item-element_view"
+            }
+          }
+        },
+        "input_dropdown_2_14": {
+          "type": "string",
+          "widget": {
+            "name": "dropdown",
+            "options": {
+              "label": "Заголовок",
+              "valueOptions": [
+                {
+                  "code": "001",
+                  "value": "Значение №1"
+                },
+                {
+                  "code": "002",
+                  "value": "Значение №2"
+                },
+                {
+                  "code": "003",
+                  "value": "Значение №3"
+                }
+              ]
+            },
+            "kind": "dropdown-dropdown-input-required-style"
+          }
+        },
+        "description_2_15": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "<br>// Чекбокс с заголовком html<br>"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element form-item-element_view"
+            }
+          }
+        },
+        "container_checkbox_2_15": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "options": {
+              "label": "Заголовок"
+            },
+            "kind": "container-text-input-style"
+          },
+          "properties": {
+            "checkbox": {
+              "type": "boolean",
+              "value": false,
+              "widget": {
+                "name": "checkbox",
+                "label": "Заголовок",
+                "options": {
+                  "optionLabel": "",
+                  "optionLabelHTML": "Значение"
+                },
+                "class": {
+                  "value": "form-item-element form-item-element_checkbox form-item-element_label-html"
+                }
+              }
+            }
+          }
+        },
+        "description_2_15_1": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "<br>// Чекбоксы с обычными заголовками<br>"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element form-item-element_view"
+            }
+          }
+        },
+        "container_checkbox_2_15_1": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "options": {
+              "label": "Заголовок"
+            },
+            "kind": "container-text-input-style"
+          },
+          "properties": {
+            "checkbox": {
+              "type": "any",
+              "value": false,
+              "widget": {
+                "name": "checkbox",
+                "options": {
+                  "optionLabel": "title",
+                  "valueKey": "code",
+                  "isMulticheckbox": true,
+                  "valueOptions": [
+                    {
+                      "code": "one",
+                      "title": "Значение 1"
+                    },
+                    {
+                      "code": "two",
+                      "title": "Значение 2"
+                    }
+                  ]
+                },
+                "class": {
+                  "value": "flex-column filter-block_checkbox"
+                }
+              }
+            }
+          }
+        },
+        "description_2_16": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "<br>// Выпадающий список с множественным выбором с заголовком <br>"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element form-item-element_view"
+            }
+          }
+        },
+        "multiselect_2_16": {
+          "type": "any",
+          "widget": {
+            "name": "multiselect",
+            "options": {
+              "label": "Наименование",
+              "useEllipsisWhenDisplayFieldOverflows": false,
+              "placeholder": "Введите значение",
+              "valueOptions": [
+                {
+                  "value": "Значение №01",
+                  "code": "code01"
+                },
+                {
+                  "value": "Значение №02",
+                  "code": "code02"
+                },
+                {
+                  "value": "Значение №03",
+                  "code": "code03"
+                }
+              ]
+            },
+            "kind": "multiselect-dropdown-input-style"
+          }
+        },
+        "description_2_17": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "<br>// Обязательная группа радиокнопок с заголовком <br>"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element form-item-element_view"
+            }
+          }
+        },
+        "radiobuttons_2_17": {
+          "type": "string",
+          "widget": {
+            "name": "radio-button",
+            "options": {
+              "label": "Заголовок",
+              "valueKey": "code",
+              "optionLabel": "title",
+              "valueOptions": [
+                {
+                  "code": "case1",
+                  "title": "Варианта №1"
+                },
+                {
+                  "code": "case2",
+                  "title": "Вариант №2"
+                }
+              ]
+            },
+            "kind": "radio-button-radio-vertical-list-required-style"
+          }
+        }
+      }
+    },
+    "container_button_3": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "options": {
+          "label": "3. Кнопки"
+        },
+        "class": {
+          "label": "h2 mrg-b-xl mrg-t-xl"
+        }
+      },
+      "properties": {
+        "description_3_1": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br><br>// Акцентная кнопка для важного действия<br>"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element form-item-element_view"
+            }
+          }
+        },
+        "button_main_action_3_1": {
+          "widget": {
+            "name": "submit-button",
+            "options": {
+              "label": "Действие"
+            },
+            "class": {
+              "value": "mrg-r-sm"
+            }
+          }
+        },
+        "description_3_2": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "<br>// Акцентная кнопка с иконкой<br>"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element form-item-element_view"
+            }
+          }
+        },
+        "button_main_action_w_icon_3_2": {
+          "type": "string",
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Добавить",
+              "icon": "icon-plus"
+            },
+            "class": {
+              "value": "button_primary button_narrow button_h1"
+            }
+          }
+        },
+        "description_3_3": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "<br>// Второстепенная кнопка<br>"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element form-item-element_view"
+            }
+          }
+        },
+        "button_outlined_3_3": {
+          "widget": {
+            "name": "submit-button",
+            "options": {
+              "label": "Действие"
+            },
+            "class": {
+              "value": "mrg-r-sm button_outline"
+            }
+          }
+        },
+        "description_3_4": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "<br>// Второстепенная кнопка с иконкой<br>"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element form-item-element_view"
+            }
+          }
+        },
+        "button_outlined_w_icon_3_4": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Добавить",
+              "icon": "icon-plus"
+            },
+            "class": {
+              "value": "button_outline button_outline-branded fl-l"
+            }
+          }
+        },
+        "description_3_5": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "<br>// Кнопка в виде ссылки<br>"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element form-item-element_view"
+            }
+          }
+        },
+        "link_button_3_5": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Действие"
+            },
+            "class": {
+              "value": "button_link"
+            }
+          }
+        },
+        "description_3_6": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "<br>// Кнопка в виде ссылки с иконкой слева<br>"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element form-item-element_view"
+            }
+          }
+        },
+        "link_button_w_icon_3_6": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "value": "p-autolayout p-flex p-jc-start"
+            }
+          },
+          "properties": {
+            "link_button_w_icon": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Действие",
+                  "icon": "icon-plus",
+                  "iconPos": "left"
+                },
+                "class": {
+                  "value": "button_outline mrg-l-md button_text button_text-branded"
+                }
+              }
+            }
+          }
+        },
+        "description_3_7": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "<br>// Две кнопки действий для формы"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element form-item-element_view"
+            }
+          }
+        },
+        "actions_3_7": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "group": "form-actions mrg-t-lg",
+              "value": "p-jc-xl-end p-autolayout"
+            }
+          },
+          "properties": {
+            "button_main_action": {
+              "widget": {
+                "name": "submit-button",
+                "options": {
+                  "label": "Основное действие"
+                },
+                "class": {
+                  "value": "mrg-r-sm"
+                }
+              }
+            },
+            "button_secondary_action": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Второстепенное действие"
+                },
+                "class": {
+                  "value": "button_outline mrg-r-0 mrg-b-0"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "container_menu-button_4": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "options": {
+          "label": "4. Кнопка, вызывающая меню со списком действий"
+        },
+        "class": {
+          "label": "h2 mrg-b-xl mrg-t-xl"
+        }
+      },
+      "properties": {
+        "description_4_1": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br><br>// Акцентная кнопка с иконкой<br>"
+            }
+          }
+        },
+        "create-primary_4_1": {
+          "type": "string",
+          "widget": {
+            "name": "menu-button",
+            "options": {
+              "labelKey": "title",
+              "togglerText": "Действие",
+              "icon": "icon-chevron-down icon_white",
+              "iconPos": "right",
+              "panelWidthAsButton": true
+            },
+            "items": [
+              {
+                "title": "Значение 1"
+              },
+              {
+                "title": "Значение 2"
+              }
+            ],
+            "class": {
+              "value": "p-jc-xl-end button_primary button_h1 pdd-lr-0 button-fit-content"
+            }
+          }
+        }
+      }
+    },
+    "container_navigation_5": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "options": {
+          "label": "5. Навигация"
+        },
+        "class": {
+          "label": "h2 mrg-b-xl mrg-t-xl"
+        }
+      },
+      "properties": {
+        "description_5_1": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br><br>// Хлебные крошки<br>"
+            }
+          }
+        },
+        "several_breadcrumbs_5_1": {
+          "type": "object",
+          "widget": {
+            "name": "breadcrumb",
+            "items": [
+              {
+                "label": "Ссылка"
+              },
+              {
+                "label": "Ссылка"
+              },
+              {
+                "label": "Ссылка"
+              }
+            ],
+            "class": {
+              "group": "p-xs-auto mrg-lg-b-xl mrg-b-md"
+            }
+          }
+        },
+        "description_5_2": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "// Вкладки"
+            }
+          }
+        },
+        "default_tabs_5_2": {
+          "type": "object",
+          "widget": {
+            "name": "tab-view"
+          },
+          "properties": {
+            "tab-panel-1": {
+              "type": "object",
+              "widget": {
+                "name": "tab-panel",
+                "options": {
+                  "label": "Первая вкладка"
+                }
+              },
+              "properties": {
+                "content-tab-panel-1": {
+                  "type": "object",
+                  "widget": {
+                    "name": "container"
+                  },
+                  "properties": {}
+                }
+              }
+            },
+            "tab-panel-2": {
+              "type": "object",
+              "widget": {
+                "name": "tab-panel",
+                "options": {
+                  "label": "Вторая вкладка"
+                }
+              },
+              "properties": {
+                "content-tab-panel-2": {
+                  "type": "object",
+                  "widget": {
+                    "name": "container"
+                  },
+                  "properties": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "container_table_6": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "options": {
+          "label": "6. Таблица"
+        },
+        "class": {
+          "label": "h2 mrg-b-xl mrg-t-xl"
+        }
+      },
+      "properties": {
+        "table_6": {
+          "type": "array",
+          "model": "#table",
+          "value": {
+            "$json-model": {
+              "data": [
+                {
+                  "numberTaskView": "1",
+                  "nameLayoutView": "Наименование",
+                  "cancelReason": "Причина отмены",
+                  "organizationId": "1",
+                  "organizationView": "1",
+                  "date": "2023-02-10T10:46:19.681Z",
+                  "file": [
+                    {
+                      "_id": {
+                        "$oid": "642128db2a26e188c2569e89"
+                      },
+                      "create_date": {
+                        "$date": "2023-03-27T05:25:47.857Z"
+                      },
+                      "name": "Наименование файла.png",
+                      "size": 94671
+                    }
+                  ]
+                },
+                {
+                  "numberTaskView": "1",
+                  "nameLayoutView": "Наименование",
+                  "cancelReason": "Причина отмены",
+                  "organizationId": "1",
+                  "organizationView": "1",
+                  "date": "2023-02-10T10:46:19.681Z",
+                  "file": [
+                    {
+                      "_id": {
+                        "$oid": "642128db2a26e188c2569e89"
+                      },
+                      "create_date": {
+                        "$date": "2023-03-27T05:25:47.857Z"
+                      },
+                      "name": "Наименование файла.png",
+                      "size": 94671
+                    }
+                  ]
+                },
+                {
+                  "numberTaskView": "1",
+                  "nameLayoutView": "Наименование",
+                  "cancelReason": "Причина отмены",
+                  "organizationId": "1",
+                  "organizationView": "1",
+                  "date": "2023-02-10T10:46:19.681Z",
+                  "file": [
+                    {
+                      "_id": {
+                        "$oid": "642128db2a26e188c2569e89"
+                      },
+                      "create_date": {
+                        "$date": "2023-03-27T05:25:47.857Z"
+                      },
+                      "name": "Наименование файла.png",
+                      "size": 94671
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "widget": {
+            "name": "table-old",
+            "options": {
+              "selectionMode": "multiple",
+              "responsive": false,
+              "first": 0,
+              "lazy": true,
+              "paginator": true,
+              "rows": 10,
+              "rowsPerPageOptions": [
+                10,
+                20,
+                50
+              ],
+              "initialFilters": {
+                "$var": {
+                  "path": "#table"
+                }
+              }
+            }
+          },
+          "items": {
+            "type": "object",
+            "properties": {
+              "numberTaskView": {
+                "type": "string",
+                "widget": {
+                  "name": "table-column",
+                  "options": {
+                    "label": "№"
+                  }
+                }
+              },
+              "nameLayoutView": {
+                "type": "string",
+                "widget": {
+                  "name": "table-column",
+                  "options": {
+                    "visible": false
+                  }
+                }
+              },
+              "cancelReason": {
+                "type": "string",
+                "widget": {
+                  "name": "table-column",
+                  "options": {
+                    "visible": false
+                  }
+                }
+              },
+              "nameLayout": {
+                "type": "object",
+                "widget": {
+                  "name": "table-column",
+                  "options": {
+                    "label": "Помещение"
+                  }
+                },
+                "properties": {
+                  "nameLayoutView": {
+                    "type": "string",
+                    "widget": {
+                      "name": "html"
+                    },
+                    "value": {
+                      "$replace": {
+                        "template": "{{name}}{{additionalInfo}}",
+                        "data": {
+                          "name": {
+                            "$from-context": {
+                              "path": "$rowData.nameLayoutView"
+                            }
+                          },
+                          "additionalInfo": {
+                            "$replace": {
+                              "template": "<div class=\"text-secondary\"><br/><b>Причина:</b><br/>{{cancelReason}}</div>",
+                              "data": {
+                                "cancelReason": {
+                                  "$encode-tag": {
+                                    "string": {
+                                      "$from-context": {
+                                        "path": "$rowData.cancelReason"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "organizationView": {
+                "type": "string",
+                "widget": {
+                  "name": "table-column",
+                  "options": {
+                    "label": "Бронируемая площадь (м2)"
+                  }
+                }
+              },
+              "date_column": {
+                "type": "object",
+                "model": false,
+                "widget": {
+                  "name": "table-column",
+                  "options": {
+                    "label": "Дата бронирования"
+                  }
+                },
+                "properties": {
+                  "date": {
+                    "type": "string",
+                    "widget": {
+                      "name": "info",
+                      "options": {
+                        "formatter": "datetime:\"DD.MM.YYYY HH:mm\""
+                      }
+                    }
+                  }
+                }
+              },
+              "fileBlock": {
+                "type": "object",
+                "model": false,
+                "widget": {
+                  "name": "table-column",
+                  "options": {
+                    "label": "Файл"
+                  }
+                },
+                "properties": {
+                  "file": {
+                    "type": "array",
+                    "widget": {
+                      "name": "container"
+                    },
+                    "items": {
+                      "type": "object",
+                      "widget": {
+                        "name": "container"
+                      },
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "widget": {
+                            "name": "hidden"
+                          }
+                        },
+                        "name": {
+                          "type": "string",
+                          "widget": {
+                            "name": "file",
+                            "options": {
+                              "displayParams": {
+                                "showSize": false,
+                                "enableFilesDownload": true
+                              },
+                              "objectId": {
+                                "$query-params": {
+                                  "name": "id"
+                                }
+                              }
+                            },
+                            "class": {
+                              "value": "word-break-all word-break-normal-lg file_table-view"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "actions_column": {
+                "type": "object",
+                "widget": {
+                  "name": "table-column",
+                  "options": {
+                    "label": "Действия"
+                  },
+                  "class": {
+                    "cell": "column_actions"
+                  }
+                },
+                "properties": {
+                  "actions": {
+                    "type": "array",
+                    "model": "actions",
+                    "widget": {
+                      "name": "actions-button",
+                      "items": [
+                        {
+                          "icon": "",
+                          "id": 201,
+                          "name": "view",
+                          "popup": "",
+                          "routerLink": "/",
+                          "title": "Просмотреть",
+                          "url": ""
+                        },
+                        {
+                          "icon": "",
+                          "id": 207,
+                          "name": "requests",
+                          "popup": "",
+                          "routerLink": "/",
+                          "title": "Редактировать",
+                          "url": ""
+                        }
+                      ]
+                    },
+                    "items": {
+                      "type": "action",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "widget": "hidden"
+                        },
+                        "title": {
+                          "type": "string",
+                          "widget": "hidden"
+                        },
+                        "icon": {
+                          "type": "string",
+                          "widget": "hidden"
+                        },
+                        "url": {
+                          "type": "string",
+                          "widget": "hidden"
+                        },
+                        "routerLink": {
+                          "type": "string",
+                          "widget": "hidden"
+                        },
+                        "popup": {
+                          "type": "string",
+                          "widget": "hidden"
+                        },
+                        "hidden": {
+                          "type": "string",
+                          "widget": "hidden"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "container_file_7": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "options": {
+          "label": "7. Файл"
+        },
+        "class": {
+          "label": "h2 mrg-b-xl mrg-t-xl"
+        }
+      },
+      "properties": {
+        "description_7_1": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br><br>// Поле для загрузки файла без заголовка<br>"
+            }
+          }
+        },
+        "file_7_1": {
+          "type": "array",
+          "items": {
+            "type": "file"
+          },
+          "widget": {
+            "name": "file",
+            "options": {
+              "enableFilesUpload": true,
+              "displayUploadedFiles": true,
+              "objectId": {
+                "$query-params": {
+                  "name": "id"
+                }
+              },
+              "uploadParams": {
+                "workflow": "settings",
+                "action": "upload",
+                "accept": " .doc, .docx, .xls, .xlsx, .txt, .rtf, .zip, .rar, .7z, .jpg, .gif, .png, .pdf, .jpeg, .tif, .tiff",
+                "fileLimit": 10,
+                "multiple": true,
+                "chooseLabel": "Добавить файл",
+                "maxFileSize": 62914560,
+                "helpTemplate": "Допустимый размер загружаемого файла: не более 60 мегабайт. Допустимые форматы загружаемых файлов: .doc, .docx, .xls, .xlsx, .txt, .rtf, .zip, .rar, .7z, .jpg, .gif, .png, .pdf, .jpeg, .tif, .tiff"
+              },
+              "displayParams": {
+                "enableFilesRemove": true
+              }
+            },
+            "kind": "file-form-item-file-upload-style"
+          }
+        }
+      }
+    },
+    "container_dialog_8": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "options": {
+          "label": "8. Всплывающее окно"
+        },
+        "class": {
+          "label": "h2 mrg-b-xl mrg-t-xl"
+        }
+      },
+      "properties": {
+        "open-dialog_8_1": {
+          "type": "object",
+          "widget": {
+            "name": "container"
+          },
+          "properties": {
+            "button": {
+              "type": "string",
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Нажми, чтобы открыть всплывающее окно"
+                },
+                "events": {
+                  "click": {
+                    "$element-option": {
+                      "option": "visible",
+                      "path": "#openDialog",
+                      "value": true
+                    }
+                  }
+                }
+              }
+            },
+            "dialog": {
+              "type": "object",
+              "model": "#openDialog",
+              "widget": {
+                "name": "dialog",
+                "options": {
+                  "visible": false,
+                  "closable": true
+                }
+              },
+              "properties": {
+                "header": {
+                  "model": false,
+                  "type": "object",
+                  "widget": {
+                    "name": "container",
+                    "class": {
+                      "value": "p-autolayout p-jc-between p-ai-center"
+                    }
+                  },
+                  "properties": {
+                    "label": {
+                      "model": false,
+                      "type": "string",
+                      "widget": {
+                        "name": "info",
+                        "options": {
+                          "viewedValue": "Модальное окно"
+                        },
+                        "class": {
+                          "value": "h3 mrg-b-lg"
+                        }
+                      }
+                    }
+                  }
+                },
+                "content": {
+                  "type": "object",
+                  "model": "#importFiles",
+                  "widget": {
+                    "name": "container",
+                    "class": {
+                      "group": "popup",
+                      "label": "h1 mrg-b-lg",
+                      "value": "form-group_popup-collapse"
+                    }
+                  },
+                  "properties": {
+                    "text": {
+                      "type": "string",
+                      "widget": "info",
+                      "value": "Содержание"
+                    },
+                    "actions": {
+                      "type": "object",
+                      "widget": {
+                        "name": "container",
+                        "class": {
+                          "group": "form-actions p-field p-grid mrg-t-lg",
+                          "value": "p-jc-xl-end p-autolayout"
+                        }
+                      },
+                      "properties": {
+                        "add": {
+                          "widget": {
+                            "name": "button",
+                            "options": {
+                              "label": "Основное действие"
+                            }
+                          }
+                        },
+                        "cancel": {
+                          "widget": {
+                            "name": "button",
+                            "options": {
+                              "label": "Второстепенное действие"
+                            },
+                            "class": {
+                              "value": "button_outline mrg-r-0 mrg-b-0"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

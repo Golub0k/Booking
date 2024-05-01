@@ -1,0 +1,12 @@
+{
+  "meta": {
+    "title": "Выражение close-modal-services"
+  },
+  "schema": {
+    "$element-option": {
+      "option": "visible",
+      "path": "#modalSelectServices",
+      "value": false
+    }
+  }
+}

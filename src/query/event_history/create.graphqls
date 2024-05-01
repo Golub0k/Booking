@@ -1,0 +1,5 @@
+mutation ($data: [CreateEventHistoryInput!]!) {
+  object: eventHistoryCreate(records: $data) {
+    id: recordIds
+  }
+}

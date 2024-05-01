@@ -1,0 +1,40 @@
+# @title: Получить данные экземпляров объекта "Пользователь" (полный набор)
+
+query ($id: MongoID!) {
+  user: userOne(filter: { _id: $id }) {
+    _id
+    login
+    email
+    fullName
+    lastName
+    firstName
+    middleName
+    position
+    roles {
+      id
+      role {
+        name
+      }
+    }
+    phone {
+      prefix
+      num
+      ext
+    }
+    organizationId
+    organization {
+      anyName
+      state
+    }
+    timezone {
+      offset
+      name
+    }
+    userAD
+    userSettings {
+      id: _id
+      emailNotification
+      pushNotification
+    }
+  }
+}

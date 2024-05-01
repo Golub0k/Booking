@@ -1,0 +1,88 @@
+query ($id: [MongoID!]) {
+  items: eventGet(_id: $id) {
+    state
+    name
+    number
+    type
+    country
+    industry
+    description
+    numberOfPeople
+    numberOfExhibitors
+    numberOfCountries
+    standardBuilding
+    buildingAreaNet
+    sitePlacement
+    protocolEvent
+    comment
+    preliminary
+    contractSigned
+    actSigned
+    installationStart
+    installationEnd
+    eventStart
+    eventEnd
+    deinstallationStart
+    deinstallationEnd
+    arrival
+    secondImport
+    openingOfExhibition
+    closingOfExhibition
+    departure
+    departureOnLastDay
+    discountOrMarkupFlag
+    discountOrMarkup
+    totalEventCost
+    totalEventCostWithDiscountOrMarkup
+    organizers {
+      organizerId
+    }
+    curators {
+      userId
+    }
+    documents {
+      fileLogo {
+        _id
+        name
+        size
+        create_date
+      }
+      fileCostings {
+        _id
+        name
+        size
+        create_date
+      }
+      fileListOfExhibitors {
+        _id
+        name
+        size
+        create_date
+      }
+      filesExpoplan {
+        _id
+        name
+        size
+        create_date
+      }
+      filesProtocol {
+        _id
+        name
+        size
+        create_date
+      }
+      filePresidentProgram {
+        _id
+        name
+        size
+        create_date
+      }
+      filesOther {
+        _id
+        name
+        size
+        create_date
+      }
+    }
+  }
+}

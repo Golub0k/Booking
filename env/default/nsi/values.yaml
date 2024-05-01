@@ -1,0 +1,18 @@
+serviceName: "nsi"
+serviceVersion: "${NSI_VERSION}"
+externalConfig: ${EXTERNAL_CONFIG}
+
+imageCredentials:
+  registry: "${CI_REGISTRY}"
+  username: "${CI_REGISTRY_USERNAME}"
+  password: "${CI_REGISTRY_TOKEN}"
+
+
+mongoDsn: "${MONGODB_DSN}"
+mongoName: "${MONGODB_NAME}"
+
+nsi:
+  type: Job
+  
+  catalogs:
+    - nsiOKSM

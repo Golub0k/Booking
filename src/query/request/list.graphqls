@@ -1,0 +1,148 @@
+# @title: Получить список всех записей заявок
+
+query (
+  $first: Int!
+  $rows: Int!
+  $search: String
+  $type: [EnumRequestType]
+  $state: [String]
+  $author: [String]
+  $dateCreateFrom: DateTime
+  $dateCreateTo: DateTime
+  $dateAgreementFrom: DateTime
+  $dateAgreementTo: DateTime
+  $sort: [FieldSortRequestInput]
+) {
+  pagination: requestPagination(
+    limit: $rows
+    offset: $first
+    sort: $sort
+    filter: {
+      AND: [
+        {
+          OR: [
+            { _filterRef: { eventId: { _regexp: { field: name, filter: $search } } } }
+            { _filterRef: { bookingId: { _regexp: { field: name, filter: $search } } } }
+            {
+              _filterRef: { facilitiesId: { _filterRef: { serviceId: { _regexp: { field: name, filter: $search } } } } }
+            }
+            { _filterRef: { facilitiesId: { _filterRef: { eventId: { _regexp: { field: name, filter: $search } } } } } }
+            {
+              _filterRef: {
+                facilitiesId: { _filterRef: { furnitureId: { _regexp: { field: name, filter: $search } } } }
+              }
+            }
+            {
+              _filterRef: {
+                facilitiesId: { _filterRef: { equipmentId: { _regexp: { field: name, filter: $search } } } }
+              }
+            }
+          ]
+        }
+        { _operators: { state: { ne: "deleted" } } }
+        { _operators: { state: { in: $state } } }
+        { _operators: { creatorId: { in: $author } } }
+        { _operators: { type: { in: $type } } }
+        { _operators: { createDate: { gte: $dateCreateFrom } } }
+        { _operators: { createDate: { lte: $dateCreateTo } } }
+        { _operators: { agreementDate: { gte: $dateAgreementFrom } } }
+        { _operators: { agreementDate: { lte: $dateAgreementTo } } }
+        {
+          OR: [
+            { _filterRef: { eventId: { _operators: { state: { nin: ["draft", "new", "canceled", "deleted"] } } } } }
+            { _operators: { eventId: { exists: false } } }
+          ]
+        }
+        { OR: [{ _filterRef: { bookingId: { state: "filled" } } }, { _operators: { bookingId: { exists: false } } }] }
+        {
+          OR: [
+            { _filterRef: { facilitiesId: { state: "filled" } } }
+            { _operators: { facilitiesId: { exists: false } } }
+          ]
+        }
+        {
+          OR: [
+            {
+              _filterRef: {
+                facilitiesId: {
+                  _filterRef: { eventId: { _operators: { state: { nin: ["draft", "new", "canceled", "deleted"] } } } }
+                }
+              }
+            }
+            { _operators: { facilitiesId: { exists: false } } }
+            { _filterRef: { facilitiesId: { _operators: { eventId: { exists: false } } } } }
+          ]
+        }
+        {
+          OR: [
+            { _filterRef: { facilitiesId: { _filterRef: { bookingId: { state: "filled" } } } } }
+            { _operators: { facilitiesId: { exists: false } } }
+            { _filterRef: { facilitiesId: { _operators: { bookingId: { exists: false } } } } }
+          ]
+        }
+        {
+          OR: [
+            {
+              _filterRef: {
+                bookingId: {
+                  _filterRef: { eventId: { _operators: { state: { nin: ["draft", "new", "canceled", "deleted"] } } } }
+                }
+              }
+            }
+            { _operators: { bookingId: { exists: false } } }
+          ]
+        }
+      ]
+    }
+  ) {
+    count
+    items {
+      id: _id
+      number
+      type
+      eventId
+      eventMain {
+        id: _id
+        name
+      }
+      changeEventId
+      bookingId
+      bookingMain {
+        id: _id
+        name
+      }
+      facilitiesId
+      additionalFacilitiesMain {
+        id: _id
+        eventId
+        event {
+          name
+        }
+        bookingId
+        booking {
+          name
+        }
+        additionalService {
+          name
+        }
+        furniture {
+          name
+        }
+        equipment {
+          name
+        }
+      }
+      changeBookingId
+      creatorId
+      author {
+        _id
+        fullName
+      }
+      createDate
+      agreementDate
+      cancelReason
+      rejectReason
+      state
+    }
+  }
+}

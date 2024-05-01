@@ -1,0 +1,203 @@
+{
+  "@title": "Подтверждение блокировки пользователя",
+  "@preload": {
+    "user": {
+      "$from-context": {
+        "path": "$response.body.data.user",
+        "data": {
+          "$http-code": {
+            "client": {
+              "$api-data": {
+                "query": "user/get_full_name",
+                "id": {
+                  "$query-params": {
+                    "name": "id"
+                  }
+                },
+                "options": {
+                  "observe": "response"
+                },
+                "variables": {
+                  "id": {
+                    "$query-params": {
+                      "name": "id"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "widget": {
+    "name": "container"
+  },
+  "model": "/",
+  "properties": {
+    "user": {
+      "type": "object",
+      "model": "#user",
+      "widget": "hidden",
+      "value": {
+        "$json-model": {
+          "data": {
+            "$from-context": {
+              "path": "@preload.user"
+            }
+          }
+        }
+      },
+      "properties": {
+        "_id": {
+          "type": "string",
+          "widget": "hidden"
+        },
+        "fullName": {
+          "type": "string",
+          "widget": "hidden"
+        }
+      }
+    },
+    "form": {
+      "type": "object",
+      "model": "#data",
+      "widget": {
+        "name": "form",
+        "options": {
+          "label": "Подтверждение блокировки"
+        },
+        "kind": "form-popup-with-h1-style"
+      },
+      "properties": {
+        "text": {
+          "type": "string",
+          "model": false,
+          "widget": {
+            "name": "html",
+            "class": {
+              "value": "mrg-b-lg"
+            }
+          },
+          "value": {
+            "$replace": {
+              "template": "<p>Вы действительно хотите заблокировать пользователя {{0}}?<br/>Заблокированный пользователь не будет иметь доступа к Системе.</p>",
+              "data": [
+                {
+                  "$subs": {
+                    "path": "#user.fullName"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "reason": {
+          "type": "string",
+          "model": "reason",
+          "widget": {
+            "name": "textarea",
+            "options": {
+              "label": "Причина блокировки"
+            },
+            "class": {
+              "group": "p-field p-grid p-fluid mrg-b-lg",
+              "label": "form-label form-label form-label_top p-col-12",
+              "value": "form-item-element p-col-12"
+            }
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$not-empty": {
+                    "data": {
+                      "$var": {
+                        "path": "."
+                      }
+                    }
+                  }
+                },
+                "message": "Поле обязательно для заполнения"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            }
+          ]
+        },
+        "actions": {
+          "type": "object",
+          "model": false,
+          "widget": {
+            "name": "container",
+            "class": {
+              "group": "form-actions p-field p-grid mrg-t-lg",
+              "value": "p-jc-xs-end p-autolayout"
+            }
+          },
+          "properties": {
+            "save": {
+              "widget": {
+                "name": "submit-button",
+                "options": {
+                  "label": "Заблокировать",
+                  "clientValidation": true,
+                  "dataForClientValidation": "/",
+                  "showClientValidationErrorsForElement": "form",
+                  "showClientValidationErrorMessage": true,
+                  "clientValidationErrorMessageSummary": "Ошибка",
+                  "clientValidationErrorMessageDetail": "Одно или несколько полей заполнены некорректно",
+                  "workflowAction": "user.block",
+                  "workflowObjectId": {
+                    "$query-params": {
+                      "name": "id"
+                    }
+                  },
+                  "dataForSubmit": {
+                    "$var": {
+                      "path": "#data"
+                    }
+                  },
+                  "showSuccessMessage": true,
+                  "successMessageSummary": "Блокировка пользователя",
+                  "successMessageDetail": "Пользователь успешно заблокирован",
+                  "urlInCaseOfSuccess": "/cabinet/user/list",
+                  "showServerValidationErrorMessage": true,
+                  "serverValidationErrorMessageSummary": "Блокировка пользователя",
+                  "serverValidationErrorMessageDetail": "Форма содержит ошибки",
+                  "showOtherErrorMessageSummary": true,
+                  "otherErrorMessageSummary": "Блокировка пользователя",
+                  "otherErrorMessageDetail": "Непредвиденная ошибка",
+                  "reloadTable": true,
+                  "closePopup": false
+                },
+                "class": {
+                  "value": "mrg-r-sm"
+                }
+              }
+            },
+            "cancel": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Отмена"
+                },
+                "events": {
+                  "click": {
+                    "$close-popup": null
+                  }
+                },
+                "kind": "button-btn-outline-last-style"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

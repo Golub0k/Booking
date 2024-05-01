@@ -1,0 +1,14 @@
+{
+  "type": "update",
+  "object": "process_object_type",
+  "data": [
+    {
+      "_id": {
+        "$oid": "65ef27a050ec0da3b88a4f43"
+      },
+      "name": "Заявка",
+      "code": "request"
+    }
+  ],
+  "enabled": true
+}

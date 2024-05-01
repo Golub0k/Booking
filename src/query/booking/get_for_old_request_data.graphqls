@@ -1,0 +1,45 @@
+# @title: Получить бронь помещения
+
+query ($id: MongoID!) {
+  object: bookingOne(filter: { _id: $id }) {
+    name
+
+    minDate
+    maxDate
+    minInstallationDates
+    maxInstallationDates
+    minEventDates
+    maxEventDates
+    minDeinstallationDates
+    maxDeinstallationDates
+    seatingTypeId
+    numberOfPeople
+    comment
+    installationDates {
+      startTime
+      endTime
+    }
+    eventDates {
+      startTime
+      endTime
+    }
+    deinstallationDates {
+      startTime
+      endTime
+    }
+    partial
+    allSquare
+    file {
+      _id
+      name
+      size
+      create_date
+    }
+    discountOrMarkupFlag
+    discountOrMarkup
+    allPriceMeter
+    allPriceMeterWithDiscountOrMarkup
+    allPrice
+    allPriceWithDiscountOrMarkup
+  }
+}

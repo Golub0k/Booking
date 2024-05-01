@@ -1,0 +1,18 @@
+global:
+  hpa:
+    enabled: false
+
+  configEnvs:
+    ENV_NAME: "${DEPLOY_NAMESPACE}"
+
+notification:
+  smtpServer: "smtp.go2.unisender.ru"
+  smtpPort: 587
+  fromEmail: "no-reply@eftech.online"
+  fromName: "Eftech.Factory"
+  smtpAuth: "true"
+  smtpLogin: "${SMTP_LOGIN}"
+  smtpPassword: "${SMTP_PASSWORD}"
+
+connector:
+  enabled: true

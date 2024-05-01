@@ -1,0 +1,10 @@
+query ($id: [MongoID!]) {
+  items: additionalFacilitiesGet(_id: $id) {
+    id: _id
+    event {
+      requests(filter: { state: "new" }) {
+        _id
+      }
+    }
+  }
+}

@@ -1,0 +1,155 @@
+{
+  "version": 2,
+  "objectType": "event_type",
+  "context": "event_type/context",
+  "description": "Жизненный цикл вида мероприятий",
+  "rbac": {
+    "visible": true,
+    "title": "Виды мероприятий"
+  },
+  "actions": {
+    "initialActions": {
+      "add": {
+        "title": "Создать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Добавить вид мероприятий"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "event_type/add",
+            "mode": "popup",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": []
+        },
+        "functions": [
+          {
+            "$workflow-object-create": {
+              "objectType": "event_type",
+              "query": "event_type/create",
+              "variables": {
+                "data": {
+                  "$from-context": {
+                    "path": "data"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "active"
+        }
+      }
+    },
+    "globalActions": {
+      "list": {
+        "title": "Реестр видов мероприятий",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Просмотреть справочник видов мероприятий"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "event_type/list",
+            "mode": "form",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "event_type/list"
+          ]
+        }
+      }
+    },
+    "statesActions": {
+      "delete": {
+        "title": "Удалить",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Удалить вид мероприятий"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "event_type/delete",
+            "mode": "popup",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "event_type/get"
+          ]
+        },
+        "results": {
+          "unconditional": "deleted"
+        }
+      },
+      "edit": {
+        "title": "Редактировать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Редактировать вид мероприятий"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "event_type/edit",
+            "mode": "popup",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "event_type/get"
+          ]
+        },
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "event_type/update",
+              "variables": {
+                "data": {
+                  "$from-context": {
+                    "path": "data"
+                  }
+                },
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "object"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "states": {
+    "active": {
+      "title": "Активен",
+      "description": "Активное состояние вида мероприятий",
+      "statesActions": [
+        "edit",
+        "delete"
+      ]
+    },
+    "deleted": {
+      "title": "Удален",
+      "description": "Удаленное состояние вида мероприятий",
+      "displaySettingsInLists": {
+        "hidden": true
+      },
+      "finish": true
+    }
+  }
+}

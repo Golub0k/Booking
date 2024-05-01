@@ -1,0 +1,24 @@
+# @title: Получить список броней помещений для графика занятости
+
+query ($search: String) {
+  items: roomGet(
+    filter: {
+      AND: [
+        { _operators: { state: { ne: "deleted" } } }
+        {
+          OR: [
+            { _regexp: { field: name, filter: $search } }
+            { _regexp: { field: number, filter: $search } }
+          ]
+        }
+      ]
+    }
+  ) {
+    id: _id
+    name
+    roomType {
+      name
+    }
+    number
+  }
+}

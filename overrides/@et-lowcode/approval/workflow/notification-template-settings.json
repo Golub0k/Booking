@@ -1,0 +1,142 @@
+{
+  "version": 2,
+  "context": "notification_template_settings/context",
+  "objectType": "notification_template_settings",
+  "description": "Жизненный цикл шаблона рассылки",
+  "rbac": {
+    "visible": false,
+    "title": "Шаблон рассылки"
+  },
+  "actions": {
+    "initialActions": {},
+    "globalActions": {
+      "list": {
+        "title": "Шаблоны рассылки",
+        "description": "Просмотреть реестр \"Шаблоны рассылок\"",
+        "grants": {
+          "rbac": {
+            "enabled": false,
+            "visible": false,
+            "title": "Просмотреть реестр \"Шаблоны рассылок\""
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "notification-template-settings/list",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "notification_template_settings/list",
+            "notification_template_settings/get_events"
+          ]
+        }
+      }
+    },
+    "statesActions": {
+      "edit": {
+        "title": "Редактировать",
+        "description": "Редактировать шаблон",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": false,
+            "title": "Редактировать шаблон"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "notification-template-settings/edit",
+            "layout": "cabinet",
+            "mode": "form"
+          },
+          "availableQueriesInViews": [
+            "notification_template_settings/get",
+            "notification_template_settings/get_events",
+            "settings/list-for-notifications"
+          ]
+        },
+        "functions": [
+          {
+            "$object-update": {
+              "changes": [
+                {
+                  "value": {
+                    "$from-context": {
+                      "path": "data"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "disable": {
+        "title": "Деактивировать",
+        "description": "Деактивировать шаблон",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": false,
+            "title": "Деактивировать шаблон"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "notification-template-settings/disable",
+            "layout": "cabinet",
+            "mode": "popup"
+          },
+          "availableQueriesInViews": [
+            "notification_template_settings/get"
+          ]
+        },
+        "results": {
+          "unconditional": "disabled"
+        }
+      },
+      "enable": {
+        "title": "Активировать",
+        "description": "Активировать шаблон",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": false,
+            "title": "Активировать шаблон"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "notification-template-settings/enable",
+            "layout": "cabinet",
+            "mode": "popup"
+          },
+          "availableQueriesInViews": [
+            "notification_template_settings/get"
+          ]
+        },
+        "results": {
+          "unconditional": "active"
+        }
+      }
+    }
+  },
+  "states": {
+    "active": {
+      "title": "Активна",
+      "description": "Активное состояние объекта",
+      "statesActions": [
+        "edit",
+        "disable"
+      ]
+    },
+    "disabled": {
+      "title": "Неактивна",
+      "description": "Неактивное состояние объекта",
+      "statesActions": [
+        "enable",
+        "edit"
+      ]
+    }
+  }
+}

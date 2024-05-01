@@ -1,0 +1,203 @@
+query ($id: [MongoID!]) {
+  items: requestGet(_id: $id) {
+    id: _id
+    number
+    type
+    state
+    eventOld: eventMain {
+      name
+      eventType {
+        name
+      }
+      country
+      eventIndustry {
+        name
+      }
+      description
+      numberOfPeople
+      numberOfExhibitors
+      numberOfCountries
+      standardBuilding
+      buildingAreaNet
+      sitePlacement
+      protocolEvent
+      contractSigned
+      actSigned
+      comment
+      organizers {
+        partner {
+          name
+          mainContactPerson {
+            fullName
+            phone
+          }
+        }
+      }
+      curators {
+        user {
+          fullName
+          phoneView
+        }
+      }
+
+      installationStart
+      installationEnd
+      eventStart
+      eventEnd
+      deinstallationStart
+      deinstallationEnd
+      arrival
+      secondImport
+      openingOfExhibition
+      closingOfExhibition
+      departure
+      departureOnLastDay
+
+      discountOrMarkupFlag
+      discountOrMarkup
+      totalEventCost
+      totalEventCostWithDiscountOrMarkup
+      documents {
+        fileLogo {
+          _id
+          name
+          size
+          create_date
+        }
+        fileCostings {
+          _id
+          name
+          size
+          create_date
+        }
+        fileListOfExhibitors {
+          _id
+          name
+          size
+          create_date
+        }
+        filesExpoplan {
+          _id
+          name
+          size
+          create_date
+        }
+        filesProtocol {
+          _id
+          name
+          size
+          create_date
+        }
+        filePresidentProgram {
+          _id
+          name
+          size
+          create_date
+        }
+        filesOther {
+          _id
+          name
+          size
+          create_date
+        }
+      }
+    }
+    eventNew {
+      name
+      eventType {
+        name
+      }
+      country
+      eventIndustry {
+        name
+      }
+      description
+      numberOfPeople
+      numberOfExhibitors
+      numberOfCountries
+      standardBuilding
+      buildingAreaNet
+      sitePlacement
+      protocolEvent
+      contractSigned
+      actSigned
+      comment
+      organizers {
+        partner {
+          name
+          mainContactPerson {
+            fullName
+            phone
+          }
+        }
+      }
+      curators {
+        user {
+          fullName
+          phoneView
+        }
+      }
+      installationStart
+      installationEnd
+      eventStart
+      eventEnd
+      deinstallationStart
+      deinstallationEnd
+      arrival
+      secondImport
+      openingOfExhibition
+      closingOfExhibition
+      departure
+      departureOnLastDay
+
+      discountOrMarkupFlag
+      discountOrMarkup
+      totalEventCost
+      totalEventCostWithDiscountOrMarkup
+      documents {
+        fileLogo {
+          _id
+          name
+          size
+          create_date
+        }
+        fileCostings {
+          _id
+          name
+          size
+          create_date
+        }
+        fileListOfExhibitors {
+          _id
+          name
+          size
+          create_date
+        }
+        filesExpoplan {
+          _id
+          name
+          size
+          create_date
+        }
+        filesProtocol {
+          _id
+          name
+          size
+          create_date
+        }
+        filePresidentProgram {
+          _id
+          name
+          size
+          create_date
+        }
+        filesOther {
+          _id
+          name
+          size
+          create_date
+        }
+      }
+    }
+  }
+}

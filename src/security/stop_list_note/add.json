@@ -1,0 +1,14 @@
+{
+  "backend-validation": {
+    "enabled": true,
+    "options": {
+      "schema": "stop_list_note/add",
+      "data": {
+        "$post-params": {
+          "name": null
+        }
+      },
+      "path": "#data"
+    }
+  }
+}

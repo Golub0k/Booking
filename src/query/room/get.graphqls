@@ -1,0 +1,68 @@
+query ($id: [MongoID!]) {
+  items: roomGet(_id: $id) {
+    id: _id
+    name
+    number
+    floor
+    square
+    roomLength
+    width
+    height
+    type
+    room_type: roomType {
+      _id
+      name
+    }
+    roominess
+    maxOrganizers
+    transformation
+    configuration
+    equipments {
+      equipmentId
+      equipment {
+        equipmentId: _id
+        owner
+        ownerCode {
+          code
+          name
+        }
+        name
+        nomenclatureNumber
+        unitPrice
+        availableQuantity
+        comment
+      }
+    }
+    additional_services {
+      serviceId
+      additionalService {
+        serviceId: _id
+        servicesType {
+          name
+        }
+        name
+        unit
+        unitPrice
+        comment
+        state
+      }
+    }
+    furniture {
+      furnitureId
+      furniture {
+        furnitureId: _id
+        owner
+        ownerCode {
+          code
+          name
+        }
+        name
+        nomenclatureNumber
+        unitPrice
+        availableQuantity
+        comment
+      }
+    }
+    state
+  }
+}

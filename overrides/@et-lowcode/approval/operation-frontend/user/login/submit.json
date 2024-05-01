@@ -1,0 +1,87 @@
+{
+  "meta": {
+    "title": "Выражение submit"
+  },
+  "schema": {
+    "$if": {
+      "condition": {
+        "$validate": {
+          "path": "/"
+        }
+      },
+      "then": {
+        "$waterfall": {
+          "arrayFunctions": [
+            {
+              "$element-option": {
+                "path": "#actions.save",
+                "option": "disabled",
+                "value": true
+              }
+            },
+            {
+              "$element-option": {
+                "path": "/",
+                "option": "loading",
+                "value": true
+              }
+            },
+            {
+              "$auth-login": {
+                "formPath": "#login",
+                "success": {
+                  "$navigate-by-url": {
+                    "url": {
+                      "$if": {
+                        "condition": {
+                          "$has-query-param": {
+                            "name": "backUrl"
+                          }
+                        },
+                        "then": {
+                          "$string-from-base64": {
+                            "string": {
+                              "$query-params": {
+                                "name": "backUrl"
+                              }
+                            }
+                          }
+                        },
+                        "else": "/cabinet/event/list"
+                      }
+                    }
+                  }
+                },
+                "fail": {
+                  "$message": {
+                    "severity": "error",
+                    "summary": "Действие не выполнено",
+                    "detail": "Непредвиденная ошибка"
+                  }
+                },
+                "finalize": [
+                  {
+                    "$element-option": {
+                      "path": "#actions.save",
+                      "option": "disabled",
+                      "value": false
+                    }
+                  },
+                  {
+                    "$element-option": {
+                      "path": "/",
+                      "option": "loading",
+                      "value": false
+                    }
+                  }
+                ],
+                "errorsPath": "/"
+              }
+            }
+          ]
+        }
+      },
+      "else": {}
+    }
+  }
+}

@@ -1,0 +1,150 @@
+{
+  "@title": "Просмотр информации о заявке",
+  "type": "object",
+  "widget": {
+    "name": "form",
+    "events": {
+      "init": {
+        "$waterfall": {
+          "arrayFunctions": [
+            {
+              "$assign-context": {
+                "data": {
+                  "$from-context": {
+                    "path": "$response.body.data.items.0",
+                    "data": {
+                      "$api-data": {
+                        "id": {
+                          "$query-params": {
+                            "name": "id"
+                          }
+                        },
+                        "options": {
+                          "observe": "response"
+                        },
+                        "variables": {
+                          "id": {
+                            "$query-params": {
+                              "name": "id"
+                            }
+                          }
+                        },
+                        "query": "request/get_preview"
+                      }
+                    }
+                  }
+                },
+                "path": "$request"
+              }
+            },
+            {
+              "$from-context": {
+                "path": "$request"
+              }
+            },
+            {
+              "$go": {
+                "action": {
+                  "$if": {
+                    "condition": {
+                      "$in": {
+                        "value": {
+                          "$from-context": {
+                            "path": "$request.state"
+                          }
+                        },
+                        "array": [
+                          "new",
+                          "on_approve"
+                        ]
+                      }
+                    },
+                    "then": {
+                      "$switch": {
+                        "condition": {
+                          "$from-context": {
+                            "path": "$request.type"
+                          }
+                        },
+                        "default": "",
+                        "cases": [
+                          {
+                            "value": "edit_event",
+                            "action": "view_new"
+                          },
+                          {
+                            "value": "edit_cost",
+                            "action": "view_new"
+                          },
+                          {
+                            "value": "edit_booking",
+                            "action": "view_new_for_booking"
+                          },
+                          {
+                            "value": "edit_booking_cost",
+                            "action": "view_new_for_booking"
+                          },
+                          {
+                            "value": "edit_facilities",
+                            "action": "view_new_for_additional_facilities"
+                          },
+                          {
+                            "value": "edit_facilities_cost",
+                            "action": "view_new_for_additional_facilities"
+                          }
+                        ]
+                      }
+                    },
+                    "else": {
+                      "$switch": {
+                        "condition": {
+                          "$from-context": {
+                            "path": "$request.type"
+                          }
+                        },
+                        "default": "view_new",
+                        "cases": [
+                          {
+                            "value": "edit_event",
+                            "action": "view"
+                          },
+                          {
+                            "value": "edit_cost",
+                            "action": "view"
+                          },
+                          {
+                            "value": "edit_booking",
+                            "action": "view_for_booking"
+                          },
+                          {
+                            "value": "edit_booking_cost",
+                            "action": "view_for_booking"
+                          },
+                          {
+                            "value": "edit_facilities",
+                            "action": "view_for_additional_facilities"
+                          },
+                          {
+                            "value": "edit_facilities_cost",
+                            "action": "view_for_additional_facilities"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "workflow": "request",
+                "id": {
+                  "$query-params": {
+                    "name": "id"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "properties": {}
+}

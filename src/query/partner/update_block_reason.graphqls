@@ -1,0 +1,10 @@
+# @title: Обновить данные о причине блокировки экземпляров объекта "Контрагент"
+
+mutation ($id: MongoID!, $blockReason: String) {
+  result: partnerUpdate(
+    record: { blockReason: $blockReason }
+    filter: { _id: $id }
+  ) {
+    numAffected
+  }
+}

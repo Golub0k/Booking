@@ -1,0 +1,40 @@
+# @title: Получить данные экземпляров объекта "Контрагент"
+
+query ($id: [MongoID!]) {
+  items: partnerGet(_id: $id) {
+    id: _id
+    preview
+    state
+    name
+    type
+    parentId
+    country {
+      code
+      fullName
+    }
+    mainContactPerson {
+      fullName
+      phone
+    }
+    inn
+    kpp
+    ogrn
+    isClient
+    isSupplier
+    checking
+    personal
+    correspondent
+    bik
+    bankName
+    bankAddress
+    websiteAddress
+    blockReason
+    createdBy
+    addressPartnerId {
+      _id
+      type
+      address
+      sameAsLegal
+    }
+  }
+}

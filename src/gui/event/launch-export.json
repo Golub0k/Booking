@@ -1,0 +1,163 @@
+{
+  "@title": "Сформировать смету",
+  "@preload": {
+    "$from-context": {
+      "path": "$response.body.data.items.0",
+      "data": {
+        "$api-data": {
+          "workflow": "event",
+          "action": "launch-export",
+          "query": "event/get_name",
+          "id": {
+            "$query-params": {
+              "name": "id"
+            }
+          },
+          "options": {
+            "observe": "response"
+          },
+          "variables": {
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "model": "#data",
+  "widget": {
+    "name": "form",
+    "options": {
+      "label": "Подтверждение формирования сметы"
+    },
+    "kind": "form-popup-with-h1-no-form-collapsed-style"
+  },
+  "properties": {
+    "message": {
+      "type": "string",
+      "widget": {
+        "name": "html",
+        "options": {
+          "viewedValue": {
+            "$replace": {
+              "template": "Формирование сметы займет несколько минут.<br>Вы действительно хотите скачать смету по мероприятию \"{{0}}\"?",
+              "data": [
+                {
+                  "$from-context": {
+                    "path": "@preload.name"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "form-actions p-field p-grid mrg-t-lg",
+          "value": "p-jc-xs-end p-autolayout"
+        }
+      },
+      "properties": {
+        "confirm": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Подтвердить"
+            },
+            "events": {
+              "click": {
+                "$waterfall": {
+                  "arrayFunctions": [
+                    {
+                      "$element-event": {
+                        "path": "#export",
+                        "event": "download",
+                        "value": true
+                      }
+                    },
+                    {
+                      "$close-popup": null
+                    }
+                  ]
+                }
+              }
+            },
+            "class": {
+              "value": "mrg-r-sm"
+            }
+          }
+        },
+        "cancel": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Отмена"
+            },
+            "events": {
+              "click": {
+                "$close-popup": null
+              }
+            },
+            "kind": "button-btn-outline-last-style"
+          }
+        }
+      }
+    },
+    "export": {
+      "type": "string",
+      "model": "#export",
+      "widget": {
+        "name": "download-file",
+        "options": {
+          "displayNone": true
+        },
+        "methods": {
+          "getFileAsync": {
+            "$fetch-object": {
+              "path": 1,
+              "data": {
+                "$waterfall": {
+                  "arrayFunctions": [
+                    {
+                      "$message": {
+                        "severity": "info",
+                        "summary": "Формирование сметы",
+                        "detail": "Идет формирование файла..."
+                      }
+                    },
+                    {
+                      "$api-workflow": {
+                        "options": {
+                          "responseType": "blob",
+                          "observe": "response"
+                        },
+                        "workflow": "event",
+                        "action": "export-estimate",
+                        "type": "post",
+                        "id": {
+                          "$query-params": {
+                            "name": "id"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "value": "Файл сметы (xlsx)"
+    }
+  }
+}

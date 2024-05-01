@@ -1,0 +1,17 @@
+# @title: Получить список пользователей
+
+query ($roles: [String]) {
+  pagination: userPagination(
+    filter: {
+      AND: [
+        { _operators: { roles: { id: { in: $roles } } } }
+        { state: "active" }
+      ]
+    }
+  ) {
+    items {
+      id: _id
+      fullName
+    }
+  }
+}

@@ -1,0 +1,1052 @@
+{
+  "@title": "Просмотр данных о помещении",
+  "@preload": {
+    "room": {
+      "$apply-func": {
+        "func": "return transformRoomArray(room); function transformRoomArray(room) { const additional_services = room.additional_services.filter(element => element.additionalService.state !== \"deleted\").map(element => element.additionalService); const equipments = room.equipments.map(element => element.equipment); const furniture = room.furniture.map(element => element.furniture); return {...room, additional_services, equipments, furniture}; }",
+        "args": {
+          "room": {
+            "$from-context": {
+              "path": "$response.body.data.items.0",
+              "data": {
+                "$api-data": {
+                  "query": "room/get",
+                  "id": {
+                    "$query-params": {
+                      "name": "id"
+                    }
+                  },
+                  "options": {
+                    "observe": "response"
+                  },
+                  "variables": {
+                    "id": {
+                      "$query-params": {
+                        "name": "id"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "model": "#data.room",
+  "widget": {
+    "name": "form"
+  },
+  "properties": {
+    "breadcrumbs": {
+      "type": "object",
+      "widget": {
+        "name": "breadcrumb",
+        "mobileItems": [
+          {
+            "label": "Реестр помещений",
+            "routerLink": "/cabinet/room/list"
+          }
+        ],
+        "items": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          },
+          {
+            "label": "Реестр помещений",
+            "routerLink": "/cabinet/room/list"
+          },
+          {
+            "label": {
+              "$from-context": {
+                "path": "@preload.room.name"
+              }
+            }
+          }
+        ],
+        "class": {
+          "group": "p-xs-auto mrg-lg-b-xl mrg-b-md"
+        }
+      }
+    },
+    "header-with-status": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "options": {
+          "label": {
+            "$from-context": {
+              "path": "@preload.room.name"
+            }
+          }
+        },
+        "class": {
+          "group": "header-badge-container mrg-b-lg",
+          "label": "h1 width-fit-content",
+          "value": "width-fit-content"
+        }
+      },
+      "properties": {
+        "badge": {
+          "type": "string",
+          "widget": "html",
+          "value": {
+            "$replace": {
+              "template": "<span class=\"badge badge_{{colorCode}}\">{{name}}</span>",
+              "data": {
+                "colorCode": {
+                  "$switch": {
+                    "condition": {
+                      "$from-context": {
+                        "path": "@preload.room.state"
+                      }
+                    },
+                    "default": "",
+                    "cases": [
+                      {
+                        "value": "archived",
+                        "action": "blocked"
+                      },
+                      {
+                        "value": "active",
+                        "action": "active"
+                      }
+                    ]
+                  }
+                },
+                "name": {
+                  "$switch": {
+                    "condition": {
+                      "$from-context": {
+                        "path": "@preload.room.state"
+                      }
+                    },
+                    "default": "Активно",
+                    "cases": [
+                      {
+                        "value": "archived",
+                        "action": "В архиве"
+                      },
+                      {
+                        "value": "active",
+                        "action": "Активно"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "value": "$ref:operation-frontend:snippets/element/preload_delayed_value@@@preload.room",
+      "model": "#data.room",
+      "widget": {
+        "name": "container"
+      },
+      "properties": {
+        "common": {
+          "type": "object",
+          "model": false,
+          "widget": {
+            "name": "container",
+            "options": {
+              "label": "Общие данные"
+            },
+            "class": {
+              "group": "form-section",
+              "label": "h2 mrg-b-xl"
+            }
+          },
+          "properties": {
+            "name": {
+              "type": "string",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Наименование"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            },
+            "room_type": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "number",
+                  "widget": "hidden"
+                },
+                "name": {
+                  "type": "string",
+                  "widget": {
+                    "name": "info",
+                    "options": {
+                      "label": "Тип помещения"
+                    },
+                    "class": {
+                      "group": "form-item p-field p-grid",
+                      "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                      "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                    }
+                  }
+                }
+              },
+              "widget": "container"
+            },
+            "number": {
+              "type": "string",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Номер"
+                },
+                "kind": "info-form-item-text-view-style"
+              }
+            },
+            "floor": {
+              "type": "string",
+              "widget": {
+                "name": "hidden"
+              }
+            },
+            "floorView": {
+              "type": "string",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Этаж"
+                },
+                "kind": "info-form-item-text-view-style"
+              },
+              "value": {
+                "$if": {
+                  "condition": {
+                    "===": {
+                      "operand1": {
+                        "$subs": {
+                          "path": "#data.room.floor"
+                        }
+                      },
+                      "operand2": "open_area"
+                    }
+                  },
+                  "then": "Открытая выставочная площадь",
+                  "else": {
+                    "$var": {
+                      "path": "#data.room.floor"
+                    }
+                  }
+                }
+              }
+            },
+            "square": {
+              "type": "number",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Площадь (м²)",
+                  "formatter": "number:'0.2-2':'ru'"
+                },
+                "kind": "info-form-item-text-view-style"
+              }
+            },
+            "roomLength": {
+              "type": "number",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Длина (м)",
+                  "formatter": "number:'0.2-2':'ru'"
+                },
+                "kind": "info-form-item-text-view-style"
+              }
+            },
+            "width": {
+              "type": "number",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Ширина (м)",
+                  "formatter": "number:'0.2-2':'ru'"
+                },
+                "kind": "info-form-item-text-view-style"
+              }
+            },
+            "height": {
+              "type": "number",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Высота (м)",
+                  "formatter": "number:'0.2-2':'ru'"
+                },
+                "kind": "info-form-item-text-view-style"
+              }
+            },
+            "roominess": {
+              "type": "number",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Вместительность (чел.)",
+                  "formatter": "number:'1.0-0':'ru'"
+                },
+                "kind": "info-form-item-text-view-style"
+              }
+            },
+            "maxOrganizers": {
+              "type": "number",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Максимальное количество организаторов",
+                  "formatter": "number:'1.0-0':'ru'"
+                },
+                "kind": "info-form-item-text-view-style"
+              }
+            },
+            "container_checkbox": {
+              "type": "object",
+              "model": false,
+              "widget": {
+                "name": "container",
+                "options": {
+                  "label": "Дополнительные параметры"
+                },
+                "kind": "container-text-input-style"
+              },
+              "properties": {
+                "transformation": {
+                  "type": "boolean",
+                  "value": false,
+                  "widget": {
+                    "name": "checkbox",
+                    "options": {
+                      "optionLabel": "",
+                      "disabled": true,
+                      "optionLabelHTML": "Возможно частичное бронирование"
+                    },
+                    "class": {
+                      "value": "form-item-element form-item-element_checkbox form-item-element_label-html"
+                    }
+                  }
+                },
+                "configuration": {
+                  "type": "boolean",
+                  "value": false,
+                  "widget": {
+                    "name": "checkbox",
+                    "options": {
+                      "optionLabel": "",
+                      "disabled": true,
+                      "optionLabelHTML": "Возможно включение в конфигурацию"
+                    },
+                    "class": {
+                      "value": "form-item-element form-item-element_checkbox form-item-element_label-html"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "facilities_container": {
+          "type": "object",
+          "model": false,
+          "widget": {
+            "name": "container",
+            "options": {
+              "label": "Доступное оснащение"
+            },
+            "class": {
+              "label": "h2 mrg-b-md",
+              "value": "mrg-b-sm"
+            }
+          },
+          "properties": {
+            "additional_services": {
+              "type": "object",
+              "model": false,
+              "widget": {
+                "name": "container",
+                "kind": "container-form-group-with-h3-style"
+              },
+              "properties": {
+                "header": {
+                  "type": "string",
+                  "widget": {
+                    "name": "info",
+                    "options": {
+                      "label": "Дополнительные услуги"
+                    },
+                    "class": {
+                      "group": "flex-row p-grid mrg-b-lg mrg-t-0",
+                      "label": "h4 p-xs-12 p-md-4 p-xl-3 pdd-tb-0 mrg-md-b-md",
+                      "value": "p-xs-12 p-md-8 p-xl-9 pdd-tb-0"
+                    }
+                  }
+                },
+                "additional_services": {
+                  "type": "array",
+                  "model": "#data.room.additional_services",
+                  "widget": {
+                    "name": "table",
+                    "options": {
+                      "selectionKey": "serviceId",
+                      "emptyMessage": "Не добавлено информации для отображения",
+                      "responsive": false,
+                      "first": 0,
+                      "lazy": true,
+                      "paginator": true,
+                      "rows": 10,
+                      "rowsPerPageOptions": [
+                        10,
+                        20,
+                        50
+                      ],
+                      "routerOptions": [
+                        "first",
+                        "rows"
+                      ],
+                      "initialFilters": {
+                        "$var": {
+                          "path": "#data.room.additional_services"
+                        }
+                      },
+                      "sortField": "name",
+                      "sortOrder": 1
+                    },
+                    "class": {
+                      "value": "data-table d-block mrg-b-lg"
+                    },
+                    "events": {
+                      "lazyLoad": {
+                        "$element-option": {
+                          "path": "#data.room.additional_services",
+                          "option": "loading",
+                          "value": true
+                        }
+                      }
+                    },
+                    "subscriptions": {
+                      "reload-table": {
+                        "$element-event": {
+                          "event": "reload",
+                          "value": true
+                        }
+                      }
+                    }
+                  },
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "serviceId": {
+                        "type": "string",
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "visible": false
+                          }
+                        }
+                      },
+                      "name": {
+                        "type": "string",
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "label": "Наименование"
+                          }
+                        }
+                      },
+                      "servicesType": {
+                        "type": "object",
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "label": "Тип услуги"
+                          }
+                        },
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "widget": {
+                              "name": "info"
+                            }
+                          }
+                        }
+                      },
+                      "unitPrice": {
+                        "type": "number",
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "visible": false
+                          }
+                        }
+                      },
+                      "unitPriceView": {
+                        "type": "object",
+                        "model": false,
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "label": "Цена (руб.)"
+                          }
+                        },
+                        "properties": {
+                          "price": {
+                            "type": "string",
+                            "model": false,
+                            "widget": {
+                              "name": "info",
+                              "options": {
+                                "formatter": "number:'0.2-2':'ru'",
+                                "viewedValue": {
+                                  "$from-context": {
+                                    "path": "$rowData.unitPrice"
+                                  }
+                                }
+                              },
+                              "class": {
+                                "group": "p-text-right",
+                                "value": "p-jc-end"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "unit": {
+                        "type": "string",
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "label": "Единица измерения"
+                          }
+                        }
+                      },
+                      "comment": {
+                        "type": "string",
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "label": "Примечание"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "equipments": {
+              "type": "object",
+              "model": false,
+              "widget": {
+                "name": "container",
+                "kind": "container-form-group-with-h3-style"
+              },
+              "properties": {
+                "header-with-button": {
+                  "type": "string",
+                  "widget": {
+                    "name": "info",
+                    "options": {
+                      "label": "Оборудование"
+                    },
+                    "class": {
+                      "group": "flex-row p-grid mrg-b-lg mrg-t-0",
+                      "label": "h4 p-xs-12 p-md-4 p-xl-3 pdd-tb-0 mrg-md-b-md",
+                      "value": "p-xs-12 p-md-8 p-xl-9 pdd-tb-0"
+                    }
+                  }
+                },
+                "equipments": {
+                  "type": "array",
+                  "model": "#data.room.equipments",
+                  "widget": {
+                    "name": "table",
+                    "options": {
+                      "selectionKey": "equipmentId",
+                      "emptyMessage": "Не добавлено информации для отображения",
+                      "responsive": false,
+                      "first": 0,
+                      "lazy": true,
+                      "paginator": true,
+                      "rows": 10,
+                      "rowsPerPageOptions": [
+                        10,
+                        20,
+                        50
+                      ],
+                      "routerOptions": [
+                        "first",
+                        "rows"
+                      ],
+                      "initialFilters": {
+                        "$var": {
+                          "path": "#data.room.equipments"
+                        }
+                      },
+                      "sortField": "name",
+                      "sortOrder": 1
+                    },
+                    "class": {
+                      "value": "data-table d-block mrg-b-lg"
+                    },
+                    "events": {
+                      "lazyLoad": {
+                        "$element-option": {
+                          "path": "#data.room.equipments",
+                          "option": "loading",
+                          "value": true
+                        }
+                      }
+                    },
+                    "subscriptions": {
+                      "reload-table": {
+                        "$element-event": {
+                          "event": "reload",
+                          "value": true
+                        }
+                      }
+                    }
+                  },
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "equipmentId": {
+                        "type": "string",
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "visible": false
+                          }
+                        }
+                      },
+                      "name": {
+                        "type": "string",
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "label": "Наименование"
+                          }
+                        }
+                      },
+                      "ownerCode": {
+                        "type": "object",
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "visible": true,
+                            "label": "Собственник"
+                          }
+                        },
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "widget": {
+                              "name": "info"
+                            }
+                          }
+                        }
+                      },
+                      "nomenclatureNumber": {
+                        "type": "string",
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "label": "Номенклатурный номер"
+                          }
+                        }
+                      },
+                      "unitPrice": {
+                        "type": "number",
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "visible": false
+                          }
+                        }
+                      },
+                      "unitPriceView": {
+                        "type": "object",
+                        "model": false,
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "label": "Цена (руб.)"
+                          }
+                        },
+                        "properties": {
+                          "price": {
+                            "type": "string",
+                            "model": false,
+                            "widget": {
+                              "name": "info",
+                              "options": {
+                                "formatter": "number:'0.2-2':'ru'",
+                                "viewedValue": {
+                                  "$from-context": {
+                                    "path": "$rowData.unitPrice"
+                                  }
+                                }
+                              },
+                              "class": {
+                                "group": "p-text-right",
+                                "value": "p-jc-end"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "availableQuantity": {
+                        "type": "number",
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "visible": false
+                          }
+                        }
+                      },
+                      "availableQuantityVisible": {
+                        "type": "object",
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "label": "Доступное количество (шт.)"
+                          }
+                        },
+                        "properties": {
+                          "quantity": {
+                            "type": "string",
+                            "model": false,
+                            "widget": {
+                              "name": "info",
+                              "options": {
+                                "viewedValue": {
+                                  "$from-context": {
+                                    "path": "$rowData.availableQuantity"
+                                  }
+                                },
+                                "formatter": "number:'1.0-0':'ru'"
+                              },
+                              "class": {
+                                "group": "p-text-right",
+                                "value": "p-jc-end"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "comment": {
+                        "type": "string",
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "label": "Примечание"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "furniture": {
+              "type": "object",
+              "model": false,
+              "widget": {
+                "name": "container",
+                "kind": "container-form-group-with-h3-style"
+              },
+              "properties": {
+                "header-with-button": {
+                  "type": "string",
+                  "widget": {
+                    "name": "info",
+                    "options": {
+                      "label": "Мебель"
+                    },
+                    "class": {
+                      "group": "flex-row p-grid mrg-b-lg mrg-t-0",
+                      "label": "h4 p-xs-12 p-md-4 p-xl-3 pdd-tb-0 mrg-md-b-md",
+                      "value": "p-xs-12 p-md-8 p-xl-9 pdd-tb-0"
+                    }
+                  }
+                },
+                "furniture": {
+                  "type": "array",
+                  "model": "#data.room.furniture",
+                  "widget": {
+                    "name": "table",
+                    "options": {
+                      "selectionKey": "furnitureId",
+                      "emptyMessage": "Не добавлено информации для отображения",
+                      "responsive": false,
+                      "first": 0,
+                      "lazy": true,
+                      "paginator": true,
+                      "rows": 10,
+                      "rowsPerPageOptions": [
+                        10,
+                        20,
+                        50
+                      ],
+                      "routerOptions": [
+                        "first",
+                        "rows"
+                      ],
+                      "initialFilters": {
+                        "$var": {
+                          "path": "#data.room.furniture"
+                        }
+                      },
+                      "sortField": "name",
+                      "sortOrder": 1
+                    },
+                    "class": {
+                      "value": "data-table d-block"
+                    },
+                    "events": {
+                      "lazyLoad": {
+                        "$element-option": {
+                          "path": "#data.room.furniture",
+                          "option": "loading",
+                          "value": true
+                        }
+                      }
+                    },
+                    "subscriptions": {
+                      "reload-table": {
+                        "$element-event": {
+                          "event": "reload",
+                          "value": true
+                        }
+                      }
+                    }
+                  },
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "furnitureId": {
+                        "type": "string",
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "visible": false
+                          }
+                        }
+                      },
+                      "name": {
+                        "type": "string",
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "label": "Наименование"
+                          }
+                        }
+                      },
+                      "ownerCode": {
+                        "type": "object",
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "visible": true,
+                            "label": "Собственник"
+                          }
+                        },
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "widget": {
+                              "name": "info"
+                            }
+                          }
+                        }
+                      },
+                      "nomenclatureNumber": {
+                        "type": "string",
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "label": "Номенклатурный номер"
+                          }
+                        }
+                      },
+                      "unitPrice": {
+                        "type": "number",
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "visible": false
+                          }
+                        }
+                      },
+                      "unitPriceView": {
+                        "type": "object",
+                        "model": false,
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "label": "Цена (руб.)"
+                          }
+                        },
+                        "properties": {
+                          "price": {
+                            "type": "string",
+                            "model": false,
+                            "widget": {
+                              "name": "info",
+                              "options": {
+                                "formatter": "number:'0.2-2':'ru'",
+                                "viewedValue": {
+                                  "$from-context": {
+                                    "path": "$rowData.unitPrice"
+                                  }
+                                }
+                              },
+                              "class": {
+                                "group": "p-text-right",
+                                "value": "p-jc-end"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "availableQuantity": {
+                        "type": "number",
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "visible": false
+                          }
+                        }
+                      },
+                      "availableQuantityVisible": {
+                        "type": "object",
+                        "model": false,
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "label": "Доступное количество (шт.)"
+                          }
+                        },
+                        "properties": {
+                          "quantity": {
+                            "type": "string",
+                            "model": false,
+                            "widget": {
+                              "name": "info",
+                              "options": {
+                                "viewedValue": {
+                                  "$from-context": {
+                                    "path": "$rowData.availableQuantity"
+                                  }
+                                },
+                                "formatter": "number:'1.0-0':'ru'"
+                              },
+                              "class": {
+                                "group": "p-text-right",
+                                "value": "p-jc-end"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "comment": {
+                        "type": "string",
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "label": "Примечание"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "model": false,
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "form-actions mrg-t-0",
+          "value": "p-jc-xl-end p-autolayout"
+        }
+      },
+      "properties": {
+        "edit": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Редактировать",
+              "visible": {
+                "$api-workflow-check-action": {
+                  "workflow": "room",
+                  "action": "edit",
+                  "id": {
+                    "$query-params": {
+                      "name": "id"
+                    }
+                  }
+                }
+              }
+            },
+            "events": {
+              "click": {
+                "$go": {
+                  "workflow": "room",
+                  "action": "edit",
+                  "id": {
+                    "$query-params": {
+                      "name": "id"
+                    }
+                  }
+                }
+              }
+            },
+            "class": {
+              "value": "mrg-r-sm"
+            }
+          }
+        },
+        "back": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Вернуться в реестр"
+            },
+            "events": {
+              "click": {
+                "$go": {
+                  "workflow": "room",
+                  "action": "list"
+                }
+              }
+            },
+            "class": {
+              "value": "button_outline mrg-r-0 mrg-b-0"
+            }
+          }
+        }
+      }
+    }
+  }
+}

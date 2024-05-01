@@ -1,0 +1,280 @@
+{
+  "type": "object",
+  "title": "История изменений для мероприятия",
+  "properties": {
+    "requestDataType": {
+      "type": "string",
+      "fieldDescription": "Новые или старые данные",
+      "required": true,
+      "enum": [
+        "old",
+        "new"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "trim": true,
+      "fieldDescription": "Наименование мероприятия",
+      "required": false
+    },
+    "type": {
+      "type": "string",
+      "trim": true,
+      "fieldDescription": "Вид мероприятия",
+      "required": false,
+      "ref": "EventType",
+      "refAlias": "eventType"
+    },
+    "country": {
+      "type": "string",
+      "required": false,
+      "fieldDescription": "Страна"
+    },
+    "industry": {
+      "type": "string",
+      "trim": true,
+      "fieldDescription": "Отрасль",
+      "required": false,
+      "ref": "Industry",
+      "refAlias": "eventIndustry"
+    },
+    "description": {
+      "type": "string",
+      "required": false,
+      "fieldDescription": "Описание"
+    },
+    "numberOfPeople": {
+      "type": "number",
+      "fieldDescription": "Количество человек",
+      "required": false
+    },
+    "numberOfExhibitors": {
+      "type": "number",
+      "fieldDescription": "Количество экспонентов",
+      "required": false
+    },
+    "numberOfCountries": {
+      "type": "number",
+      "fieldDescription": "Количество стран-участниц",
+      "required": false
+    },
+    "standardBuilding": {
+      "type": "decimal",
+      "fieldDescription": "Стандартная застройка",
+      "required": false
+    },
+    "buildingAreaNet": {
+      "type": "decimal",
+      "fieldDescription": "Площадь застройки нетто",
+      "required": false
+    },
+    "sitePlacement": {
+      "type": "string",
+      "required": false,
+      "enum": [
+        "no_request",
+        "yes",
+        "no"
+      ]
+    },
+    "protocolEvent": {
+      "type": "boolean",
+      "fieldDescription": "Признак протокольного мероприятия",
+      "required": false
+    },
+    "comment": {
+      "type": "string",
+      "trim": true,
+      "fieldDescription": "Комментарий",
+      "required": false
+    },
+    "organizers": [
+      {
+        "organizerId": {
+          "type": "string",
+          "ref": "Partner",
+          "fieldDescription": "Организатор мероприятия",
+          "refAlias": "partner",
+          "inversedBy": "eventOrganizer"
+        },
+        "fieldDescription": "Список организаторов мероприятия"
+      }
+    ],
+    "curators": [
+      {
+        "userId": {
+          "type": "string",
+          "ref": "User",
+          "fieldDescription": "Куратор мероприятия",
+          "refAlias": "user"
+        },
+        "fieldDescription": "Список кураторов мероприятия"
+      }
+    ],
+    "contractSigned": {
+      "type": "boolean",
+      "fieldDescription": "Признак подписания договора",
+      "required": false
+    },
+    "actSigned": {
+      "type": "boolean",
+      "fieldDescription": "Признак подписания акта",
+      "required": false
+    },
+    "preliminary": {
+      "type": "boolean",
+      "fieldDescription": "Признак предварительной брони мероприятия",
+      "required": false
+    },
+    "installationStart": {
+      "type": "datetime",
+      "fieldDescription": "Дата и время начала монтажных работ",
+      "index": true
+    },
+    "installationEnd": {
+      "type": "datetime",
+      "fieldDescription": "Дата и время окончания монтажных работ",
+      "index": true
+    },
+    "eventStart": {
+      "type": "datetime",
+      "fieldDescription": "Дата и время начала мероприятия",
+      "index": true,
+      "required": false
+    },
+    "eventEnd": {
+      "type": "datetime",
+      "fieldDescription": "Дата и время окончания мероприятия",
+      "index": true,
+      "required": false
+    },
+    "deinstallationStart": {
+      "type": "datetime",
+      "fieldDescription": "Дата и время начала демонтажных работ",
+      "index": true
+    },
+    "deinstallationEnd": {
+      "type": "datetime",
+      "fieldDescription": "Дата и время окончания демонтажных работ",
+      "index": true
+    },
+    "arrival": {
+      "type": "datetime",
+      "fieldDescription": "Дата и время заезда участников"
+    },
+    "secondImport": {
+      "type": "datetime",
+      "fieldDescription": "Дата и время дозавоза"
+    },
+    "openingOfExhibition": {
+      "type": "datetime",
+      "fieldDescription": "Дата и время открытия мероприятия для посетителей"
+    },
+    "closingOfExhibition": {
+      "type": "datetime",
+      "fieldDescription": "Дата и время закрытия мероприятия для посетителей"
+    },
+    "departure": {
+      "type": "datetime",
+      "fieldDescription": "Дата и время выхода участников из павильона"
+    },
+    "departureOnLastDay": {
+      "type": "datetime",
+      "fieldDescription": "Дата и время выхода участников из павильона в последний день проведения мероприятия"
+    },
+    "discountOrMarkupFlag": {
+      "type": "string",
+      "fieldDescription": "Признак применения скидки/наценки ко всему мероприятию",
+      "default": "no",
+      "enum": [
+        "no",
+        "discount",
+        "markup"
+      ]
+    },
+    "discountOrMarkup": {
+      "type": "number",
+      "fieldDescription": "Размер скидки/наценки, применяемой к стоимости мероприятия, в процентах"
+    },
+    "totalEventCost": {
+      "type": "number",
+      "fieldDescription": "Итоговая стоимость по мероприятию",
+      "required": false
+    },
+    "totalEventCostWithDiscountOrMarkup": {
+      "type": "number",
+      "fieldDescription": "Общий бюджет мероприятия с учетом применяемой скидки/наценки"
+    },
+    "documents": {
+      "fileLogo": {
+        "type": "file",
+        "properties": {
+          "hash": {
+            "type": "string",
+            "trim": true
+          }
+        }
+      },
+      "fileCostings": {
+        "type": "file",
+        "properties": {
+          "hash": {
+            "type": "string",
+            "trim": true
+          }
+        }
+      },
+      "fileListOfExhibitors": {
+        "type": "file",
+        "properties": {
+          "hash": {
+            "type": "string",
+            "trim": true
+          }
+        }
+      },
+      "filesExpoplan": [
+        {
+          "type": "file",
+          "properties": {
+            "hash": {
+              "type": "string",
+              "trim": true
+            }
+          }
+        }
+      ],
+      "filesProtocol": [
+        {
+          "type": "file",
+          "properties": {
+            "hash": {
+              "type": "string",
+              "trim": true
+            }
+          }
+        }
+      ],
+      "filePresidentProgram": {
+        "type": "file",
+        "properties": {
+          "hash": {
+            "type": "string",
+            "trim": true
+          }
+        }
+      },
+      "filesOther": [
+        {
+          "type": "file",
+          "properties": {
+            "hash": {
+              "type": "string",
+              "trim": true
+            }
+          }
+        }
+      ]
+    }
+  }
+}

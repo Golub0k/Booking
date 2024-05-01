@@ -1,0 +1,17 @@
+# @title: Получить данные экземпляров объекта "Адрес контрагента"
+
+query ($id: [MongoID!]) {
+  items: partnerAddressGet(_id: $id) {
+    id: _id
+    preview
+    state
+    type
+    partnerId
+    partner {
+      _id
+      preview
+    }
+    address
+    sameAsLegal
+  }
+}

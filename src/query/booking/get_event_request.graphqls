@@ -1,0 +1,10 @@
+query ($id: [MongoID!]) {
+  items: bookingGet(_id: $id) {
+    id: _id
+    event {
+      requests(filter: { state: "new" }) {
+        _id
+      }
+    }
+  }
+}

@@ -1,0 +1,5 @@
+query ($eventId: MongoID) {
+  items: bookingGet(filter: { AND: [{ _filterRef: { eventId: { _id: $eventId } } }] }) {
+    id: _id
+  }
+}

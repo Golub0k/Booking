@@ -1,0 +1,45 @@
+# @title: Получить список всей мебели
+
+query (
+  $first: Int!
+  $rows: Int!
+  $typeOrNumber: String
+  $name: String
+  $sort: [FieldSortFurnitureInput]
+  $ids: [MongoID!]
+) {
+  pagination: furniturePagination(
+    limit: $rows
+    offset: $first
+    sort: $sort
+    filter: {
+      AND: [
+        {
+          OR: [
+            { _regexp: { field: name, filter: $typeOrNumber } }
+            { _regexp: { field: nomenclatureNumber, filter: $typeOrNumber } }
+          ]
+        }
+        { _operators: { state: { nin: ["archived", "deleted"] } } }
+        { _operators: { _id: { in: $ids } } }
+        { name: $name }
+      ]
+    }
+  ) {
+    count
+    items {
+      furnitureId: _id
+      owner
+      ownerCode {
+        code
+        name
+      }
+      name
+      nomenclatureNumber
+      unitPrice
+      availableQuantity
+      comment
+      state
+    }
+  }
+}

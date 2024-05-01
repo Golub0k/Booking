@@ -1,0 +1,42 @@
+# @title: Получить список контрагентов
+
+query (
+  $first: Int
+  $rows: Int
+  $search: String
+  $name: String
+  $sort: [FieldSortPartnerInput]
+  $id: [MongoID]
+) {
+  pagination: partnerPagination(
+    limit: $rows
+    offset: $first
+    sort: $sort
+    filter: {
+      AND: [
+        {
+          OR: [
+            { _regexp: { field: name, filter: $search } }
+            { _regexp: { field: mainContactPerson__fullName, filter: $search } }
+          ]
+        }
+        { state: "active" }
+        { _operators: { _id: { in: $id } } }
+        { name: $name }
+        { isClient: true }
+      ]
+    }
+  ) {
+    count
+    items {
+      organizerId: _id
+
+      name
+      mainContactPerson {
+        fullName
+        phone
+      }
+      state
+    }
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "protocol": "ldap",
+  "title": "Интеграция с AD Kazan Expo",
+  "description": "Описание интеграции с с AD Kazan Expo",
+  "params": {
+    "connection": {
+      "type": "url",
+      "connectionParams": {
+        "address": "$ref:settings:UrlAD"
+      }
+    }
+  },
+  "methods": [
+    {
+      "code": "getUser",
+      "title": "Получение информации о пользователе",
+      "params": {
+        "operation": "search",
+        "operationOptions": {
+          "scope": "sub",
+          "sizeLimit": 1
+        }
+      },
+      "input": {
+        "bind": {
+          "bindDN": {
+            "type": "string",
+            "mapping": {
+              "source": "const",
+              "const": "$ref:settings:BindDN"
+            }
+          },
+          "bindPassword": {
+            "type": "string",
+            "mapping": {
+              "source": "const",
+              "const": "$ref:settings:BindPassword"
+            }
+          }
+        },
+        "baseDn": "$ref:settings:BaseDN",
+        "filter": "sAMAccountName={ACCOUNT_NAME}",
+        "source": {
+          "ACCOUNT_NAME": {
+            "type": "string",
+            "mapping": {
+              "source": "ctx",
+              "path": "data.login"
+            }
+          }
+        }
+      },
+      "error": {
+        "errCode": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string",
+              "mapping": {
+                "source": "const",
+                "const": "errCode"
+              }
+            },
+            "message": {
+              "type": "string",
+              "mapping": {
+                "source": "const",
+                "const": "Error message"
+              }
+            }
+          }
+        }
+      },
+      "output": {
+        "format": "Asn1",
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "sAMAccountName": {
+                "type": "string",
+                "mapping": {
+                  "source": "ctx",
+                  "path": "response.result[].sAMAccountName"
+                }
+              },
+              "userAccountControl": {
+                "type": "string",
+                "mapping": {
+                  "source": "ctx",
+                  "path": "response.result[].userAccountControl"
+                }
+              }
+            }
+          },
+          "mapping": {
+            "source": "ctx",
+            "path": "response.result"
+          }
+        }
+      }
+    }
+  ]
+}

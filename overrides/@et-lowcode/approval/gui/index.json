@@ -1,0 +1,170 @@
+{
+  "@title": "Главная страница системы",
+  "type": "object",
+  "model": "/",
+  "widget": {
+    "name": "fieldset",
+    "options": {
+      "formWrap": true,
+      "label": "Вход в личный кабинет",
+      "visible": {
+        "$empty": {
+          "data": {
+            "$active-user": {
+              "field": "_id"
+            }
+          }
+        }
+      }
+    },
+    "events": {
+      "keypress-13": "$ref:operation-frontend:index/submit"
+    },
+    "class": {
+      "group": "p-jc-center login-form",
+      "label": "h1 mrg-b-lg",
+      "value": "form-group_popup-collapse"
+    }
+  },
+  "properties": {
+    "login": {
+      "type": "object",
+      "model": "#login",
+      "widget": {
+        "name": "container",
+        "options": {
+          "selectedKey": "login"
+        }
+      },
+      "properties": {
+        "login": {
+          "type": "string",
+          "widget": {
+            "name": "input",
+            "options": {
+              "autocomplete": "username",
+              "label": "Логин",
+              "maxlength": 64
+            },
+            "class": {
+              "group": "form-item p-field p-grid p-fluid",
+              "label": "form-label p-xs-12 p-md-4 p-xl-3",
+              "value": "form-item-element"
+            }
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$if": {
+                    "condition": {
+                      "$not-empty": {
+                        "data": {
+                          "$var": {
+                            "path": "."
+                          }
+                        }
+                      }
+                    },
+                    "then": true
+                  }
+                },
+                "message": "Обязательно для заполнения"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            }
+          ]
+        },
+        "password": {
+          "type": "string",
+          "widget": {
+            "name": "password",
+            "options": {
+              "feedback": false,
+              "label": "Пароль"
+            },
+            "class": {
+              "group": "form-item p-fluid d-block mrg-b-lg",
+              "label": "form-label form-label_top form-label_with-append",
+              "value": "form-item-element form-item-password"
+            },
+            "labelAppend": {
+              "type": "string",
+              "widget": {
+                "name": "link",
+                "events": {
+                  "click": {
+                    "$go": {
+                      "workflow": "user",
+                      "action": "recovery-password"
+                    }
+                  }
+                },
+                "class": {
+                  "group": "p-xs-auto mrg-l-auto",
+                  "link": "shaded-link"
+                }
+              },
+              "value": "Забыли пароль?"
+            }
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$if": {
+                    "condition": {
+                      "$not-empty": {
+                        "data": {
+                          "$var": {
+                            "path": "."
+                          }
+                        }
+                      }
+                    },
+                    "then": true
+                  }
+                },
+                "message": "Обязательно для заполнения"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "model": "#actions",
+      "widget": {
+        "name": "container"
+      },
+      "properties": {
+        "save": {
+          "type": "string",
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Войти"
+            },
+            "events": {
+              "click": "$ref:operation-frontend:index/submit"
+            },
+            "class": {
+              "group": "p-xs-12",
+              "value": "mrg-b-md p-fluid"
+            }
+          }
+        }
+      }
+    }
+  }
+}

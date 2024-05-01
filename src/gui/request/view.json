@@ -1,0 +1,3003 @@
+{
+  "@title": "Просмотр информации о заявке",
+  "@preload": {
+    "request": {
+      "$from-context": {
+        "path": "$response.body.data.items.0",
+        "data": {
+          "$api-data": {
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            },
+            "options": {
+              "observe": "response"
+            },
+            "variables": {
+              "id": {
+                "$query-params": {
+                  "name": "id"
+                }
+              }
+            },
+            "query": "request/get_all_info"
+          }
+        }
+      }
+    },
+    "process": "$ref:fieldset:approval/get_process_for_view_object"
+  },
+  "type": "object",
+  "model": "#data",
+  "widget": {
+    "name": "form",
+    "events": {
+      "init": [
+        {
+          "$session-storage-set": {
+            "key": "previousPage",
+            "value": "view"
+          }
+        }
+      ]
+    }
+  },
+  "value": {
+    "$if": {
+      "condition": {
+        "$not-empty": {
+          "data": {
+            "$from-context": {
+              "path": "@preload.process"
+            }
+          }
+        }
+      },
+      "then": {
+        "$json-model": {
+          "alias": "#data",
+          "data": {
+            "$assign-object": {
+              "object": {
+                "$from-context": {
+                  "path": "@preload.process"
+                }
+              },
+              "path": "stages",
+              "data": {
+                "$array-map": {
+                  "array": {
+                    "$from-context": {
+                      "path": "@preload.process.stages"
+                    }
+                  },
+                  "map": {
+                    "$assign-object": {
+                      "object": {
+                        "$from-context": {
+                          "path": "$data"
+                        }
+                      },
+                      "path": "tasks",
+                      "data": {
+                        "$array-map": {
+                          "array": {
+                            "$from-context": {
+                              "path": "$data.tasks"
+                            }
+                          },
+                          "map": {
+                            "$exclude": {
+                              "data": {
+                                "$assign-object": {
+                                  "object": {
+                                    "$from-context": {
+                                      "path": "$data.1"
+                                    }
+                                  },
+                                  "path": "",
+                                  "data": {
+                                    "fullName": {
+                                      "$from-context": {
+                                        "path": "$data.1.user.fullName"
+                                      }
+                                    },
+                                    "position": {
+                                      "$from-context": {
+                                        "path": "$data.1.user.position"
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "exclude": [
+                                "user"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "else": {}
+    }
+  },
+  "properties": {
+    "breadcrumbs": {
+      "type": "object",
+      "widget": {
+        "name": "breadcrumb",
+        "mobileItems": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          }
+        ],
+        "items": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          },
+          {
+            "label": "Заявки",
+            "routerLink": "/cabinet/request/list"
+          },
+          {
+            "label": {
+              "$replace": {
+                "template": "Заявка №{{number}} на {{type}} мероприятия \"{{name}}\"",
+                "data": {
+                  "number": {
+                    "$from-context": {
+                      "path": "@preload.request.number"
+                    }
+                  },
+                  "type": {
+                    "$switch": {
+                      "condition": {
+                        "$from-context": {
+                          "path": "@preload.request.type"
+                        }
+                      },
+                      "default": "",
+                      "cases": [
+                        {
+                          "value": "edit_event",
+                          "action": "изменение"
+                        },
+                        {
+                          "value": "edit_cost",
+                          "action": "изменение стоимости"
+                        }
+                      ]
+                    }
+                  },
+                  "name": {
+                    "$from-context": {
+                      "path": "@preload.request.eventOld.name"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "class": {
+          "group": "p-xs-auto mrg-lg-b-xl mrg-b-md"
+        }
+      }
+    },
+    "header-with-status": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "options": {
+          "label": {
+            "$replace": {
+              "template": "Заявка №{{number}} на {{type}} мероприятия \"{{name}}\"",
+              "data": {
+                "number": {
+                  "$from-context": {
+                    "path": "@preload.request.number"
+                  }
+                },
+                "type": {
+                  "$switch": {
+                    "condition": {
+                      "$from-context": {
+                        "path": "@preload.request.type"
+                      }
+                    },
+                    "default": "",
+                    "cases": [
+                      {
+                        "value": "edit_event",
+                        "action": "изменение"
+                      },
+                      {
+                        "value": "edit_cost",
+                        "action": "изменение стоимости"
+                      }
+                    ]
+                  }
+                },
+                "name": {
+                  "$from-context": {
+                    "path": "@preload.request.eventOld.name"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "class": {
+          "group": "header-badge-container mrg-b-lg",
+          "label": "h1 width-fit-content",
+          "value": "width-fit-content"
+        }
+      },
+      "properties": {
+        "badge": {
+          "type": "string",
+          "widget": "html",
+          "value": {
+            "$replace": {
+              "template": "<span class=\"badge badge_{{code}}\">{{name}}</span>",
+              "data": {
+                "name": {
+                  "$fetch-object": {
+                    "data": {
+                      "$workflow-object-state": {
+                        "objectId": {
+                          "$query-params": {
+                            "name": "id"
+                          }
+                        },
+                        "workflow": "request"
+                      }
+                    },
+                    "path": "name"
+                  }
+                },
+                "code": {
+                  "$switch": {
+                    "condition": {
+                      "$from-context": {
+                        "path": "@preload.request.state"
+                      }
+                    },
+                    "default": "default",
+                    "cases": [
+                      {
+                        "action": "new",
+                        "value": "new"
+                      },
+                      {
+                        "action": "new",
+                        "value": "on_approve"
+                      },
+                      {
+                        "action": "active",
+                        "value": "accepted"
+                      },
+                      {
+                        "action": "error",
+                        "value": "rejected"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "organizersArray": {
+      "type": "array",
+      "model": "#organizersArray",
+      "widget": "hidden",
+      "value": {
+        "$apply-func": {
+          "func": "$ref:js:request/get-organizers",
+          "args": {
+            "eventData": {
+              "$from-context": {
+                "path": "@preload.request"
+              }
+            }
+          }
+        }
+      },
+      "items": {
+        "type": "string"
+      }
+    },
+    "curatorsArray": {
+      "type": "array",
+      "model": "#curatorsArray",
+      "widget": "hidden",
+      "value": {
+        "$apply-func": {
+          "func": "$ref:js:request/get-curators",
+          "args": {
+            "eventData": {
+              "$from-context": {
+                "path": "@preload.request"
+              }
+            }
+          }
+        }
+      },
+      "items": {
+        "type": "string"
+      }
+    },
+    "tabs": {
+      "type": "object",
+      "widget": {
+        "key": "tabs",
+        "name": "tab-view"
+      },
+      "properties": {
+        "object": {
+          "type": "object",
+          "model": false,
+          "widget": {
+            "key": "object",
+            "name": "tab-panel",
+            "options": {
+              "label": "Заявка",
+              "visible": true
+            }
+          },
+          "properties": {
+            "object": {
+              "type": "object",
+              "widget": {
+                "name": "accordion",
+                "options": {
+                  "multiple": true
+                },
+                "class": {
+                  "group": "filters-block_accordion"
+                }
+              },
+              "properties": {
+                "mainInfo": {
+                  "type": "object",
+                  "widget": {
+                    "name": "accordion-tab",
+                    "options": {
+                      "label": "Общие данные",
+                      "selected": {
+                        "$switch": {
+                          "condition": {
+                            "$from-context": {
+                              "path": "@preload.request.type"
+                            }
+                          },
+                          "default": "",
+                          "cases": [
+                            {
+                              "value": "edit_event",
+                              "action": true
+                            },
+                            {
+                              "value": "edit_cost",
+                              "action": false
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "class": {
+                      "group": "form-section",
+                      "label": "h2 mrg-b-xl"
+                    }
+                  },
+                  "properties": {
+                    "commonTableContainer": {
+                      "type": "object",
+                      "widget": {
+                        "name": "container",
+                        "options": {
+                          "label": "Основные сведения о мероприятии"
+                        },
+                        "class": {
+                          "label": "h4 mrg-b-sm"
+                        }
+                      },
+                      "properties": {
+                        "table": {
+                          "value": [
+                            {
+                              "name": "Договор подписан",
+                              "oldValue": {
+                                "$if": {
+                                  "condition": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventOld.contractSigned"
+                                    }
+                                  },
+                                  "then": "Да",
+                                  "else": "Нет"
+                                }
+                              },
+                              "newValue": {
+                                "$if": {
+                                  "condition": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventNew.contractSigned"
+                                    }
+                                  },
+                                  "then": "Да",
+                                  "else": "Нет"
+                                }
+                              }
+                            },
+                            {
+                              "name": "Акт подписан",
+                              "oldValue": {
+                                "$if": {
+                                  "condition": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventOld.actSigned"
+                                    }
+                                  },
+                                  "then": "Да",
+                                  "else": "Нет"
+                                }
+                              },
+                              "newValue": {
+                                "$if": {
+                                  "condition": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventNew.actSigned"
+                                    }
+                                  },
+                                  "then": "Да",
+                                  "else": "Нет"
+                                }
+                              }
+                            },
+                            {
+                              "name": "Наименование мероприятия",
+                              "oldValue": {
+                                "$from-context": {
+                                  "path": "@preload.request.eventOld.name"
+                                }
+                              },
+                              "newValue": {
+                                "$from-context": {
+                                  "path": "@preload.request.eventNew.name"
+                                }
+                              }
+                            },
+                            {
+                              "name": "Вид мероприятия",
+                              "oldValue": {
+                                "$from-context": {
+                                  "path": "@preload.request.eventOld.eventType.name"
+                                }
+                              },
+                              "newValue": {
+                                "$from-context": {
+                                  "path": "@preload.request.eventNew.eventType.name"
+                                }
+                              }
+                            },
+                            {
+                              "name": "Страна/регион",
+                              "oldValue": {
+                                "$switch": {
+                                  "condition": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventOld.country"
+                                    }
+                                  },
+                                  "default": "",
+                                  "cases": [
+                                    {
+                                      "value": "ru",
+                                      "action": "Российская Федерация"
+                                    },
+                                    {
+                                      "value": "rt",
+                                      "action": "Республика Татарстан"
+                                    },
+                                    {
+                                      "value": "other",
+                                      "action": "Зарубежные страны"
+                                    }
+                                  ]
+                                }
+                              },
+                              "newValue": {
+                                "$switch": {
+                                  "condition": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventNew.country"
+                                    }
+                                  },
+                                  "default": "",
+                                  "cases": [
+                                    {
+                                      "value": "ru",
+                                      "action": "Российская Федерация"
+                                    },
+                                    {
+                                      "value": "rt",
+                                      "action": "Республика Татарстан"
+                                    },
+                                    {
+                                      "value": "other",
+                                      "action": "Зарубежные страны"
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "name": "Отрасль",
+                              "oldValue": {
+                                "$from-context": {
+                                  "path": "@preload.request.eventOld.eventIndustry.name"
+                                }
+                              },
+                              "newValue": {
+                                "$from-context": {
+                                  "path": "@preload.request.eventNew.eventIndustry.name"
+                                }
+                              }
+                            },
+                            {
+                              "name": "Описание",
+                              "oldValue": {
+                                "$from-context": {
+                                  "path": "@preload.request.eventOld.description"
+                                }
+                              },
+                              "newValue": {
+                                "$from-context": {
+                                  "path": "@preload.request.eventNew.description"
+                                }
+                              }
+                            },
+                            {
+                              "name": "Количество человек",
+                              "oldValue": {
+                                "$formatter": {
+                                  "format": "number:'1.0-0':'ru'",
+                                  "data": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventOld.numberOfPeople"
+                                    }
+                                  }
+                                }
+                              },
+                              "newValue": {
+                                "$formatter": {
+                                  "format": "number:'1.0-0':'ru'",
+                                  "data": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventNew.numberOfPeople"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "Количество экспонентов",
+                              "oldValue": {
+                                "$formatter": {
+                                  "format": "number:'1.0-0':'ru'",
+                                  "data": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventOld.numberOfExhibitors"
+                                    }
+                                  }
+                                }
+                              },
+                              "newValue": {
+                                "$formatter": {
+                                  "format": "number:'1.0-0':'ru'",
+                                  "data": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventNew.numberOfExhibitors"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "Количество стран-участниц",
+                              "oldValue": {
+                                "$formatter": {
+                                  "format": "number:'1.0-0':'ru'",
+                                  "data": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventOld.numberOfCountries"
+                                    }
+                                  }
+                                }
+                              },
+                              "newValue": {
+                                "$formatter": {
+                                  "format": "number:'1.0-0':'ru'",
+                                  "data": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventNew.numberOfCountries"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "Стандартная застройка (м²)",
+                              "oldValue": {
+                                "$formatter": {
+                                  "format": "number:'0.2-2':'ru'",
+                                  "data": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventOld.standardBuilding"
+                                    }
+                                  }
+                                }
+                              },
+                              "newValue": {
+                                "$formatter": {
+                                  "format": "number:'0.2-2':'ru'",
+                                  "data": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventNew.standardBuilding"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "Площадь застройки нетто (м²)",
+                              "oldValue": {
+                                "$formatter": {
+                                  "format": "number:'0.2-2':'ru'",
+                                  "data": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventOld.buildingAreaNet"
+                                    }
+                                  }
+                                }
+                              },
+                              "newValue": {
+                                "$formatter": {
+                                  "format": "number:'0.2-2':'ru'",
+                                  "data": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventNew.buildingAreaNet"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "Размещение на сайте",
+                              "oldValue": {
+                                "$switch": {
+                                  "condition": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventOld.sitePlacement"
+                                    }
+                                  },
+                                  "default": "",
+                                  "cases": [
+                                    {
+                                      "value": "no_request",
+                                      "action": "Официальный запрос не поступил"
+                                    },
+                                    {
+                                      "value": "yes",
+                                      "action": "Да"
+                                    },
+                                    {
+                                      "value": "no",
+                                      "action": "Нет"
+                                    }
+                                  ]
+                                }
+                              },
+                              "newValue": {
+                                "$switch": {
+                                  "condition": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventNew.sitePlacement"
+                                    }
+                                  },
+                                  "default": "",
+                                  "cases": [
+                                    {
+                                      "value": "no_request",
+                                      "action": "Официальный запрос не поступил"
+                                    },
+                                    {
+                                      "value": "yes",
+                                      "action": "Да"
+                                    },
+                                    {
+                                      "value": "no",
+                                      "action": "Нет"
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "name": "Протокольное мероприятие",
+                              "oldValue": {
+                                "$if": {
+                                  "condition": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventOld.protocolEvent"
+                                    }
+                                  },
+                                  "then": "Да",
+                                  "else": "Нет"
+                                }
+                              },
+                              "newValue": {
+                                "$if": {
+                                  "condition": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventNew.protocolEvent"
+                                    }
+                                  },
+                                  "then": "Да",
+                                  "else": "Нет"
+                                }
+                              }
+                            },
+                            {
+                              "name": "Комментарий",
+                              "oldValue": {
+                                "$from-context": {
+                                  "path": "@preload.request.eventOld.comment"
+                                }
+                              },
+                              "newValue": {
+                                "$from-context": {
+                                  "path": "@preload.request.eventNew.comment"
+                                }
+                              }
+                            }
+                          ],
+                          "type": "array",
+                          "model": "#data",
+                          "widget": {
+                            "name": "table",
+                            "options": {
+                              "emptyMessage": "Данные не найдены",
+                              "responsive": false,
+                              "first": 0,
+                              "paginator": false,
+                              "rows": 20,
+                              "rowsPerPageOptions": [
+                                10,
+                                20,
+                                50
+                              ],
+                              "routerOptions": [
+                                "first",
+                                "rows"
+                              ]
+                            },
+                            "class": {
+                              "value": "p-col-4 data-table_table-fixed"
+                            },
+                            "subscriptions": {
+                              "reload-table": {
+                                "$element-event": {
+                                  "event": "reload",
+                                  "value": true
+                                }
+                              }
+                            }
+                          },
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Наименование поля"
+                                  }
+                                }
+                              },
+                              "oldValueView": {
+                                "type": "object",
+                                "model": false,
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Старое значение"
+                                  }
+                                },
+                                "properties": {
+                                  "oldValue": {
+                                    "type": "string",
+                                    "widget": {
+                                      "name": "info",
+                                      "class": {
+                                        "value": {
+                                          "$if": {
+                                            "condition": {
+                                              "===": {
+                                                "operand1": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.oldValue"
+                                                  }
+                                                },
+                                                "operand2": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.newValue"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "then": "",
+                                            "else": "text-color_blocked"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "value": {
+                                      "$if": {
+                                        "condition": {
+                                          "$not-empty": {
+                                            "data": {
+                                              "$from-context": {
+                                                "path": "$rowData.oldValue"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": {
+                                          "$from-context": {
+                                            "path": "$rowData.oldValue"
+                                          }
+                                        },
+                                        "else": "Не указано"
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "newValueView": {
+                                "type": "object",
+                                "model": false,
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Новое значение"
+                                  }
+                                },
+                                "properties": {
+                                  "newValue": {
+                                    "type": "string",
+                                    "widget": {
+                                      "name": "info",
+                                      "class": {
+                                        "value": {
+                                          "$if": {
+                                            "condition": {
+                                              "===": {
+                                                "operand1": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.oldValue"
+                                                  }
+                                                },
+                                                "operand2": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.newValue"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "then": "",
+                                            "else": "text-color_blocked"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "value": {
+                                      "$if": {
+                                        "condition": {
+                                          "$not-empty": {
+                                            "data": {
+                                              "$from-context": {
+                                                "path": "$rowData.newValue"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": {
+                                          "$from-context": {
+                                            "path": "$rowData.newValue"
+                                          }
+                                        },
+                                        "else": "Не указано"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "organizersTableContainer": {
+                      "type": "object",
+                      "widget": {
+                        "name": "container",
+                        "options": {
+                          "label": "Сведения об организаторах"
+                        },
+                        "class": {
+                          "label": "h4 mrg-b-sm mrg-t-lg"
+                        }
+                      },
+                      "properties": {
+                        "table": {
+                          "value": {
+                            "$var": {
+                              "path": "#organizersArray"
+                            }
+                          },
+                          "type": "array",
+                          "model": "#data",
+                          "widget": {
+                            "name": "table",
+                            "options": {
+                              "emptyMessage": "Данные не найдены",
+                              "responsive": false,
+                              "first": 0,
+                              "lazy": true,
+                              "paginator": false,
+                              "rows": 20,
+                              "rowsPerPageOptions": [
+                                10,
+                                20,
+                                50
+                              ],
+                              "routerOptions": [
+                                "first",
+                                "rows"
+                              ]
+                            },
+                            "class": {
+                              "value": "p-col-4 data-table_table-fixed"
+                            },
+                            "events": {
+                              "lazyLoad": {
+                                "$element-option": {
+                                  "path": "#data",
+                                  "option": "loading",
+                                  "value": true
+                                }
+                              }
+                            },
+                            "subscriptions": {
+                              "reload-table": {
+                                "$element-event": {
+                                  "event": "reload",
+                                  "value": true
+                                }
+                              }
+                            }
+                          },
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Наименование поля"
+                                  }
+                                }
+                              },
+                              "oldValueView": {
+                                "type": "object",
+                                "model": false,
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Старое значение"
+                                  }
+                                },
+                                "properties": {
+                                  "oldValue": {
+                                    "type": "string",
+                                    "widget": {
+                                      "name": "html",
+                                      "class": {
+                                        "value": {
+                                          "$if": {
+                                            "condition": {
+                                              "$in": {
+                                                "array": {
+                                                  "$array-pluck": {
+                                                    "array": {
+                                                      "$var": {
+                                                        "path": "#organizersArray"
+                                                      }
+                                                    },
+                                                    "key": "newValue"
+                                                  }
+                                                },
+                                                "value": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.oldValue"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "then": "",
+                                            "else": "text-color_blocked"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "value": {
+                                      "$if": {
+                                        "condition": {
+                                          "$not-empty": {
+                                            "data": {
+                                              "$from-context": {
+                                                "path": "$rowData.oldValue"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": {
+                                          "$from-context": {
+                                            "path": "$rowData.oldValue"
+                                          }
+                                        },
+                                        "else": ""
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "newValueView": {
+                                "type": "object",
+                                "model": false,
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Новое значение"
+                                  }
+                                },
+                                "properties": {
+                                  "newValue": {
+                                    "type": "string",
+                                    "widget": {
+                                      "name": "html",
+                                      "class": {
+                                        "value": {
+                                          "$if": {
+                                            "condition": {
+                                              "$in": {
+                                                "array": {
+                                                  "$array-pluck": {
+                                                    "array": {
+                                                      "$var": {
+                                                        "path": "#organizersArray"
+                                                      }
+                                                    },
+                                                    "key": "oldValue"
+                                                  }
+                                                },
+                                                "value": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.newValue"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "then": "",
+                                            "else": "text-color_accepted"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "value": {
+                                      "$if": {
+                                        "condition": {
+                                          "$not-empty": {
+                                            "data": {
+                                              "$from-context": {
+                                                "path": "$rowData.newValue"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": {
+                                          "$from-context": {
+                                            "path": "$rowData.newValue"
+                                          }
+                                        },
+                                        "else": ""
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "curatorsTableContainer": {
+                      "type": "object",
+                      "widget": {
+                        "name": "container",
+                        "options": {
+                          "label": "Сведения о кураторах"
+                        },
+                        "class": {
+                          "label": "h4 mrg-b-sm mrg-t-lg",
+                          "value": "mrg-b-lg"
+                        }
+                      },
+                      "properties": {
+                        "table": {
+                          "value": {
+                            "$var": {
+                              "path": "#curatorsArray"
+                            }
+                          },
+                          "type": "array",
+                          "model": "#data",
+                          "widget": {
+                            "name": "table",
+                            "options": {
+                              "emptyMessage": "Данные не найдены",
+                              "responsive": false,
+                              "first": 0,
+                              "lazy": true,
+                              "paginator": false,
+                              "rows": 20,
+                              "rowsPerPageOptions": [
+                                10,
+                                20,
+                                50
+                              ],
+                              "routerOptions": [
+                                "first",
+                                "rows"
+                              ]
+                            },
+                            "class": {
+                              "value": "p-col-4 data-table_table-fixed"
+                            },
+                            "events": {
+                              "lazyLoad": {
+                                "$element-option": {
+                                  "path": "#data",
+                                  "option": "loading",
+                                  "value": true
+                                }
+                              }
+                            },
+                            "subscriptions": {
+                              "reload-table": {
+                                "$element-event": {
+                                  "event": "reload",
+                                  "value": true
+                                }
+                              }
+                            }
+                          },
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Наименование поля"
+                                  }
+                                }
+                              },
+                              "oldValueView": {
+                                "type": "object",
+                                "model": false,
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Старое значение"
+                                  }
+                                },
+                                "properties": {
+                                  "oldValue": {
+                                    "type": "string",
+                                    "widget": {
+                                      "name": "html",
+                                      "class": {
+                                        "value": {
+                                          "$if": {
+                                            "condition": {
+                                              "$in": {
+                                                "array": {
+                                                  "$array-pluck": {
+                                                    "array": {
+                                                      "$var": {
+                                                        "path": "#curatorsArray"
+                                                      }
+                                                    },
+                                                    "key": "newValue"
+                                                  }
+                                                },
+                                                "value": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.oldValue"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "then": "",
+                                            "else": "text-color_blocked"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "value": {
+                                      "$if": {
+                                        "condition": {
+                                          "$not-empty": {
+                                            "data": {
+                                              "$from-context": {
+                                                "path": "$rowData.oldValue"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": {
+                                          "$from-context": {
+                                            "path": "$rowData.oldValue"
+                                          }
+                                        },
+                                        "else": ""
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "newValueView": {
+                                "type": "object",
+                                "model": false,
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Новое значение"
+                                  }
+                                },
+                                "properties": {
+                                  "newValue": {
+                                    "type": "string",
+                                    "widget": {
+                                      "name": "html",
+                                      "class": {
+                                        "value": {
+                                          "$if": {
+                                            "condition": {
+                                              "$in": {
+                                                "array": {
+                                                  "$array-pluck": {
+                                                    "array": {
+                                                      "$var": {
+                                                        "path": "#curatorsArray"
+                                                      }
+                                                    },
+                                                    "key": "oldValue"
+                                                  }
+                                                },
+                                                "value": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.newValue"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "then": "",
+                                            "else": "text-color_accepted"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "value": {
+                                      "$if": {
+                                        "condition": {
+                                          "$not-empty": {
+                                            "data": {
+                                              "$from-context": {
+                                                "path": "$rowData.newValue"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": {
+                                          "$from-context": {
+                                            "path": "$rowData.newValue"
+                                          }
+                                        },
+                                        "else": ""
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "workingHours": {
+                  "type": "object",
+                  "widget": {
+                    "name": "accordion-tab",
+                    "options": {
+                      "label": "График работы",
+                      "selected": false
+                    },
+                    "class": {
+                      "group": "form-section",
+                      "label": "h2 mrg-b-xl"
+                    }
+                  },
+                  "properties": {
+                    "table": {
+                      "value": [
+                        {
+                          "name": "Начало монтажных работ",
+                          "oldValue": {
+                            "$from-context": {
+                              "path": "@preload.request.eventOld.installationStart"
+                            }
+                          },
+                          "newValue": {
+                            "$from-context": {
+                              "path": "@preload.request.eventNew.installationStart"
+                            }
+                          }
+                        },
+                        {
+                          "name": "Завершение монтажных работ",
+                          "oldValue": {
+                            "$from-context": {
+                              "path": "@preload.request.eventOld.installationEnd"
+                            }
+                          },
+                          "newValue": {
+                            "$from-context": {
+                              "path": "@preload.request.eventNew.installationEnd"
+                            }
+                          }
+                        },
+                        {
+                          "name": "Начало мероприятия",
+                          "oldValue": {
+                            "$from-context": {
+                              "path": "@preload.request.eventOld.eventStart"
+                            }
+                          },
+                          "newValue": {
+                            "$from-context": {
+                              "path": "@preload.request.eventNew.eventStart"
+                            }
+                          }
+                        },
+                        {
+                          "name": "Завершение мероприятия",
+                          "oldValue": {
+                            "$from-context": {
+                              "path": "@preload.request.eventOld.eventEnd"
+                            }
+                          },
+                          "newValue": {
+                            "$from-context": {
+                              "path": "@preload.request.eventNew.eventEnd"
+                            }
+                          }
+                        },
+                        {
+                          "name": "Начало демонтажных работ",
+                          "oldValue": {
+                            "$from-context": {
+                              "path": "@preload.request.eventOld.deinstallationStart"
+                            }
+                          },
+                          "newValue": {
+                            "$from-context": {
+                              "path": "@preload.request.eventNew.deinstallationStart"
+                            }
+                          }
+                        },
+                        {
+                          "name": "Завершение демонтажных работ",
+                          "oldValue": {
+                            "$from-context": {
+                              "path": "@preload.request.eventOld.deinstallationEnd"
+                            }
+                          },
+                          "newValue": {
+                            "$from-context": {
+                              "path": "@preload.request.eventNew.deinstallationEnd"
+                            }
+                          }
+                        },
+                        {
+                          "name": "Заезд участников",
+                          "oldValue": {
+                            "$from-context": {
+                              "path": "@preload.request.eventOld.arrival"
+                            }
+                          },
+                          "newValue": {
+                            "$from-context": {
+                              "path": "@preload.request.eventNew.arrival"
+                            }
+                          }
+                        },
+                        {
+                          "name": "Дозавоз",
+                          "oldValue": {
+                            "$from-context": {
+                              "path": "@preload.request.eventOld.secondImport"
+                            }
+                          },
+                          "newValue": {
+                            "$from-context": {
+                              "path": "@preload.request.eventNew.secondImport"
+                            }
+                          }
+                        },
+                        {
+                          "name": "Открытие выставки для посетителей",
+                          "oldValue": {
+                            "$from-context": {
+                              "path": "@preload.request.eventOld.openingOfExhibition"
+                            }
+                          },
+                          "newValue": {
+                            "$from-context": {
+                              "path": "@preload.request.eventNew.openingOfExhibition"
+                            }
+                          }
+                        },
+                        {
+                          "name": "Закрытие выставки для посетителей",
+                          "oldValue": {
+                            "$from-context": {
+                              "path": "@preload.request.eventOld.closingOfExhibition"
+                            }
+                          },
+                          "newValue": {
+                            "$from-context": {
+                              "path": "@preload.request.eventNew.closingOfExhibition"
+                            }
+                          }
+                        },
+                        {
+                          "name": "Выход участников из павильона",
+                          "oldValue": {
+                            "$from-context": {
+                              "path": "@preload.request.eventOld.departure"
+                            }
+                          },
+                          "newValue": {
+                            "$from-context": {
+                              "path": "@preload.request.eventNew.departure"
+                            }
+                          }
+                        },
+                        {
+                          "name": "Выход из павильона в последний день",
+                          "oldValue": {
+                            "$from-context": {
+                              "path": "@preload.request.eventOld.departureOnLastDay"
+                            }
+                          },
+                          "newValue": {
+                            "$from-context": {
+                              "path": "@preload.request.eventNew.departureOnLastDay"
+                            }
+                          }
+                        }
+                      ],
+                      "type": "array",
+                      "model": "#data.workingHours.table",
+                      "widget": {
+                        "name": "table",
+                        "options": {
+                          "emptyMessage": "Данные не найдены",
+                          "responsive": false,
+                          "first": 0,
+                          "paginator": false,
+                          "rows": 20,
+                          "rowsPerPageOptions": [
+                            10,
+                            20,
+                            50
+                          ],
+                          "routerOptions": [
+                            "first",
+                            "rows"
+                          ]
+                        },
+                        "class": {
+                          "value": "p-col-4 data-table_table-fixed mrg-b-lg"
+                        },
+                        "subscriptions": {
+                          "reload-table": {
+                            "$element-event": {
+                              "event": "reload",
+                              "value": true
+                            }
+                          }
+                        }
+                      },
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "widget": {
+                              "name": "table-column",
+                              "options": {
+                                "label": "Наименование поля"
+                              }
+                            }
+                          },
+                          "oldValueView": {
+                            "type": "object",
+                            "model": false,
+                            "widget": {
+                              "name": "table-column",
+                              "options": {
+                                "label": "Старое значение"
+                              }
+                            },
+                            "properties": {
+                              "oldValue": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "info",
+                                  "class": {
+                                    "value": {
+                                      "$if": {
+                                        "condition": {
+                                          "===": {
+                                            "operand1": {
+                                              "$from-context": {
+                                                "path": "$rowData.oldValue"
+                                              }
+                                            },
+                                            "operand2": {
+                                              "$from-context": {
+                                                "path": "$rowData.newValue"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": "",
+                                        "else": "text-color_blocked"
+                                      }
+                                    }
+                                  }
+                                },
+                                "value": {
+                                  "$if": {
+                                    "condition": {
+                                      "$not-empty": {
+                                        "data": {
+                                          "$from-context": {
+                                            "path": "$rowData.oldValue"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "then": {
+                                      "$formatter": {
+                                        "format": "datetime:\"DD.MM.YYYY HH:mm\"",
+                                        "data": {
+                                          "$from-context": {
+                                            "path": "$rowData.oldValue"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "else": "Не указано"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "newValueView": {
+                            "type": "object",
+                            "model": false,
+                            "widget": {
+                              "name": "table-column",
+                              "options": {
+                                "label": "Новое значение"
+                              }
+                            },
+                            "properties": {
+                              "newValue": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "info",
+                                  "class": {
+                                    "value": {
+                                      "$if": {
+                                        "condition": {
+                                          "===": {
+                                            "operand1": {
+                                              "$from-context": {
+                                                "path": "$rowData.oldValue"
+                                              }
+                                            },
+                                            "operand2": {
+                                              "$from-context": {
+                                                "path": "$rowData.newValue"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": "",
+                                        "else": "text-color_blocked"
+                                      }
+                                    }
+                                  }
+                                },
+                                "value": {
+                                  "$if": {
+                                    "condition": {
+                                      "$not-empty": {
+                                        "data": {
+                                          "$from-context": {
+                                            "path": "$rowData.newValue"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "then": {
+                                      "$formatter": {
+                                        "format": "datetime:\"DD.MM.YYYY HH:mm\"",
+                                        "data": {
+                                          "$from-context": {
+                                            "path": "$rowData.newValue"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "else": "Не указано"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "rent": {
+                  "type": "object",
+                  "widget": {
+                    "name": "accordion-tab",
+                    "options": {
+                      "label": "Аренда",
+                      "selected": {
+                        "===": {
+                          "operand1": {
+                            "$from-context": {
+                              "path": "@preload.request.type"
+                            }
+                          },
+                          "operand2": "edit_cost"
+                        }
+                      }
+                    },
+                    "class": {
+                      "group": "form-section",
+                      "label": "h2 mrg-b-xl"
+                    }
+                  },
+                  "properties": {
+                    "table": {
+                      "value": [
+                        {
+                          "name": "Скидка/наценка",
+                          "oldValue": {
+                            "$if": {
+                              "condition": {
+                                "!==": {
+                                  "operand1": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventOld.discountOrMarkupFlag"
+                                    }
+                                  },
+                                  "operand2": "no"
+                                }
+                              },
+                              "then": {
+                                "$replace": {
+                                  "template": "{{0}} {{1}}%",
+                                  "data": [
+                                    {
+                                      "$switch": {
+                                        "condition": {
+                                          "$from-context": {
+                                            "path": "@preload.request.eventOld.discountOrMarkupFlag"
+                                          }
+                                        },
+                                        "default": "",
+                                        "cases": [
+                                          {
+                                            "value": "discount",
+                                            "action": "Скидка"
+                                          },
+                                          {
+                                            "value": "markup",
+                                            "action": "Наценка"
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "$from-context": {
+                                        "path": "@preload.request.eventOld.discountOrMarkup"
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              "else": "Нет"
+                            }
+                          },
+                          "newValue": {
+                            "$if": {
+                              "condition": {
+                                "!==": {
+                                  "operand1": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventNew.discountOrMarkupFlag"
+                                    }
+                                  },
+                                  "operand2": "no"
+                                }
+                              },
+                              "then": {
+                                "$replace": {
+                                  "template": "{{0}} {{1}}%",
+                                  "data": [
+                                    {
+                                      "$switch": {
+                                        "condition": {
+                                          "$from-context": {
+                                            "path": "@preload.request.eventNew.discountOrMarkupFlag"
+                                          }
+                                        },
+                                        "default": "",
+                                        "cases": [
+                                          {
+                                            "value": "discount",
+                                            "action": "Скидка"
+                                          },
+                                          {
+                                            "value": "markup",
+                                            "action": "Наценка"
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "$from-context": {
+                                        "path": "@preload.request.eventNew.discountOrMarkup"
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              "else": "Нет"
+                            }
+                          }
+                        },
+                        {
+                          "name": "Итоговая стоимость по мероприятию",
+                          "oldValue": {
+                            "$formatter": {
+                              "format": "number:'0.2-2':'ru'",
+                              "data": {
+                                "$if": {
+                                  "condition": {
+                                    "$not-empty": {
+                                      "data": {
+                                        "$from-context": {
+                                          "path": "@preload.request.eventOld.totalEventCostWithDiscountOrMarkup"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "then": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventOld.totalEventCostWithDiscountOrMarkup"
+                                    }
+                                  },
+                                  "else": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventOld.totalEventCost"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "newValue": {
+                            "$formatter": {
+                              "format": "number:'0.2-2':'ru'",
+                              "data": {
+                                "$if": {
+                                  "condition": {
+                                    "$not-empty": {
+                                      "data": {
+                                        "$from-context": {
+                                          "path": "@preload.request.eventNew.totalEventCostWithDiscountOrMarkup"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "then": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventNew.totalEventCostWithDiscountOrMarkup"
+                                    }
+                                  },
+                                  "else": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventNew.totalEventCost"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "type": "array",
+                      "model": "#data",
+                      "widget": {
+                        "name": "table",
+                        "paginatorLeft": {
+                          "type": "string",
+                          "widget": "info",
+                          "value": {
+                            "$grid": {
+                              "action": "rows-per-page",
+                              "path": "#data"
+                            }
+                          }
+                        },
+                        "options": {
+                          "emptyMessage": "Данные не найдены",
+                          "responsive": false,
+                          "first": 0,
+                          "lazy": true,
+                          "paginator": false,
+                          "rows": 20,
+                          "rowsPerPageOptions": [
+                            10,
+                            20,
+                            50
+                          ],
+                          "routerOptions": [
+                            "first",
+                            "rows"
+                          ]
+                        },
+                        "class": {
+                          "value": "p-col-4 data-table_table-fixed mrg-b-lg"
+                        },
+                        "events": {
+                          "lazyLoad": {
+                            "$element-option": {
+                              "path": "#data",
+                              "option": "loading",
+                              "value": true
+                            }
+                          }
+                        },
+                        "subscriptions": {
+                          "reload-table": {
+                            "$element-event": {
+                              "event": "reload",
+                              "value": true
+                            }
+                          }
+                        }
+                      },
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "widget": {
+                              "name": "table-column",
+                              "options": {
+                                "label": "Наименование поля"
+                              }
+                            }
+                          },
+                          "oldValueView": {
+                            "type": "object",
+                            "model": false,
+                            "widget": {
+                              "name": "table-column",
+                              "options": {
+                                "label": "Старое значение"
+                              }
+                            },
+                            "properties": {
+                              "oldValue": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "info",
+                                  "class": {
+                                    "value": {
+                                      "$if": {
+                                        "condition": {
+                                          "===": {
+                                            "operand1": {
+                                              "$from-context": {
+                                                "path": "$rowData.oldValue"
+                                              }
+                                            },
+                                            "operand2": {
+                                              "$from-context": {
+                                                "path": "$rowData.newValue"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": "",
+                                        "else": "text-color_blocked"
+                                      }
+                                    }
+                                  }
+                                },
+                                "value": {
+                                  "$if": {
+                                    "condition": {
+                                      "$not-empty": {
+                                        "data": {
+                                          "$from-context": {
+                                            "path": "$rowData.oldValue"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "then": {
+                                      "$if": {
+                                        "condition": {
+                                          "===": {
+                                            "operand1": {
+                                              "$from-context": {
+                                                "path": "$rowData.oldValue"
+                                              }
+                                            },
+                                            "operand2": 0
+                                          }
+                                        },
+                                        "then": "0",
+                                        "else": {
+                                          "$from-context": {
+                                            "path": "$rowData.oldValue"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "else": "Не указано"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "newValueView": {
+                            "type": "object",
+                            "model": false,
+                            "widget": {
+                              "name": "table-column",
+                              "options": {
+                                "label": "Новое значение"
+                              }
+                            },
+                            "properties": {
+                              "newValue": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "info",
+                                  "class": {
+                                    "value": {
+                                      "$if": {
+                                        "condition": {
+                                          "===": {
+                                            "operand1": {
+                                              "$from-context": {
+                                                "path": "$rowData.oldValue"
+                                              }
+                                            },
+                                            "operand2": {
+                                              "$from-context": {
+                                                "path": "$rowData.newValue"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": "",
+                                        "else": "text-color_blocked"
+                                      }
+                                    }
+                                  }
+                                },
+                                "value": {
+                                  "$if": {
+                                    "condition": {
+                                      "$not-empty": {
+                                        "data": {
+                                          "$from-context": {
+                                            "path": "$rowData.newValue"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "then": {
+                                      "$if": {
+                                        "condition": {
+                                          "===": {
+                                            "operand1": {
+                                              "$from-context": {
+                                                "path": "$rowData.newValue"
+                                              }
+                                            },
+                                            "operand2": 0
+                                          }
+                                        },
+                                        "then": "0",
+                                        "else": {
+                                          "$from-context": {
+                                            "path": "$rowData.newValue"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "else": "Не указано"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "documents": {
+                  "type": "object",
+                  "widget": {
+                    "name": "accordion-tab",
+                    "options": {
+                      "label": "Вложения",
+                      "selected": false
+                    },
+                    "class": {
+                      "group": "form-section",
+                      "label": "h2 mrg-b-xl"
+                    }
+                  },
+                  "properties": {
+                    "table": {
+                      "value": [
+                        {
+                          "name": "Логотип",
+                          "oldValue": {
+                            "$if": {
+                              "condition": {
+                                "$not-empty": {
+                                  "data": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventOld.documents.fileLogo"
+                                    }
+                                  }
+                                }
+                              },
+                              "then": [
+                                {
+                                  "$assign-object": {
+                                    "object": {
+                                      "$from-context": {
+                                        "path": "@preload.request.eventOld.documents.fileLogo"
+                                      }
+                                    },
+                                    "data": {
+                                      "$if": {
+                                        "condition": {
+                                          "===": {
+                                            "operand1": {
+                                              "$from-context": {
+                                                "path": "@preload.request.eventOld.documents.fileLogo._id"
+                                              }
+                                            },
+                                            "operand2": {
+                                              "$from-context": {
+                                                "path": "@preload.request.eventNew.documents.fileLogo._id"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": "blue",
+                                        "else": "error"
+                                      }
+                                    },
+                                    "path": "color"
+                                  }
+                                }
+                              ],
+                              "else": []
+                            }
+                          },
+                          "newValue": {
+                            "$if": {
+                              "condition": {
+                                "$not-empty": {
+                                  "data": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventNew.documents.fileLogo"
+                                    }
+                                  }
+                                }
+                              },
+                              "then": [
+                                {
+                                  "$assign-object": {
+                                    "object": {
+                                      "$from-context": {
+                                        "path": "@preload.request.eventNew.documents.fileLogo"
+                                      }
+                                    },
+                                    "data": {
+                                      "$if": {
+                                        "condition": {
+                                          "===": {
+                                            "operand1": {
+                                              "$from-context": {
+                                                "path": "@preload.request.eventOld.documents.fileLogo._id"
+                                              }
+                                            },
+                                            "operand2": {
+                                              "$from-context": {
+                                                "path": "@preload.request.eventNew.documents.fileLogo._id"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": "blue",
+                                        "else": "error"
+                                      }
+                                    },
+                                    "path": "color"
+                                  }
+                                }
+                              ],
+                              "else": []
+                            }
+                          }
+                        },
+                        {
+                          "name": "Смета расходов",
+                          "oldValue": {
+                            "$if": {
+                              "condition": {
+                                "$not-empty": {
+                                  "data": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventOld.documents.fileCostings"
+                                    }
+                                  }
+                                }
+                              },
+                              "then": [
+                                {
+                                  "$assign-object": {
+                                    "object": {
+                                      "$from-context": {
+                                        "path": "@preload.request.eventOld.documents.fileCostings"
+                                      }
+                                    },
+                                    "data": {
+                                      "$if": {
+                                        "condition": {
+                                          "===": {
+                                            "operand1": {
+                                              "$from-context": {
+                                                "path": "@preload.request.eventOld.documents.fileCostings._id"
+                                              }
+                                            },
+                                            "operand2": {
+                                              "$from-context": {
+                                                "path": "@preload.request.eventNew.documents.fileCostings._id"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": "blue",
+                                        "else": "error"
+                                      }
+                                    },
+                                    "path": "color"
+                                  }
+                                }
+                              ],
+                              "else": []
+                            }
+                          },
+                          "newValue": {
+                            "$if": {
+                              "condition": {
+                                "$not-empty": {
+                                  "data": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventNew.documents.fileCostings"
+                                    }
+                                  }
+                                }
+                              },
+                              "then": [
+                                {
+                                  "$assign-object": {
+                                    "object": {
+                                      "$from-context": {
+                                        "path": "@preload.request.eventNew.documents.fileCostings"
+                                      }
+                                    },
+                                    "data": {
+                                      "$if": {
+                                        "condition": {
+                                          "===": {
+                                            "operand1": {
+                                              "$from-context": {
+                                                "path": "@preload.request.eventOld.documents.fileCostings._id"
+                                              }
+                                            },
+                                            "operand2": {
+                                              "$from-context": {
+                                                "path": "@preload.request.eventNew.documents.fileCostings._id"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": "blue",
+                                        "else": "error"
+                                      }
+                                    },
+                                    "path": "color"
+                                  }
+                                }
+                              ],
+                              "else": []
+                            }
+                          }
+                        },
+                        {
+                          "name": "Перечень экспонентов (с кратким описанием компаний) ",
+                          "oldValue": {
+                            "$if": {
+                              "condition": {
+                                "$not-empty": {
+                                  "data": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventOld.documents.fileListOfExhibitors"
+                                    }
+                                  }
+                                }
+                              },
+                              "then": [
+                                {
+                                  "$assign-object": {
+                                    "object": {
+                                      "$from-context": {
+                                        "path": "@preload.request.eventOld.documents.fileListOfExhibitors"
+                                      }
+                                    },
+                                    "data": {
+                                      "$if": {
+                                        "condition": {
+                                          "===": {
+                                            "operand1": {
+                                              "$from-context": {
+                                                "path": "@preload.request.eventOld.documents.fileListOfExhibitors._id"
+                                              }
+                                            },
+                                            "operand2": {
+                                              "$from-context": {
+                                                "path": "@preload.request.eventNew.documents.fileListOfExhibitors._id"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": "blue",
+                                        "else": "error"
+                                      }
+                                    },
+                                    "path": "color"
+                                  }
+                                }
+                              ],
+                              "else": []
+                            }
+                          },
+                          "newValue": {
+                            "$if": {
+                              "condition": {
+                                "$not-empty": {
+                                  "data": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventNew.documents.fileListOfExhibitors"
+                                    }
+                                  }
+                                }
+                              },
+                              "then": [
+                                {
+                                  "$assign-object": {
+                                    "object": {
+                                      "$from-context": {
+                                        "path": "@preload.request.eventNew.documents.fileListOfExhibitors"
+                                      }
+                                    },
+                                    "data": {
+                                      "$if": {
+                                        "condition": {
+                                          "===": {
+                                            "operand1": {
+                                              "$from-context": {
+                                                "path": "@preload.request.eventOld.documents.fileListOfExhibitors._id"
+                                              }
+                                            },
+                                            "operand2": {
+                                              "$from-context": {
+                                                "path": "@preload.request.eventNew.documents.fileListOfExhibitors._id"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": "blue",
+                                        "else": "error"
+                                      }
+                                    },
+                                    "path": "color"
+                                  }
+                                }
+                              ],
+                              "else": []
+                            }
+                          }
+                        },
+                        {
+                          "name": "Экспоплан",
+                          "oldValue": {
+                            "$array-map": {
+                              "array": {
+                                "$from-context": {
+                                  "path": "@preload.request.eventOld.documents.filesExpoplan"
+                                }
+                              },
+                              "map": {
+                                "$assign-object": {
+                                  "object": {
+                                    "$from-context": {
+                                      "path": "$data"
+                                    }
+                                  },
+                                  "data": {
+                                    "$if": {
+                                      "condition": {
+                                        "$in": {
+                                          "array": {
+                                            "$array-pluck": {
+                                              "array": {
+                                                "$from-context": {
+                                                  "path": "@preload.request.eventNew.documents.filesExpoplan"
+                                                }
+                                              },
+                                              "key": "_id"
+                                            }
+                                          },
+                                          "value": {
+                                            "$from-context": {
+                                              "path": "$data._id"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "then": "blue",
+                                      "else": "error"
+                                    }
+                                  },
+                                  "path": "color"
+                                }
+                              }
+                            }
+                          },
+                          "newValue": {
+                            "$array-map": {
+                              "array": {
+                                "$from-context": {
+                                  "path": "@preload.request.eventNew.documents.filesExpoplan"
+                                }
+                              },
+                              "map": {
+                                "$assign-object": {
+                                  "object": {
+                                    "$from-context": {
+                                      "path": "$data"
+                                    }
+                                  },
+                                  "data": {
+                                    "$if": {
+                                      "condition": {
+                                        "$in": {
+                                          "array": {
+                                            "$array-pluck": {
+                                              "array": {
+                                                "$from-context": {
+                                                  "path": "@preload.request.eventOld.documents.filesExpoplan"
+                                                }
+                                              },
+                                              "key": "_id"
+                                            }
+                                          },
+                                          "value": {
+                                            "$from-context": {
+                                              "path": "$data._id"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "then": "blue",
+                                      "else": "error"
+                                    }
+                                  },
+                                  "path": "color"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "name": "Протокол/сценарий",
+                          "oldValue": {
+                            "$array-map": {
+                              "array": {
+                                "$from-context": {
+                                  "path": "@preload.request.eventOld.documents.filesProtocol"
+                                }
+                              },
+                              "map": {
+                                "$assign-object": {
+                                  "object": {
+                                    "$from-context": {
+                                      "path": "$data"
+                                    }
+                                  },
+                                  "data": {
+                                    "$if": {
+                                      "condition": {
+                                        "$in": {
+                                          "array": {
+                                            "$array-pluck": {
+                                              "array": {
+                                                "$from-context": {
+                                                  "path": "@preload.request.eventNew.documents.filesProtocol"
+                                                }
+                                              },
+                                              "key": "_id"
+                                            }
+                                          },
+                                          "value": {
+                                            "$from-context": {
+                                              "path": "$data._id"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "then": "blue",
+                                      "else": "error"
+                                    }
+                                  },
+                                  "path": "color"
+                                }
+                              }
+                            }
+                          },
+                          "newValue": {
+                            "$array-map": {
+                              "array": {
+                                "$from-context": {
+                                  "path": "@preload.request.eventNew.documents.filesProtocol"
+                                }
+                              },
+                              "map": {
+                                "$assign-object": {
+                                  "object": {
+                                    "$from-context": {
+                                      "path": "$data"
+                                    }
+                                  },
+                                  "data": {
+                                    "$if": {
+                                      "condition": {
+                                        "$in": {
+                                          "array": {
+                                            "$array-pluck": {
+                                              "array": {
+                                                "$from-context": {
+                                                  "path": "@preload.request.eventOld.documents.filesProtocol"
+                                                }
+                                              },
+                                              "key": "_id"
+                                            }
+                                          },
+                                          "value": {
+                                            "$from-context": {
+                                              "path": "$data._id"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "then": "blue",
+                                      "else": "error"
+                                    }
+                                  },
+                                  "path": "color"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "name": "График первых лиц",
+                          "oldValue": {
+                            "$if": {
+                              "condition": {
+                                "$not-empty": {
+                                  "data": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventOld.documents.filePresidentProgram"
+                                    }
+                                  }
+                                }
+                              },
+                              "then": [
+                                {
+                                  "$assign-object": {
+                                    "object": {
+                                      "$from-context": {
+                                        "path": "@preload.request.eventOld.documents.filePresidentProgram"
+                                      }
+                                    },
+                                    "data": {
+                                      "$if": {
+                                        "condition": {
+                                          "===": {
+                                            "operand1": {
+                                              "$from-context": {
+                                                "path": "@preload.request.eventOld.documents.filePresidentProgram._id"
+                                              }
+                                            },
+                                            "operand2": {
+                                              "$from-context": {
+                                                "path": "@preload.request.eventNew.documents.filePresidentProgram._id"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": "blue",
+                                        "else": "error"
+                                      }
+                                    },
+                                    "path": "color"
+                                  }
+                                }
+                              ],
+                              "else": []
+                            }
+                          },
+                          "newValue": {
+                            "$if": {
+                              "condition": {
+                                "$not-empty": {
+                                  "data": {
+                                    "$from-context": {
+                                      "path": "@preload.request.eventNew.documents.filePresidentProgram"
+                                    }
+                                  }
+                                }
+                              },
+                              "then": [
+                                {
+                                  "$assign-object": {
+                                    "object": {
+                                      "$from-context": {
+                                        "path": "@preload.request.eventNew.documents.filePresidentProgram"
+                                      }
+                                    },
+                                    "data": {
+                                      "$if": {
+                                        "condition": {
+                                          "===": {
+                                            "operand1": {
+                                              "$from-context": {
+                                                "path": "@preload.request.eventOld.documents.filePresidentProgram._id"
+                                              }
+                                            },
+                                            "operand2": {
+                                              "$from-context": {
+                                                "path": "@preload.request.eventNew.documents.filePresidentProgram._id"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": "blue",
+                                        "else": "error"
+                                      }
+                                    },
+                                    "path": "color"
+                                  }
+                                }
+                              ],
+                              "else": []
+                            }
+                          }
+                        },
+                        {
+                          "name": "Прочие документы",
+                          "oldValue": {
+                            "$array-map": {
+                              "array": {
+                                "$from-context": {
+                                  "path": "@preload.request.eventOld.documents.filesOther"
+                                }
+                              },
+                              "map": {
+                                "$assign-object": {
+                                  "object": {
+                                    "$from-context": {
+                                      "path": "$data"
+                                    }
+                                  },
+                                  "data": {
+                                    "$if": {
+                                      "condition": {
+                                        "$in": {
+                                          "array": {
+                                            "$array-pluck": {
+                                              "array": {
+                                                "$from-context": {
+                                                  "path": "@preload.request.eventNew.documents.filesOther"
+                                                }
+                                              },
+                                              "key": "_id"
+                                            }
+                                          },
+                                          "value": {
+                                            "$from-context": {
+                                              "path": "$data._id"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "then": "blue",
+                                      "else": "error"
+                                    }
+                                  },
+                                  "path": "color"
+                                }
+                              }
+                            }
+                          },
+                          "newValue": {
+                            "$array-map": {
+                              "array": {
+                                "$from-context": {
+                                  "path": "@preload.request.eventNew.documents.filesOther"
+                                }
+                              },
+                              "map": {
+                                "$assign-object": {
+                                  "object": {
+                                    "$from-context": {
+                                      "path": "$data"
+                                    }
+                                  },
+                                  "data": {
+                                    "$if": {
+                                      "condition": {
+                                        "$in": {
+                                          "array": {
+                                            "$array-pluck": {
+                                              "array": {
+                                                "$from-context": {
+                                                  "path": "@preload.request.eventOld.documents.filesOther"
+                                                }
+                                              },
+                                              "key": "_id"
+                                            }
+                                          },
+                                          "value": {
+                                            "$from-context": {
+                                              "path": "$data._id"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "then": "blue",
+                                      "else": "error"
+                                    }
+                                  },
+                                  "path": "color"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "type": "array",
+                      "model": "#data.documents",
+                      "widget": {
+                        "name": "table",
+                        "options": {
+                          "emptyMessage": "Данные не найдены",
+                          "responsive": false,
+                          "first": 0,
+                          "lazy": true,
+                          "paginator": false,
+                          "rows": 20,
+                          "rowsPerPageOptions": [
+                            10,
+                            20,
+                            50
+                          ],
+                          "routerOptions": [
+                            "first",
+                            "rows"
+                          ]
+                        },
+                        "class": {
+                          "value": "p-col-4 data-table_table-fixed"
+                        },
+                        "events": {
+                          "lazyLoad": {
+                            "$element-option": {
+                              "path": "#data.documents",
+                              "option": "loading",
+                              "value": true
+                            }
+                          }
+                        },
+                        "subscriptions": {
+                          "reload-table": {
+                            "$element-event": {
+                              "event": "reload",
+                              "value": true
+                            }
+                          }
+                        }
+                      },
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "widget": {
+                              "name": "table-column",
+                              "options": {
+                                "label": "Наименование документа"
+                              }
+                            }
+                          },
+                          "oldValue": {
+                            "type": "array",
+                            "widget": {
+                              "name": "table-column",
+                              "options": {
+                                "label": "Старое значение"
+                              }
+                            },
+                            "items": {
+                              "type": "object",
+                              "widget": {
+                                "name": "container"
+                              },
+                              "properties": {
+                                "_id": {
+                                  "type": "string",
+                                  "widget": {
+                                    "name": "hidden"
+                                  }
+                                },
+                                "color": {
+                                  "type": "string",
+                                  "widget": {
+                                    "name": "hidden"
+                                  }
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "widget": {
+                                    "name": "file",
+                                    "options": {
+                                      "displayParams": {
+                                        "showSize": true,
+                                        "enableFilesDownload": true
+                                      },
+                                      "objectId": {
+                                        "$query-params": {
+                                          "name": "id"
+                                        }
+                                      }
+                                    },
+                                    "class": {
+                                      "value": "word-break-all word-break-normal-lg file_table-view",
+                                      "link": {
+                                        "$if": {
+                                          "condition": {
+                                            "===": {
+                                              "operand1": {
+                                                "$from-context": {
+                                                  "path": "$rowData.color"
+                                                }
+                                              },
+                                              "operand2": "error"
+                                            }
+                                          },
+                                          "then": "text-color_blocked",
+                                          "else": ""
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "newValue": {
+                            "type": "array",
+                            "widget": {
+                              "name": "table-column",
+                              "options": {
+                                "label": "Новое значение"
+                              }
+                            },
+                            "items": {
+                              "type": "object",
+                              "widget": {
+                                "name": "container"
+                              },
+                              "properties": {
+                                "_id": {
+                                  "type": "string",
+                                  "widget": {
+                                    "name": "hidden"
+                                  }
+                                },
+                                "color": {
+                                  "type": "string",
+                                  "widget": {
+                                    "name": "hidden"
+                                  }
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "widget": {
+                                    "name": "file",
+                                    "options": {
+                                      "displayParams": {
+                                        "showSize": true,
+                                        "enableFilesDownload": true
+                                      },
+                                      "objectId": {
+                                        "$query-params": {
+                                          "name": "id"
+                                        }
+                                      }
+                                    },
+                                    "class": {
+                                      "value": "word-break-all word-break-normal-lg file_table-view",
+                                      "link": {
+                                        "$if": {
+                                          "condition": {
+                                            "===": {
+                                              "operand1": {
+                                                "$from-context": {
+                                                  "path": "$rowData.color"
+                                                }
+                                              },
+                                              "operand2": "error"
+                                            }
+                                          },
+                                          "then": "text-color_accepted",
+                                          "else": ""
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "approval": "$ref:fieldset:approval/view_process",
+        "history": "$ref:fieldset:approval/view_history"
+      }
+    },
+    "actions": {
+      "type": "object",
+      "model": false,
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "form-actions p-field p-grid mrg-t-lg",
+          "value": "p-xs-12 p-autolayout"
+        }
+      },
+      "properties": {
+        "back": {
+          "type": "string",
+          "value": "Вернуться к реестру заявок",
+          "widget": {
+            "name": "link",
+            "options": {
+              "routerLink": "/cabinet/request/list"
+            },
+            "class": {
+              "group": "mrg-t-0",
+              "link": "back-link"
+            }
+          }
+        }
+      }
+    }
+  }
+}

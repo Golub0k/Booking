@@ -1,0 +1,561 @@
+{
+  "meta": {
+    "title": "Кнопки действий для согласования"
+  },
+  "schema": {
+    "type": "string",
+    "widget": {
+      "name": "actions-menu",
+      "options": {
+        "labelKey": "title"
+      },
+      "class": {
+        "group": "actions-button-menu-widget"
+      },
+      "items": {
+        "$if": {
+          "condition": {
+            "$not-empty": {
+              "data": {
+                "$fetch-object": {
+                  "path": "data.items.0.stages.0.tasks.0.userId",
+                  "data": {
+                    "$api-data": {
+                      "query": "default/approval_process/tasks_in_process_for_object",
+                      "id": {
+                        "$query-params": {
+                          "name": "id"
+                        }
+                      },
+                      "variables": {
+                        "objectId": {
+                          "$query-params": {
+                            "name": "id"
+                          }
+                        },
+                        "activeUser": {
+                          "$active-user": {
+                            "field": "_id"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "$array-concat": {
+              "array": [
+                {
+                  "title": "Согласовать",
+                  "visible": {
+                    "$active-user-has-permission": {
+                      "permission": "approval_task.resolve.in_process"
+                    }
+                  },
+                  "hidden": false,
+                  "popup": {
+                    "$replace": {
+                      "template": "approval_task/resolve?id={{id}}&decision=approve",
+                      "data": {
+                        "id": {
+                          "$fetch-object": {
+                            "path": "data.items.0.stages.0.tasks.0._id",
+                            "data": {
+                              "$api-data": {
+                                "query": "default/approval_process/tasks_in_process_for_object",
+                                "id": {
+                                  "$query-params": {
+                                    "name": "id"
+                                  }
+                                },
+                                "variables": {
+                                  "objectId": {
+                                    "$query-params": {
+                                      "name": "id"
+                                    }
+                                  },
+                                  "activeUser": {
+                                    "$active-user": {
+                                      "field": "_id"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "title": "Отказать в согласовании",
+                  "visible": {
+                    "$active-user-has-permission": {
+                      "permission": "approval_task.resolve.in_process"
+                    }
+                  },
+                  "hidden": false,
+                  "popup": {
+                    "$replace": {
+                      "template": "approval_task/resolve?id={{id}}&decision=refuseApproval",
+                      "data": {
+                        "id": {
+                          "$fetch-object": {
+                            "path": "data.items.0.stages.0.tasks.0._id",
+                            "data": {
+                              "$api-data": {
+                                "query": "default/approval_process/tasks_in_process_for_object",
+                                "id": {
+                                  "$query-params": {
+                                    "name": "id"
+                                  }
+                                },
+                                "variables": {
+                                  "objectId": {
+                                    "$query-params": {
+                                      "name": "id"
+                                    }
+                                  },
+                                  "activeUser": {
+                                    "$active-user": {
+                                      "field": "_id"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "title": "Прервать процесс",
+                  "visible": {
+                    "$active-user-has-permission": {
+                      "permission": "approval_process.cancel.new"
+                    }
+                  },
+                  "hidden": false,
+                  "popup": {
+                    "$replace": {
+                      "template": "approval_process/cancel?id={{processId}}",
+                      "data": {
+                        "processId": {
+                          "$fetch-object": {
+                            "path": "data.items._id",
+                            "data": {
+                              "$api-data": {
+                                "query": "default/approval_process/get_id_process",
+                                "id": {
+                                  "$query-params": {
+                                    "name": "id"
+                                  }
+                                },
+                                "variables": {
+                                  "objectId": {
+                                    "$query-params": {
+                                      "name": "id"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ],
+              "data": {
+                "$from-context": {
+                  "path": "$response.body.0",
+                  "data": {
+                    "$http-code": {
+                      "200": {},
+                      "422": [
+                        {
+                          "$validate": {
+                            "errors": {
+                              "$from-context": {
+                                "path": "$response.error.errors"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "client": {
+                        "$api-workflow-actions": {
+                          "options": {
+                            "observe": "response"
+                          },
+                          "type": "get",
+                          "id": {
+                            "$query-params": {
+                              "name": "id"
+                            }
+                          }
+                        }
+                      },
+                      "finalize": {
+                        "$waterfall": {
+                          "arrayFunctions": [
+                            {
+                              "$element-option": {
+                                "option": "disabled",
+                                "value": false
+                              }
+                            },
+                            {
+                              "$element-option": {
+                                "option": "loading",
+                                "value": false
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "default": [
+                        {
+                          "$message": {
+                            "severity": "error",
+                            "summary": "Действие не выполнено",
+                            "detail": "Непредвиденная ошибка"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "$if": {
+              "condition": {
+                "===": {
+                  "operand1": "new",
+                  "operand2": {
+                    "$fetch-object": {
+                      "path": "data.items.state",
+                      "data": {
+                        "$api-data": {
+                          "query": "default/approval_process/get_id_process",
+                          "id": {
+                            "$query-params": {
+                              "name": "id"
+                            }
+                          },
+                          "variables": {
+                            "objectId": {
+                              "$query-params": {
+                                "name": "id"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "then": {
+                "$array-concat": {
+                  "array": [
+                    {
+                      "title": "Прервать процесс",
+                      "visible": {
+                        "$active-user-has-permission": {
+                          "permission": "approval_process.cancel.new"
+                        }
+                      },
+                      "hidden": false,
+                      "popup": {
+                        "$replace": {
+                          "template": "approval_process/cancel?id={{processId}}",
+                          "data": {
+                            "processId": {
+                              "$fetch-object": {
+                                "path": "data.items._id",
+                                "data": {
+                                  "$api-data": {
+                                    "query": "default/approval_process/get_id_process",
+                                    "id": {
+                                      "$query-params": {
+                                        "name": "id"
+                                      }
+                                    },
+                                    "variables": {
+                                      "objectId": {
+                                        "$query-params": {
+                                          "name": "id"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "data": {
+                    "$from-context": {
+                      "path": "$response.body.0",
+                      "data": {
+                        "$http-code": {
+                          "200": {},
+                          "422": [
+                            {
+                              "$validate": {
+                                "errors": {
+                                  "$from-context": {
+                                    "path": "$response.error.errors"
+                                  }
+                                }
+                              }
+                            }
+                          ],
+                          "client": {
+                            "$api-workflow-actions": {
+                              "options": {
+                                "observe": "response"
+                              },
+                              "type": "get",
+                              "id": {
+                                "$query-params": {
+                                  "name": "id"
+                                }
+                              }
+                            }
+                          },
+                          "finalize": {
+                            "$waterfall": {
+                              "arrayFunctions": [
+                                {
+                                  "$element-option": {
+                                    "option": "disabled",
+                                    "value": false
+                                  }
+                                },
+                                {
+                                  "$element-option": {
+                                    "option": "loading",
+                                    "value": false
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          "default": [
+                            {
+                              "$message": {
+                                "severity": "error",
+                                "summary": "Действие не выполнено",
+                                "detail": "Непредвиденная ошибка"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "else": {
+                "$if": {
+                  "condition": {
+                    "===": {
+                      "operand1": "new",
+                      "operand2": {
+                        "$fetch-object": {
+                          "data": {
+                            "$workflow-object-state": {
+                              "objectId": {
+                                "$query-params": {
+                                  "name": "id"
+                                }
+                              },
+                              "workflow": {
+                                "$route-params": {
+                                  "name": "workflow"
+                                }
+                              }
+                            }
+                          },
+                          "path": "code"
+                        }
+                      }
+                    }
+                  },
+                  "then": {
+                    "$array-concat": {
+                      "array": [
+                        {
+                          "title": "Запустить совместное согласования",
+                          "visible": {
+                            "$active-user-has-permission": {
+                              "permission": "approval_process.add"
+                            }
+                          },
+                          "hidden": false,
+                          "popup": {
+                            "$replace": {
+                              "template": "approval_template/select?objectId={{objectId}}&objectType={{objectType}}",
+                              "data": {
+                                "objectId": {
+                                  "$query-params": {
+                                    "name": "id"
+                                  }
+                                },
+                                "objectType": {
+                                  "$route-params": {
+                                    "name": "workflow"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "data": {
+                        "$from-context": {
+                          "path": "$response.body.0",
+                          "data": {
+                            "$http-code": {
+                              "200": {},
+                              "422": [
+                                {
+                                  "$validate": {
+                                    "errors": {
+                                      "$from-context": {
+                                        "path": "$response.error.errors"
+                                      }
+                                    }
+                                  }
+                                }
+                              ],
+                              "client": {
+                                "$api-workflow-actions": {
+                                  "options": {
+                                    "observe": "response"
+                                  },
+                                  "type": "get",
+                                  "id": {
+                                    "$query-params": {
+                                      "name": "id"
+                                    }
+                                  }
+                                }
+                              },
+                              "finalize": {
+                                "$waterfall": {
+                                  "arrayFunctions": [
+                                    {
+                                      "$element-option": {
+                                        "option": "disabled",
+                                        "value": false
+                                      }
+                                    },
+                                    {
+                                      "$element-option": {
+                                        "option": "loading",
+                                        "value": false
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              "default": [
+                                {
+                                  "$message": {
+                                    "severity": "error",
+                                    "summary": "Действие не выполнено",
+                                    "detail": "Непредвиденная ошибка"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "else": {
+                    "$from-context": {
+                      "path": "$response.body.0",
+                      "data": {
+                        "$http-code": {
+                          "200": {},
+                          "422": [
+                            {
+                              "$validate": {
+                                "errors": {
+                                  "$from-context": {
+                                    "path": "$response.error.errors"
+                                  }
+                                }
+                              }
+                            }
+                          ],
+                          "client": {
+                            "$api-workflow-actions": {
+                              "options": {
+                                "observe": "response"
+                              },
+                              "type": "get",
+                              "id": {
+                                "$query-params": {
+                                  "name": "id"
+                                }
+                              }
+                            }
+                          },
+                          "finalize": {
+                            "$waterfall": {
+                              "arrayFunctions": [
+                                {
+                                  "$element-option": {
+                                    "option": "disabled",
+                                    "value": false
+                                  }
+                                },
+                                {
+                                  "$element-option": {
+                                    "option": "loading",
+                                    "value": false
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          "default": [
+                            {
+                              "$message": {
+                                "severity": "error",
+                                "summary": "Действие не выполнено",
+                                "detail": "Непредвиденная ошибка"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+query {
+  items: eventTypeGet(
+    sort: { field: name, type: ASC }
+    filter: { _operators: { state: { ne: "deleted" } } }
+  ) {
+    id: _id
+    name
+  }
+}

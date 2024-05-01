@@ -1,0 +1,110 @@
+global:
+  hpa:
+    enabled: false
+  redis:
+    mode: "${REDIS_MODE}"
+    sentinel:
+      master: "${CI_REDIS_SENTINEL_MASTER}"
+      addresses: "${CI_REDIS_SENTINELS}"
+      password: ""
+
+  configEnvs:
+    ENV_NAME: "${DEPLOY_NAMESPACE}"
+
+  captchaSiteKey: "${CI_CAPTCHA_SITE_KEY}"
+
+notification:
+  smtpServer: "mail-01.kazanexpo.ru"
+  smtpPort: 25
+  smtpAuth: true
+  smtpLogin: "${SMTP_LOGIN}"
+  smtpPassword: "${SMTP_PASSWORD}"
+
+connector:
+  enabled: true
+
+file:
+  deployment:
+    replicas: 2
+  s3Endpoint: "${S3_ENDPOINT}"
+  s3Region: "us-east-1"
+  s3SigningRegion: "us-east-1"
+  s3RootPath: "/"
+  resources:
+    s3:
+      limits:
+        memory: 500Mi
+      requests:
+        cpu: 100m
+        memory: 200Mi
+
+api-proxy:
+  deployment:
+    replicas: 2
+  resources:
+    requests:
+      cpu: 100m
+      memory: 500Mi
+    limits:
+      memory: 500Mi
+
+auth-api:
+  deployment:
+    replicas: 2
+  resources:
+    requests:
+      cpu: 50m
+      memory: 100Mi
+    limits:
+      memory: 100Mi
+
+cache:
+  resources:
+    requests:
+      cpu: 20m
+      memory: 100Mi
+    limits:
+      memory: 100Mi
+
+data:
+  deployment:
+    replicas: 2
+  resources:
+    requests:
+      cpu: 150m
+      memory: 1200Mi
+    limits:
+      memory: 1200Mi
+
+document:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 400Mi
+    limits:
+      memory: 400Mi
+
+frontend:
+  resources:
+    frontend:
+      requests:
+        memory: "200Mi"
+        cpu: "50m"
+      limits:
+        memory: "200Mi"
+    sidecar:
+      requests:
+        memory: "200Mi"
+        cpu: "50m"
+      limits:
+        memory: "200Mi"
+
+workflow:
+  deployment:
+    replicas: 2
+  resources:
+    requests:
+      cpu: 200m
+      memory: 500Mi
+    limits:
+      memory: 500Mi

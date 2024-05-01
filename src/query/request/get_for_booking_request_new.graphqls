@@ -1,0 +1,95 @@
+query ($id: [MongoID!]) {
+  items: requestGet(_id: $id) {
+    id: _id
+    number
+    type
+    state
+    bookingId
+    changeBookingId
+    bookingOld: bookingMain {
+      _id
+      name
+      configuration
+      event {
+        _id
+        name
+      }
+      rooms {
+        room {
+          name
+          roomType {
+            name
+          }
+          transformation
+          square
+        }
+      }
+      seatingType {
+        name
+      }
+      numberOfPeople
+      comment
+      installationDates {
+        startTime
+        endTime
+      }
+      eventDates {
+        startTime
+        endTime
+      }
+      deinstallationDates {
+        startTime
+        endTime
+      }
+      partial
+      allSquare
+      file {
+        _id
+        name
+        size
+        create_date
+      }
+      discountOrMarkupFlag
+      discountOrMarkup
+      allPriceMeter
+      allPriceMeterWithDiscountOrMarkup
+      allPrice
+      allPriceWithDiscountOrMarkup
+    }
+    bookingNew {
+      _id
+      name
+      seatingType {
+        name
+      }
+      numberOfPeople
+      comment
+      installationDates {
+        startTime
+        endTime
+      }
+      eventDates {
+        startTime
+        endTime
+      }
+      deinstallationDates {
+        startTime
+        endTime
+      }
+      partial
+      allSquare
+      file {
+        _id
+        name
+        size
+        create_date
+      }
+      discountOrMarkupFlag
+      discountOrMarkup
+      allPriceMeter
+      allPriceMeterWithDiscountOrMarkup
+      allPrice
+      allPriceWithDiscountOrMarkup
+    }
+  }
+}

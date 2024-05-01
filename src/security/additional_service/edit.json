@@ -1,0 +1,17 @@
+{
+  "backend-validation": {
+    "enabled": true,
+    "options": {
+      "schema": "additional_service/edit",
+      "data": {
+        "$post-params": {
+          "name": null
+        }
+      },
+      "path": "#data.object"
+    },
+    "states": [
+      "active"
+    ]
+  }
+}

@@ -1,0 +1,175 @@
+{
+  "@title": "Установка значения системной настройки (управление)",
+  "@preload": {
+    "$from-context": {
+      "path": "$response.body.data",
+      "data": {
+        "$api-data": {
+          "workflow": "settings",
+          "action": "save",
+          "query": "settings/get",
+          "id": {
+            "$query-params": {
+              "name": "id"
+            }
+          },
+          "options": {
+            "observe": "response"
+          },
+          "variables": {
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "model": "#data",
+  "widget": {
+    "name": "form"
+  },
+  "value": {
+    "$from-context": {
+      "path": "@preload"
+    }
+  },
+  "properties": {
+    "breadcrumbs": {
+      "type": "object",
+      "widget": {
+        "name": "breadcrumb",
+        "mobileItems": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          }
+        ],
+        "items": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          },
+          {
+            "label": "Управление системными настройками",
+            "routerLink": "/cabinet/settings/list"
+          },
+          {
+            "label": "Установка значения"
+          }
+        ],
+        "kind": "breadcrumb-breadcrumbs-container-style"
+      }
+    },
+    "header": {
+      "type": "string",
+      "widget": {
+        "name": "info",
+        "options": {
+          "label": {
+            "$replace": {
+              "template": "Системная настройка «{{0}}»",
+              "data": [
+                {
+                  "$subs": {
+                    "path": "#data.object.name"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "class": {
+          "label": "h1 mrg-b-lg"
+        }
+      }
+    },
+    "object": "$ref:fieldset:settings/form_set_value",
+    "actions": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "form-actions p-field p-grid mrg-t-lg",
+          "value": "p-jc-xs-end p-autolayout"
+        }
+      },
+      "properties": {
+        "save": {
+          "widget": {
+            "name": "submit-button",
+            "options": {
+              "label": "Сохранить",
+              "clientValidation": true,
+              "dataForClientValidation": "/",
+              "showClientValidationErrorsForElement": "form",
+              "showClientValidationErrorMessage": true,
+              "clientValidationErrorMessageSummary": "Ошибка",
+              "clientValidationErrorMessageDetail": "Одно или несколько полей заполнены некорректно",
+              "workflowAction": "settings.set-value-configurator",
+              "workflowObjectId": {
+                "$query-params": {
+                  "name": "id"
+                }
+              },
+              "dataForSubmit": {
+                "$exclude": {
+                  "data": {
+                    "$filter-empty": {
+                      "data": {
+                        "$var": {
+                          "path": "#data.object"
+                        }
+                      },
+                      "mode": "clear"
+                    }
+                  },
+                  "exclude": [
+                    "settingsType"
+                  ]
+                }
+              },
+              "showSuccessMessage": true,
+              "successMessageSummary": "Установка значения системной настройки",
+              "successMessageDetail": "Новое значение успешно сохранено",
+              "urlInCaseOfSuccess": "/cabinet/settings/list-configurator",
+              "showServerValidationErrorMessage": true,
+              "serverValidationErrorMessageSummary": "Установка значения системной настройки",
+              "serverValidationErrorMessageDetail": "Форма содержит ошибки",
+              "showOtherErrorMessageSummary": true,
+              "otherErrorMessageSummary": "Установка значения системной настройки",
+              "otherErrorMessageDetail": "Непредвиденная ошибка",
+              "reloadTable": true,
+              "closePopup": true
+            },
+            "class": {
+              "value": "mrg-r-sm"
+            }
+          }
+        },
+        "cancel": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Отмена"
+            },
+            "events": {
+              "click": {
+                "$go": {
+                  "workflow": "settings",
+                  "action": "list-configurator"
+                }
+              }
+            },
+            "class": {
+              "value": "button_outline mrg-r-0 mrg-b-0 mrg-sm-t-md"
+            }
+          }
+        }
+      }
+    }
+  }
+}

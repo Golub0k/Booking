@@ -1,0 +1,225 @@
+{
+  "@title": "Подтверждение удаления типа услуг",
+  "@preload": {
+    "services_type": {
+      "$from-context": {
+        "path": "$response.body.data.items.0",
+        "data": {
+          "$api-data": {
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            },
+            "options": {
+              "observe": "response"
+            },
+            "variables": {
+              "id": {
+                "$query-params": {
+                  "name": "id"
+                }
+              }
+            },
+            "query": "services_type/get"
+          }
+        }
+      }
+    },
+    "count": {
+      "$fetch-object": {
+        "path": "data.count.0.servicesAddServiceCount",
+        "data": {
+          "$api-data": {
+            "query": "services_type/link_exists",
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            },
+            "variables": {
+              "name": {
+                "$from-context": {
+                  "path": "$response.body.data.items.0.name",
+                  "data": {
+                    "$api-data": {
+                      "id": {
+                        "$query-params": {
+                          "name": "id"
+                        }
+                      },
+                      "options": {
+                        "observe": "response"
+                      },
+                      "variables": {
+                        "id": {
+                          "$query-params": {
+                            "name": "id"
+                          }
+                        }
+                      },
+                      "query": "services_type/get"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "model": "#data",
+  "widget": {
+    "name": "container",
+    "options": {
+      "label": {
+        "$if": {
+          "condition": {
+            "===": {
+              "operand1": 0,
+              "operand2": {
+                "$from-context": {
+                  "path": "@preload.count"
+                }
+              }
+            }
+          },
+          "then": "Подтверждение удаления",
+          "else": "Удаление недоступно"
+        }
+      }
+    },
+    "class": {
+      "group": "popup",
+      "label": "h1 mrg-b-lg",
+      "value": "form-group_popup-collapse"
+    }
+  },
+  "properties": {
+    "object": {
+      "type": "string",
+      "widget": {
+        "name": "info",
+        "options": {
+          "viewedValue": {
+            "$if": {
+              "condition": {
+                "===": {
+                  "operand1": 0,
+                  "operand2": {
+                    "$from-context": {
+                      "path": "@preload.count"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "$replace": {
+                  "template": "Вы действительно хотите удалить тип услуг \"{{title}}\"?",
+                  "data": {
+                    "title": {
+                      "$from-context": {
+                        "path": "@preload.services_type.name"
+                      }
+                    }
+                  }
+                }
+              },
+              "else": {
+                "$replace": {
+                  "template": "Тип услуг \"{{title}}\" нельзя удалить, так как в Системе уже добавлены дополнительные услуги данного типа.",
+                  "data": {
+                    "title": {
+                      "$from-context": {
+                        "path": "@preload.services_type.name"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "form-actions p-field p-grid mrg-t-lg",
+          "value": "p-jc-xs-end p-autolayout"
+        }
+      },
+      "properties": {
+        "accept": {
+          "widget": {
+            "name": "submit-button",
+            "options": {
+              "label": "Удалить",
+              "visible": {
+                "$if": {
+                  "condition": {
+                    "===": {
+                      "operand1": 0,
+                      "operand2": {
+                        "$from-context": {
+                          "path": "@preload.count"
+                        }
+                      }
+                    }
+                  },
+                  "then": true,
+                  "else": false
+                }
+              },
+              "clientValidation": false,
+              "workflowAction": "services_type.delete",
+              "workflowObjectId": {
+                "$query-params": {
+                  "name": "id"
+                }
+              },
+              "showSuccessMessage": true,
+              "successMessageSummary": "Удаление типа услуг",
+              "successMessageDetail": "Тип услуг успешно удален",
+              "urlInCaseOfSuccess": "/cabinet/services_type/list",
+              "showServerValidationErrorMessage": true,
+              "serverValidationErrorMessageSummary": "Удаление типа услуг",
+              "serverValidationErrorMessageDetail": "Форма содержит ошибки",
+              "showOtherErrorMessageSummary": true,
+              "otherErrorMessageSummary": "Удаление типа услуг",
+              "otherErrorMessageDetail": "Непредвиденная ошибка",
+              "reloadTable": true,
+              "closePopup": true
+            },
+            "class": {
+              "value": "mrg-r-sm"
+            }
+          }
+        },
+        "cancel": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Отмена"
+            },
+            "events": {
+              "click": {
+                "$go": {
+                  "workflow": "services_type",
+                  "action": "list"
+                }
+              }
+            },
+            "class": {
+              "value": "button_outline mrg-r-0 mrg-b-0"
+            }
+          }
+        }
+      }
+    }
+  }
+}

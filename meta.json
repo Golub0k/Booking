@@ -1,0 +1,19 @@
+{
+  "deleted": {
+    "@et-lowcode/base": [
+      "/fieldset/system-journal",
+      "/fieldset/system-journal/desktop_search.json",
+      "/fieldset/system-journal/mobile_search.json",
+      "/gui/system-journal",
+      "/gui/system-journal/list.json",
+      "/query/system-journal",
+      "/query/system-journal/context.graphqls",
+      "/query/system-journal/list.graphqls",
+      "/workflow/system-journal.json"
+    ]
+  },
+  "lastMigration": {
+    "version": "13.4.0",
+    "migration": "changeDomain"
+  }
+}

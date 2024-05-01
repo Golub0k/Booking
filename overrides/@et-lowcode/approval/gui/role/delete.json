@@ -1,0 +1,243 @@
+{
+  "@title": "Подтверждение удаления роли",
+  "@preload": {
+    "role": {
+      "$from-context": {
+        "path": "$response.body.data.object",
+        "data": {
+          "$http-code": {
+            "client": {
+              "$api-data": {
+                "query": "role/get",
+                "id": {
+                  "$query-params": {
+                    "name": "id"
+                  }
+                },
+                "options": {
+                  "observe": "response"
+                },
+                "variables": {
+                  "id": {
+                    "$query-params": {
+                      "name": "id"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "model": "/",
+  "widget": {
+    "name": "form",
+    "options": {
+      "label": "Подтверждение удаления"
+    },
+    "kind": "form-popup-with-h1-style"
+  },
+  "properties": {
+    "object": {
+      "type": "object",
+      "model": "#data",
+      "widget": "hidden",
+      "value": {
+        "$from-context": {
+          "path": "@preload.role"
+        }
+      },
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "usersCount": {
+          "type": "number",
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "===": {
+                    "operand1": 0,
+                    "operand2": {
+                      "$fetch-object": {
+                        "path": "data.count",
+                        "data": {
+                          "$api-data": {
+                            "query": "role/role_users_count",
+                            "variables": {
+                              "id": {
+                                "$query-params": {
+                                  "name": "id"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "message": "В Системе имеются пользователи с данной ролью"
+              },
+              "events": [
+                "onBackend"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "info": {
+      "type": "string",
+      "widget": "info",
+      "value": {
+        "$replace": {
+          "template": "Вы действительно хотите удалить роль \"{{name}}\"?",
+          "data": {
+            "$from-context": {
+              "path": "@preload.role"
+            }
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "form-actions p-field p-grid mrg-t-lg",
+          "value": "p-jc-xs-end p-autolayout"
+        }
+      },
+      "properties": {
+        "save": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Удалить"
+            },
+            "events": {
+              "click": {
+                "$if": {
+                  "condition": {
+                    "$validate": {
+                      "path": "/"
+                    }
+                  },
+                  "then": {
+                    "$waterfall": {
+                      "arrayFunctions": [
+                        "$ref:operation-frontend:snippets/element/_loading/onclick-loading-enable",
+                        {
+                          "$http-code": {
+                            "200": [
+                              {
+                                "$event-bus-publish": {
+                                  "type": "reload-table"
+                                }
+                              },
+                              {
+                                "$go": {
+                                  "workflow": "user-role",
+                                  "action": "list"
+                                }
+                              },
+                              {
+                                "$message": {
+                                  "severity": "success",
+                                  "summary": "Удаление роли",
+                                  "detail": "Роль успешно удалена"
+                                }
+                              }
+                            ],
+                            "422": [
+                              "$ref:operation-frontend:snippets/element/_loading/onclick-loading-disable",
+                              {
+                                "$go": {
+                                  "workflow": "user-role",
+                                  "action": "list"
+                                }
+                              },
+                              {
+                                "$message": {
+                                  "severity": "error",
+                                  "summary": "Удаление роли",
+                                  "detail": "Удаление роли невозможно. В Системе имеются пользователи с данной ролью"
+                                }
+                              }
+                            ],
+                            "client": {
+                              "$api-workflow": {
+                                "type": "post",
+                                "options": {
+                                  "observe": "response"
+                                },
+                                "id": {
+                                  "$if": {
+                                    "condition": {
+                                      "$not-empty": {
+                                        "data": {
+                                          "$query-params": {
+                                            "name": "id",
+                                            "filter": false
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "then": {
+                                      "$query-params": {
+                                        "name": "id",
+                                        "filter": false
+                                      }
+                                    },
+                                    "else": ""
+                                  }
+                                }
+                              }
+                            },
+                            "default": [
+                              "$ref:operation-frontend:snippets/element/_loading/onclick-loading-disable",
+                              "$ref:operation-frontend:snippets/element/_http_message/http-default-error-message-action"
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "else": {
+                    "$form-control-mark": {
+                      "key": "form"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "cancel": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Отмена"
+            },
+            "events": {
+              "click": {
+                "$go": {
+                  "workflow": "user-role",
+                  "action": "list"
+                }
+              }
+            },
+            "kind": "button-btn-outline-last-style"
+          }
+        }
+      }
+    }
+  }
+}

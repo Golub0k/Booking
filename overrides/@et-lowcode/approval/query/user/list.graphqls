@@ -1,0 +1,75 @@
+# @title: Получить список всех пользователей
+
+query (
+  $first: Int!
+  $rows: Int!
+  $search: String
+  $organization: [String]
+  $state: [String]
+  $userAD: [Boolean]
+  $createdAtFrom: DateTime
+  $createdAtTo: DateTime
+  $sort: [FieldSortUserInput]
+) {
+  pagination: userPagination(
+    limit: $rows
+    offset: $first
+    sort: $sort
+    filter: {
+      AND: [
+        {
+          OR: [
+            { _regexp: { field: lastName, filter: $search } }
+            { _regexp: { field: firstName, filter: $search } }
+            { _regexp: { field: middleName, filter: $search } }
+            { _regexp: { field: login, filter: $search } }
+            { _regexp: { field: email, filter: $search } }
+          ]
+        }
+        { _operators: { organizationId: { in: $organization } } }
+        { _operators: { state: { in: $state } } }
+        { _operators: { userAD: { in: $userAD } } }
+        {
+          AND: [
+            { _operators: { createdAt: { gte: $createdAtFrom } } }
+            { _operators: { createdAt: { lte: $createdAtTo } } }
+          ]
+        }
+        { _operators: { state: { ne: "deleted" } } }
+      ]
+    }
+  ) {
+    count
+    items {
+      id: _id
+      lastName
+      firstName
+      middleName
+      fullName
+      position
+      login
+      email
+      userAD
+      phone {
+        prefix
+        num
+        ext
+      }
+      roles {
+        id
+        role {
+          name
+        }
+      }
+      blockReason {
+        reason
+      }
+      organizationId
+      organization {
+        anyName
+        state
+      }
+      state
+    }
+  }
+}

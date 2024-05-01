@@ -1,0 +1,566 @@
+{
+  "version": 2,
+  "objectType": "partner",
+  "context": "partner/context",
+  "description": "Жизненный цикл объекта \"Контрагент\"",
+  "rbac": {
+    "visible": true,
+    "title": "Контрагенты"
+  },
+  "actions": {
+    "initialActions": {
+      "add": {
+        "title": "Создать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Добавить контрагента"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "partner/add",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "nsi_oksm/get-for-select",
+            "partner/get_country",
+            "partner/inn_exists"
+          ]
+        },
+        "functions": [
+          {
+            "$waterfall": {
+              "arrayFunctions": [
+                {
+                  "$workflow-object-create": {
+                    "objectType": "partner",
+                    "query": "partner/create",
+                    "variables": {
+                      "data": {
+                        "$from-context": {
+                          "path": "data.mainInfo"
+                        }
+                      }
+                    },
+                    "responsePath": "partner",
+                    "resultPath": "$partnerId"
+                  }
+                },
+                {
+                  "$workflow-run": {
+                    "workflowName": "partner_address",
+                    "action": "add",
+                    "data": {
+                      "type": "mail",
+                      "partnerId": {
+                        "$from-context": {
+                          "path": "objectId"
+                        }
+                      },
+                      "sameAsLegal": {
+                        "$from-context": {
+                          "path": "data.address.sameAsLegal"
+                        }
+                      },
+                      "address": {
+                        "$from-context": {
+                          "path": "data.address.mail"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "$workflow-run": {
+                    "workflowName": "partner_address",
+                    "action": "add",
+                    "data": {
+                      "type": "legal",
+                      "partnerId": {
+                        "$from-context": {
+                          "path": "objectId"
+                        }
+                      },
+                      "address": {
+                        "$from-context": {
+                          "path": "data.address.legal"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "$workflow-run-from-collection": {
+                    "workflowName": "contact_person",
+                    "action": "add",
+                    "collection": {
+                      "$array-map": {
+                        "array": {
+                          "$from-context": {
+                            "path": "data.contactList.table"
+                          }
+                        },
+                        "map": {
+                          "$assign-object": {
+                            "path": "partnerId",
+                            "data": {
+                              "$from-context": {
+                                "path": "objectId"
+                              }
+                            },
+                            "object": {
+                              "$exclude": {
+                                "data": {
+                                  "$from-context": {
+                                    "path": "$data"
+                                  }
+                                },
+                                "exclude": [
+                                  "actions_column",
+                                  "phoneView"
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "active"
+        }
+      }
+    },
+    "globalActions": {
+      "list": {
+        "title": "Реестр экземпляров объекта \"Контрагент\"",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Просмотреть реестр контрагентов"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "partner/list",
+            "mode": "form",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "partner/list"
+          ]
+        }
+      }
+    },
+    "statesActions": {
+      "view": {
+        "title": "Просмотреть",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Просмотреть карточку контрагента"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "partner/view",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "contact_person/list_for_view"
+          ]
+        }
+      },
+      "delete": {
+        "title": "Удалить",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Удалить контрагента"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "partner/delete",
+            "layout": "cabinet",
+            "mode": "popup"
+          }
+        },
+        "results": {
+          "unconditional": "deleted"
+        }
+      },
+      "edit": {
+        "title": "Редактировать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Редактировать контрагента"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "partner/edit",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "contact_person/list_for_view",
+            "partner/get_country"
+          ]
+        },
+        "functions": [
+          {
+            "$waterfall": {
+              "arrayFunctions": [
+                {
+                  "$api-data-query": {
+                    "query": "partner/update",
+                    "variables": {
+                      "id": {
+                        "$from-context": {
+                          "path": "objectId"
+                        }
+                      },
+                      "data": {
+                        "$from-context": {
+                          "path": "data.mainInfo"
+                        }
+                      }
+                    },
+                    "responsePath": "partner"
+                  }
+                },
+                {
+                  "$workflow-run": {
+                    "workflowName": "partner_address",
+                    "action": "edit",
+                    "objectId": {
+                      "$from-context": {
+                        "path": "data.address.mailId"
+                      }
+                    },
+                    "data": {
+                      "type": "mail",
+                      "partnerId": {
+                        "$from-context": {
+                          "path": "objectId"
+                        }
+                      },
+                      "sameAsLegal": {
+                        "$from-context": {
+                          "path": "data.address.sameAsLegal"
+                        }
+                      },
+                      "address": {
+                        "$from-context": {
+                          "path": "data.address.mail"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "$workflow-run": {
+                    "workflowName": "partner_address",
+                    "action": "edit",
+                    "objectId": {
+                      "$from-context": {
+                        "path": "data.address.legalId"
+                      }
+                    },
+                    "data": {
+                      "type": "legal",
+                      "partnerId": {
+                        "$from-context": {
+                          "path": "objectId"
+                        }
+                      },
+                      "address": {
+                        "$from-context": {
+                          "path": "data.address.legal"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "$if": {
+                    "condition": {
+                      "$not-empty": {
+                        "data": {
+                          "$from-context": {
+                            "path": "data.contactsForDelete"
+                          }
+                        }
+                      }
+                    },
+                    "then": {
+                      "$workflow-run-from-collection": {
+                        "workflowName": "contact_person",
+                        "action": "delete",
+                        "collection": {
+                          "$from-context": {
+                            "path": "data.contactsForDelete"
+                          }
+                        },
+                        "objectIdPath": ""
+                      }
+                    }
+                  }
+                },
+                {
+                  "$assign-context": {
+                    "path": "$oldContacts",
+                    "data": {
+                      "$array-filter": {
+                        "array": {
+                          "$from-context": {
+                            "path": "data.contactList.table"
+                          }
+                        },
+                        "filter": {
+                          "$not-empty": {
+                            "data": {
+                              "$from-context": {
+                                "path": "$data.id"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "$assign-context": {
+                    "path": "$newContacts",
+                    "data": {
+                      "$array-filter": {
+                        "array": {
+                          "$from-context": {
+                            "path": "data.contactList.table"
+                          }
+                        },
+                        "filter": {
+                          "$empty": {
+                            "data": {
+                              "$from-context": {
+                                "path": "$data.id"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "$if": {
+                    "condition": {
+                      "$not-empty": {
+                        "data": {
+                          "$from-context": {
+                            "path": "$oldContacts"
+                          }
+                        }
+                      }
+                    },
+                    "then": {
+                      "$workflow-run-from-collection": {
+                        "workflowName": "contact_person",
+                        "action": "edit",
+                        "collection": {
+                          "$array-map": {
+                            "array": {
+                              "$from-context": {
+                                "path": "$oldContacts"
+                              }
+                            },
+                            "map": {
+                              "$assign-object": {
+                                "path": "partnerId",
+                                "data": {
+                                  "$from-context": {
+                                    "path": "objectId"
+                                  }
+                                },
+                                "object": {
+                                  "$exclude": {
+                                    "data": {
+                                      "$from-context": {
+                                        "path": "$data"
+                                      }
+                                    },
+                                    "exclude": [
+                                      "actions_column",
+                                      "phoneView"
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "$if": {
+                    "condition": {
+                      "$not-empty": {
+                        "data": {
+                          "$from-context": {
+                            "path": "$newContacts"
+                          }
+                        }
+                      }
+                    },
+                    "then": {
+                      "$workflow-run-from-collection": {
+                        "workflowName": "contact_person",
+                        "action": "add",
+                        "collection": {
+                          "$array-map": {
+                            "array": {
+                              "$from-context": {
+                                "path": "$newContacts"
+                              }
+                            },
+                            "map": {
+                              "$assign-object": {
+                                "path": "partnerId",
+                                "data": {
+                                  "$from-context": {
+                                    "path": "objectId"
+                                  }
+                                },
+                                "object": {
+                                  "$exclude": {
+                                    "data": {
+                                      "$from-context": {
+                                        "path": "$data"
+                                      }
+                                    },
+                                    "exclude": [
+                                      "actions_column",
+                                      "phoneView",
+                                      "id"
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "block": {
+        "title": "Заблокировать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Заблокировать контрагента"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "partner/block",
+            "layout": "cabinet",
+            "mode": "popup"
+          }
+        },
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "partner/update_block_reason",
+              "variables": {
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                },
+                "blockReason": {
+                  "$from-context": {
+                    "path": "data.reason"
+                  }
+                }
+              },
+              "responsePath": "result"
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "blocked"
+        }
+      },
+      "unblock": {
+        "title": "Разблокировать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Разблокировать контрагента"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "partner/unblock",
+            "layout": "cabinet",
+            "mode": "popup"
+          }
+        },
+        "results": {
+          "unconditional": "active"
+        }
+      }
+    }
+  },
+  "states": {
+    "active": {
+      "title": "Активен",
+      "description": "Активное состояние объекта",
+      "statesActions": [
+        "view",
+        "block",
+        "edit"
+      ]
+    },
+    "deleted": {
+      "title": "Удален",
+      "description": "Удаленное состояние объекта",
+      "statesActions": [],
+      "finish": true
+    },
+    "blocked": {
+      "title": "Заблокирован",
+      "description": "Заблокированное состояние объекта",
+      "finish": false,
+      "statesActions": [
+        "view",
+        "unblock",
+        "edit",
+        "delete"
+      ]
+    }
+  }
+}

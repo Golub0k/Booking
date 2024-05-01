@@ -1,0 +1,212 @@
+{
+  "@title": "Подтверждение удаления группы мероприятий",
+  "@preload": {
+    "group": {
+      "$from-context": {
+        "path": "$response.body.data.items",
+        "data": {
+          "$api-data": {
+            "query": "event_group/get_name",
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            },
+            "options": {
+              "observe": "response"
+            },
+            "variables": {
+              "id": {
+                "$query-params": {
+                  "name": "id"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "widget": {
+    "name": "container"
+  },
+  "model": "/",
+  "properties": {
+    "form": {
+      "type": "object",
+      "model": "#data",
+      "widget": {
+        "name": "form"
+      },
+      "properties": {
+        "header": {
+          "model": false,
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "value": "p-autolayout p-jc-between p-ai-center"
+            }
+          },
+          "properties": {
+            "label": {
+              "model": false,
+              "type": "string",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "viewedValue": "Подтверждение удаления"
+                },
+                "class": {
+                  "value": "h3 mrg-b-lg"
+                }
+              }
+            }
+          }
+        },
+        "content": {
+          "type": "object",
+          "widget": {
+            "name": "container"
+          },
+          "properties": {
+            "text": {
+              "type": "string",
+              "widget": "html",
+              "value": {
+                "$replace": {
+                  "template": "<p>Вы действительно хотите удалить группу мероприятий \"{{0}}\"?</p>",
+                  "data": [
+                    {
+                      "$from-context": {
+                        "path": "@preload.group.name"
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "actions": {
+              "type": "object",
+              "widget": {
+                "name": "container",
+                "class": {
+                  "group": "form-actions p-field p-grid mrg-t-lg",
+                  "value": "p-jc-xl-end p-autolayout"
+                }
+              },
+              "properties": {
+                "delete": {
+                  "widget": {
+                    "name": "button",
+                    "options": {
+                      "label": "Удалить"
+                    },
+                    "events": {
+                      "click": {
+                        "$if": {
+                          "condition": {
+                            "$validate": {
+                              "path": "/"
+                            }
+                          },
+                          "then": {
+                            "$waterfall": {
+                              "arrayFunctions": [
+                                "$ref:operation-frontend:snippets/element/_loading/onclick-loading-enable",
+                                {
+                                  "$http-code": {
+                                    "200": [
+                                      {
+                                        "$event-bus-publish": {
+                                          "type": "reload-table"
+                                        }
+                                      },
+                                      {
+                                        "$go": {
+                                          "workflow": "event_group",
+                                          "action": "list"
+                                        }
+                                      },
+                                      {
+                                        "$message": {
+                                          "severity": "success",
+                                          "summary": "Удаление группы мероприятий",
+                                          "detail": "Группа мероприятий успешно удалена"
+                                        }
+                                      }
+                                    ],
+                                    "422": [
+                                      "$ref:operation-frontend:snippets/element/_loading/onclick-loading-disable",
+                                      {
+                                        "$validate": {
+                                          "errors": {
+                                            "$from-context": {
+                                              "path": "$response.error.errors"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "client": {
+                                      "$api-workflow": {
+                                        "options": {
+                                          "observe": "response"
+                                        },
+                                        "workflow": "event_group",
+                                        "action": "delete",
+                                        "id": {
+                                          "$query-params": {
+                                            "name": "id"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "default": [
+                                      "$ref:operation-frontend:snippets/element/_loading/onclick-loading-disable",
+                                      {
+                                        "$message": {
+                                          "severity": "error",
+                                          "summary": "Удаление группы мероприятий",
+                                          "detail": "Непредвиденная ошибка"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          "else": {
+                            "$form-control-mark": {
+                              "key": "form"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "cancel": {
+                  "widget": {
+                    "name": "button",
+                    "options": {
+                      "label": "Отмена"
+                    },
+                    "events": {
+                      "click": {
+                        "$close-popup": null
+                      }
+                    },
+                    "kind": "button-btn-outline-last-style"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

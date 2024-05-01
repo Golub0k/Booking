@@ -1,0 +1,2533 @@
+{
+  "@title": "Просмотр брони помещения",
+  "@preload": {
+    "booking": {
+      "$from-context": {
+        "path": "$response.body.data.object.0",
+        "data": {
+          "$api-data": {
+            "options": {
+              "observe": "response"
+            },
+            "workflow": "booking",
+            "action": "edit",
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            },
+            "query": "booking/get",
+            "variables": {
+              "id": {
+                "$query-params": {
+                  "name": "id"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "widget": {
+    "name": "container"
+  },
+  "properties": {
+    "breadcrumbs": {
+      "type": "object",
+      "model": false,
+      "widget": {
+        "name": "breadcrumb",
+        "mobileItems": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          }
+        ],
+        "items": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          },
+          {
+            "label": {
+              "$from-context": {
+                "path": "@preload.booking.event.name"
+              }
+            },
+            "routerLink": "/cabinet/event/view",
+            "queryParams": {
+              "id": {
+                "$from-context": {
+                  "path": "@preload.booking.eventId"
+                }
+              }
+            }
+          },
+          {
+            "label": {
+              "$replace": {
+                "template": "Просмотр брони помещения \"{{0}}\"",
+                "data": [
+                  {
+                    "$from-context": {
+                      "path": "@preload.booking.name"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "class": {
+          "group": "p-xs-auto mrg-b-md"
+        }
+      }
+    },
+    "form": {
+      "type": "object",
+      "model": "#data",
+      "value": {
+        "$json-model": {
+          "data": {
+            "$from-context": {
+              "path": "@preload.booking"
+            }
+          },
+          "alias": "#data"
+        }
+      },
+      "widget": {
+        "name": "form",
+        "options": {
+          "label": {
+            "$replace": {
+              "template": "Просмотр брони помещения \"{{0}}\"",
+              "data": [
+                {
+                  "$from-context": {
+                    "path": "@preload.booking.name"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "class": {
+          "label": "h1 mrg-b-xl",
+          "value": "tabview-with-actions-menu"
+        }
+      },
+      "properties": {
+        "tabs": {
+          "type": "object",
+          "model": false,
+          "widget": {
+            "key": "tabs",
+            "name": "tab-view"
+          },
+          "properties": {
+            "commonInfo": {
+              "type": "object",
+              "model": false,
+              "widget": {
+                "key": "commonInfo",
+                "name": "tab-panel",
+                "options": {
+                  "label": "Общие данные"
+                }
+              },
+              "properties": {
+                "common": {
+                  "type": "object",
+                  "model": false,
+                  "widget": {
+                    "name": "container",
+                    "options": {
+                      "label": "Основные сведения о брони"
+                    },
+                    "kind": "container-form-group-with-h2-style"
+                  },
+                  "properties": {
+                    "rooms": {
+                      "type": "array",
+                      "widget": "hidden",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "roomId": {
+                            "type": "string",
+                            "widget": "hidden"
+                          },
+                          "room": {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "widget": "hidden"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "configuration": {
+                      "type": "boolean",
+                      "widget": "hidden"
+                    },
+                    "minDate": {
+                      "type": "datetime",
+                      "widget": "hidden"
+                    },
+                    "maxDate": {
+                      "type": "datetime",
+                      "widget": "hidden"
+                    },
+                    "roomsView": {
+                      "type": "array",
+                      "widget": {
+                        "name": "info",
+                        "options": {
+                          "label": {
+                            "$if": {
+                              "condition": {
+                                "$from-context": {
+                                  "path": "@preload.booking.configuration"
+                                }
+                              },
+                              "then": "Помещения",
+                              "else": "Помещение"
+                            }
+                          },
+                          "separator": "<br>",
+                          "asList": "true",
+                          "viewedValue": {
+                            "$array-map": {
+                              "array": {
+                                "$from-context": {
+                                  "path": "@preload.booking.rooms"
+                                }
+                              },
+                              "map": {
+                                "$from-context": {
+                                  "path": "$data.room.name"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "kind": "info-form-item-text-view-style"
+                      },
+                      "items": {
+                        "type": "string",
+                        "widget": {
+                          "name": "info"
+                        }
+                      }
+                    },
+                    "roomType": {
+                      "type": "string",
+                      "value": {
+                        "$from-context": {
+                          "path": "@preload.booking.rooms.0.room.roomType.name"
+                        }
+                      },
+                      "widget": {
+                        "name": "info",
+                        "options": {
+                          "label": "Тип помещения",
+                          "visible": {
+                            "$not": {
+                              "data": {
+                                "$from-context": {
+                                  "path": "@preload.booking.configuration"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "kind": "info-form-item-text-view-style"
+                      }
+                    },
+                    "seatingType": {
+                      "type": "string",
+                      "value": {
+                        "$from-context": {
+                          "path": "@preload.booking.seatingType.name"
+                        }
+                      },
+                      "widget": {
+                        "name": "info",
+                        "options": {
+                          "label": "Тип рассадки",
+                          "emptyText": "Не указано"
+                        },
+                        "kind": "info-form-item-text-view-style"
+                      }
+                    },
+                    "numberOfPeople": {
+                      "type": "number",
+                      "widget": {
+                        "name": "info",
+                        "options": {
+                          "label": "Количество человек",
+                          "emptyText": "Не указано"
+                        },
+                        "kind": "info-form-item-text-view-style"
+                      }
+                    },
+                    "comment": {
+                      "type": "string",
+                      "widget": {
+                        "name": "info",
+                        "options": {
+                          "label": "Комментарий",
+                          "emptyText": "Не указано"
+                        },
+                        "kind": "info-form-item-text-view-style"
+                      }
+                    }
+                  }
+                },
+                "dates_container": {
+                  "type": "object",
+                  "model": false,
+                  "widget": {
+                    "name": "container",
+                    "options": {
+                      "label": "Даты бронирования"
+                    },
+                    "kind": "container-form-group-with-h2-style"
+                  },
+                  "properties": {
+                    "installation": {
+                      "type": "object",
+                      "model": false,
+                      "widget": {
+                        "name": "container",
+                        "kind": "container-form-group-with-h3-style"
+                      },
+                      "properties": {
+                        "header": {
+                          "type": "object",
+                          "widget": {
+                            "name": "container",
+                            "options": {
+                              "label": "Монтаж"
+                            },
+                            "class": {
+                              "group": "flex-row p-grid mrg-b-lg mrg-t-0",
+                              "label": "h4 p-xs-12 p-md-4 p-xl-3 pdd-tb-0 mrg-md-b-md",
+                              "value": "p-xs-12 p-md-8 p-xl-9 pdd-tb-0"
+                            }
+                          }
+                        },
+                        "installation_dates": {
+                          "type": "array",
+                          "model": "#data.installationDates",
+                          "widget": {
+                            "name": "table-old",
+                            "class": {
+                              "group": "p-xxl-12 p-xs-12 mrg-t-md"
+                            },
+                            "options": {
+                              "emptyMessage": "Данные не найдены"
+                            },
+                            "columns": {
+                              "number": {
+                                "label": "№"
+                              },
+                              "day": {
+                                "label": "День"
+                              },
+                              "startTime": {
+                                "label": "Время начала"
+                              },
+                              "endTime": {
+                                "label": "Время завершения"
+                              }
+                            }
+                          },
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "number": {
+                                "type": "number",
+                                "widget": {
+                                  "name": "info"
+                                },
+                                "value": {
+                                  "$collection": {
+                                    "action": "row-number"
+                                  }
+                                }
+                              },
+                              "day": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "info",
+                                  "options": {
+                                    "formatter": "datetime:\"DD.MM.YYYY\""
+                                  }
+                                },
+                                "value": {
+                                  "$subs": {
+                                    "path": "#data.installationDates[].startTime"
+                                  }
+                                }
+                              },
+                              "startTime": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "info",
+                                  "options": {
+                                    "formatter": "datetime:\"HH:mm\""
+                                  }
+                                }
+                              },
+                              "endTime": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "info",
+                                  "options": {
+                                    "formatter": "datetime:\"HH:mm\""
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "event": {
+                      "type": "object",
+                      "model": false,
+                      "widget": {
+                        "name": "container",
+                        "kind": "container-form-group-with-h3-style"
+                      },
+                      "properties": {
+                        "header": {
+                          "type": "object",
+                          "widget": {
+                            "name": "container",
+                            "options": {
+                              "label": "Мероприятие"
+                            },
+                            "class": {
+                              "group": "flex-row p-grid mrg-b-lg mrg-t-0",
+                              "label": "h4 p-xs-12 p-md-4 p-xl-3 pdd-tb-0 mrg-md-b-md",
+                              "value": "p-xs-12 p-md-8 p-xl-9 pdd-tb-0"
+                            }
+                          }
+                        },
+                        "event_dates": {
+                          "type": "array",
+                          "model": "#data.eventDates",
+                          "widget": {
+                            "name": "table-old",
+                            "class": {
+                              "group": "p-xxl-12 p-xs-12 mrg-t-md"
+                            },
+                            "options": {
+                              "emptyMessage": "Данные не найдены"
+                            },
+                            "columns": {
+                              "number": {
+                                "label": "№"
+                              },
+                              "day": {
+                                "label": "День"
+                              },
+                              "startTime": {
+                                "label": "Время начала"
+                              },
+                              "endTime": {
+                                "label": "Время завершения"
+                              }
+                            }
+                          },
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "number": {
+                                "type": "number",
+                                "widget": {
+                                  "name": "info"
+                                },
+                                "value": {
+                                  "$collection": {
+                                    "action": "row-number"
+                                  }
+                                }
+                              },
+                              "day": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "info",
+                                  "options": {
+                                    "formatter": "datetime:\"DD.MM.YYYY\""
+                                  }
+                                },
+                                "value": {
+                                  "$subs": {
+                                    "path": "#data.eventDates[].startTime"
+                                  }
+                                }
+                              },
+                              "startTime": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "info",
+                                  "options": {
+                                    "formatter": "datetime:\"HH:mm\""
+                                  }
+                                }
+                              },
+                              "endTime": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "info",
+                                  "options": {
+                                    "formatter": "datetime:\"HH:mm\""
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "deinstallation": {
+                      "type": "object",
+                      "model": false,
+                      "widget": {
+                        "name": "container",
+                        "kind": "container-form-group-with-h3-style"
+                      },
+                      "properties": {
+                        "header": {
+                          "type": "object",
+                          "widget": {
+                            "name": "container",
+                            "options": {
+                              "label": "Демонтаж"
+                            },
+                            "class": {
+                              "group": "flex-row p-grid mrg-b-lg mrg-t-0",
+                              "label": "h4 p-xs-12 p-md-4 p-xl-3 pdd-tb-0 mrg-md-b-md",
+                              "value": "p-xs-12 p-md-8 p-xl-9 pdd-tb-0"
+                            }
+                          }
+                        },
+                        "deinstallation_dates": {
+                          "type": "array",
+                          "model": "#data.deinstallationDates",
+                          "widget": {
+                            "name": "table-old",
+                            "class": {
+                              "group": "p-xxl-12 p-xs-12 mrg-t-md"
+                            },
+                            "options": {
+                              "emptyMessage": "Данные не найдены"
+                            },
+                            "columns": {
+                              "number": {
+                                "label": "№"
+                              },
+                              "day": {
+                                "label": "День"
+                              },
+                              "startTime": {
+                                "label": "Время начала"
+                              },
+                              "endTime": {
+                                "label": "Время завершения"
+                              }
+                            }
+                          },
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "number": {
+                                "type": "number",
+                                "widget": {
+                                  "name": "info"
+                                },
+                                "value": {
+                                  "$collection": {
+                                    "action": "row-number"
+                                  }
+                                }
+                              },
+                              "day": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "info",
+                                  "options": {
+                                    "formatter": "datetime:\"DD.MM.YYYY\""
+                                  }
+                                },
+                                "value": {
+                                  "$subs": {
+                                    "path": "#data.deinstallationDates[].startTime"
+                                  }
+                                }
+                              },
+                              "startTime": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "info",
+                                  "options": {
+                                    "formatter": "datetime:\"HH:mm\""
+                                  }
+                                }
+                              },
+                              "endTime": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "info",
+                                  "options": {
+                                    "formatter": "datetime:\"HH:mm\""
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "cost_of_rent_container": {
+                  "type": "object",
+                  "model": false,
+                  "widget": {
+                    "name": "container",
+                    "options": {
+                      "label": "Расчет стоимости аренды"
+                    },
+                    "class": {
+                      "label": "h2 mrg-b-md",
+                      "value": "mrg-b-xl"
+                    }
+                  },
+                  "properties": {
+                    "container_checkbox": {
+                      "type": "string",
+                      "model": false,
+                      "widget": {
+                        "name": "info",
+                        "options": {
+                          "label": "Забронировать часть помещения",
+                          "visible": {
+                            "$and": {
+                              "operands": [
+                                {
+                                  "$from-context": {
+                                    "path": "@preload.booking.rooms.0.room.transformation"
+                                  }
+                                },
+                                {
+                                  "$not": {
+                                    "data": {
+                                      "$from-context": {
+                                        "path": "@preload.booking.configuration"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        "kind": "info-form-item-text-view-style"
+                      },
+                      "value": {
+                        "$if": {
+                          "condition": {
+                            "$from-context": {
+                              "path": "@preload.booking.partial"
+                            }
+                          },
+                          "then": "Да",
+                          "else": "Нет"
+                        }
+                      }
+                    },
+                    "file": {
+                      "type": "file",
+                      "widget": {
+                        "name": "file",
+                        "model": "#data.file",
+                        "options": {
+                          "visible": {
+                            "$from-context": {
+                              "path": "@preload.booking.partial"
+                            }
+                          },
+                          "label": "Часть помещения на карте",
+                          "displayParams": {
+                            "showSize": true,
+                            "enableFilesDownload": true
+                          },
+                          "objectId": {
+                            "$query-params": {
+                              "name": "id"
+                            }
+                          }
+                        },
+                        "class": {
+                          "group": "form-item p-field p-grid p-fluid mrg-b-sm",
+                          "label": "form-label form-label_required p-col-12 p-md-4 p-xl-3",
+                          "value": "form-item-element p-col-12 p-md-6 p-xl-4"
+                        }
+                      }
+                    },
+                    "allSquare": {
+                      "type": "string",
+                      "model": "#data.allSquare",
+                      "value": {
+                        "$replace": {
+                          "template": "{{0}} м²",
+                          "data": [
+                            {
+                              "$if": {
+                                "condition": {
+                                  "$empty": {
+                                    "data": {
+                                      "$from-context": {
+                                        "path": "@preload.booking.allSquare"
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "$from-context": {
+                                    "path": "@preload.booking.rooms.0.room.square"
+                                  }
+                                },
+                                "else": {
+                                  "$from-context": {
+                                    "path": "@preload.booking.allSquare"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "widget": {
+                        "name": "info",
+                        "options": {
+                          "label": "Бронируемая площадь"
+                        },
+                        "kind": "info-form-item-text-view-style"
+                      }
+                    },
+                    "allPriceMeter": {
+                      "type": "string",
+                      "model": "#data.allPriceMeter",
+                      "value": {
+                        "$if": {
+                          "condition": {
+                            "$empty": {
+                              "data": {
+                                "$if": {
+                                  "condition": {
+                                    "$empty": {
+                                      "data": {
+                                        "$from-context": {
+                                          "path": "@preload.booking.allPriceMeterWithDiscountOrMarkup"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "then": {
+                                    "$from-context": {
+                                      "path": "@preload.booking.allPriceMeter"
+                                    }
+                                  },
+                                  "else": {
+                                    "$from-context": {
+                                      "path": "@preload.booking.allPriceMeterWithDiscountOrMarkup"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "then": "Не указано",
+                          "else": {
+                            "$replace": {
+                              "template": "{{0}} руб.",
+                              "data": [
+                                {
+                                  "$formatter": {
+                                    "format": "number:'0.2-2':'ru'",
+                                    "data": {
+                                      "$if": {
+                                        "condition": {
+                                          "$empty": {
+                                            "data": {
+                                              "$from-context": {
+                                                "path": "@preload.booking.allPriceMeterWithDiscountOrMarkup"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": {
+                                          "$from-context": {
+                                            "path": "@preload.booking.allPriceMeter"
+                                          }
+                                        },
+                                        "else": {
+                                          "$from-context": {
+                                            "path": "@preload.booking.allPriceMeterWithDiscountOrMarkup"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      "widget": {
+                        "name": "info",
+                        "options": {
+                          "label": "Стоимость брони помещения за м²"
+                        },
+                        "kind": "info-form-item-text-view-style"
+                      }
+                    },
+                    "allPrice": {
+                      "type": "string",
+                      "model": "#data.allPrice",
+                      "value": {
+                        "$if": {
+                          "condition": {
+                            "$empty": {
+                              "data": {
+                                "$if": {
+                                  "condition": {
+                                    "$empty": {
+                                      "data": {
+                                        "$from-context": {
+                                          "path": "@preload.booking.allPriceWithDiscountOrMarkup"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "then": {
+                                    "$from-context": {
+                                      "path": "@preload.booking.allPrice"
+                                    }
+                                  },
+                                  "else": {
+                                    "$from-context": {
+                                      "path": "@preload.booking.allPriceWithDiscountOrMarkup"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "then": "Не указано",
+                          "else": {
+                            "$replace": {
+                              "template": "{{0}} руб.",
+                              "data": [
+                                {
+                                  "$formatter": {
+                                    "format": "number:'0.2-2':'ru'",
+                                    "data": {
+                                      "$if": {
+                                        "condition": {
+                                          "$empty": {
+                                            "data": {
+                                              "$from-context": {
+                                                "path": "@preload.booking.allPriceWithDiscountOrMarkup"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": {
+                                          "$from-context": {
+                                            "path": "@preload.booking.allPrice"
+                                          }
+                                        },
+                                        "else": {
+                                          "$from-context": {
+                                            "path": "@preload.booking.allPriceWithDiscountOrMarkup"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      "widget": {
+                        "name": "info",
+                        "options": {
+                          "label": "Общая стоимость брони помещения"
+                        },
+                        "kind": "info-form-item-text-view-style"
+                      }
+                    },
+                    "discountOrMarkup": {
+                      "type": "string",
+                      "model": "#data.discountOrMarkup",
+                      "value": {
+                        "$replace": {
+                          "template": "{{0}}%",
+                          "data": [
+                            {
+                              "$from-context": {
+                                "path": "@preload.booking.discountOrMarkup"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "widget": {
+                        "name": "info",
+                        "options": {
+                          "label": {
+                            "$switch": {
+                              "condition": {
+                                "$from-context": {
+                                  "path": "@preload.booking.discountOrMarkupFlag"
+                                }
+                              },
+                              "default": "",
+                              "cases": [
+                                {
+                                  "value": "discount",
+                                  "action": "Скидка"
+                                },
+                                {
+                                  "value": "markup",
+                                  "action": "Наценка"
+                                }
+                              ]
+                            }
+                          },
+                          "visible": {
+                            "!==": {
+                              "operand1": {
+                                "$from-context": {
+                                  "path": "@preload.booking.discountOrMarkupFlag"
+                                }
+                              },
+                              "operand2": "no"
+                            }
+                          }
+                        },
+                        "kind": "info-form-item-text-view-style"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "allEquipment": {
+              "type": "object",
+              "model": false,
+              "widget": {
+                "key": "allEquipment",
+                "name": "tab-panel",
+                "options": {
+                  "label": "Оснащение"
+                }
+              },
+              "properties": {
+                "facilities_container": {
+                  "type": "object",
+                  "model": false,
+                  "widget": {
+                    "name": "container",
+                    "options": {
+                      "label": "Сведения о бронируемом оснащении"
+                    },
+                    "kind": "container-form-group-with-h2-style"
+                  },
+                  "properties": {
+                    "additional_services": {
+                      "type": "object",
+                      "model": false,
+                      "widget": {
+                        "name": "container",
+                        "kind": "container-form-group-with-h3-style"
+                      },
+                      "properties": {
+                        "header": {
+                          "type": "object",
+                          "widget": {
+                            "name": "container",
+                            "options": {
+                              "label": "Дополнительные услуги"
+                            },
+                            "class": {
+                              "group": "flex-row p-grid mrg-b-lg mrg-t-0",
+                              "label": "h4 p-xs-12 p-md-4 p-xl-3 pdd-tb-0 mrg-md-b-md",
+                              "value": "p-xs-12 p-md-8 p-xl-9 pdd-tb-0"
+                            }
+                          }
+                        },
+                        "additional_services": {
+                          "type": "array",
+                          "model": "#data.additional_services",
+                          "value": {
+                            "$api-table-workflow-data": {
+                              "model": "#data.additional_services",
+                              "query": "additional_facilities/list_for_booking",
+                              "id": {
+                                "$query-params": {
+                                  "name": "id"
+                                }
+                              },
+                              "variables": {
+                                "$assign-object": {
+                                  "object": {
+                                    "$graphql-event-variables": {
+                                      "data": {
+                                        "$element-event": {
+                                          "event": "lazyLoad"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "data": {
+                                    "eventId": {
+                                      "$from-context": {
+                                        "path": "@preload.booking.eventId"
+                                      }
+                                    },
+                                    "bookingId": {
+                                      "$query-params": {
+                                        "name": "id"
+                                      }
+                                    },
+                                    "facilityType": "additional_service"
+                                  },
+                                  "path": ""
+                                }
+                              },
+                              "errors": {
+                                "default": {
+                                  "$message": {
+                                    "severity": "error",
+                                    "summary": "Ошибка",
+                                    "detail": "При загрузке данных произошла ошибка, повторите попытку позднее"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "widget": {
+                            "name": "table-lazy",
+                            "options": {
+                              "emptyMessage": "Не добавлено информации для отображения",
+                              "responsive": false,
+                              "first": 0,
+                              "lazy": true,
+                              "paginator": true,
+                              "rows": 10,
+                              "rowsPerPageOptions": [
+                                10,
+                                20,
+                                50
+                              ],
+                              "routerOptions": [
+                                "first",
+                                "rows"
+                              ],
+                              "sortField": "createdAt",
+                              "sortOrder": 1
+                            },
+                            "class": {
+                              "value": "data-table d-block mrg-b-lg"
+                            },
+                            "events": {
+                              "lazyLoad": {
+                                "$element-option": {
+                                  "path": "#data.additional_services",
+                                  "option": "loading",
+                                  "value": true
+                                }
+                              }
+                            }
+                          },
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "visible": false
+                                  }
+                                }
+                              },
+                              "number": {
+                                "type": "number",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "№",
+                                    "viewedValue": {
+                                      "$sum": {
+                                        "terms": [
+                                          {
+                                            "$collection": {
+                                              "action": "row-number"
+                                            }
+                                          },
+                                          {
+                                            "$element-option": {
+                                              "path": "#data.additional_services",
+                                              "option": "first"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  "class": {
+                                    "header": "column_actions",
+                                    "cell": "column_actions"
+                                  }
+                                }
+                              },
+                              "serviceId": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "visible": false
+                                  }
+                                }
+                              },
+                              "additionalService": {
+                                "type": "object",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Наименование услуги"
+                                  }
+                                },
+                                "properties": {
+                                  "name": {
+                                    "type": "string",
+                                    "widget": {
+                                      "name": "info"
+                                    }
+                                  },
+                                  "servicesType": {
+                                    "type": "object",
+                                    "widget": {
+                                      "name": "hidden"
+                                    },
+                                    "properties": {
+                                      "name": {
+                                        "type": "string",
+                                        "widget": {
+                                          "name": "info"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "unit": {
+                                    "type": "string",
+                                    "widget": {
+                                      "name": "hidden"
+                                    }
+                                  },
+                                  "unitPrice": {
+                                    "type": "string",
+                                    "widget": {
+                                      "name": "hidden"
+                                    }
+                                  }
+                                }
+                              },
+                              "servicesType": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Тип услуги",
+                                    "viewedValue": {
+                                      "$from-context": {
+                                        "path": "$rowData.additionalService.servicesType.name"
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "discountOrMarkupFlag": {
+                                "type": "number",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "visible": false
+                                  }
+                                }
+                              },
+                              "unitPrice": {
+                                "type": "number",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "visible": false
+                                  }
+                                }
+                              },
+                              "unitPriceWithDiscountOrMarkup": {
+                                "type": "number",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "visible": false
+                                  }
+                                }
+                              },
+                              "unitPriceView": {
+                                "type": "object",
+                                "model": false,
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Цена за единицу (руб.)"
+                                  }
+                                },
+                                "properties": {
+                                  "price": {
+                                    "type": "string",
+                                    "model": false,
+                                    "widget": {
+                                      "name": "info",
+                                      "options": {
+                                        "formatter": "number:'0.2-2':'ru'",
+                                        "viewedValue": {
+                                          "$if": {
+                                            "condition": {
+                                              "===": {
+                                                "operand1": "no",
+                                                "operand2": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.discountOrMarkupFlag"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "then": {
+                                              "$from-context": {
+                                                "path": "$rowData.additionalService.unitPrice"
+                                              }
+                                            },
+                                            "else": {
+                                              "$from-context": {
+                                                "path": "$rowData.unitPriceWithDiscountOrMarkup"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "class": {
+                                        "group": "p-text-right",
+                                        "value": "p-jc-end"
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "quantity": {
+                                "type": "number",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "visible": false
+                                  }
+                                }
+                              },
+                              "quantityView": {
+                                "type": "object",
+                                "model": false,
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Количество"
+                                  }
+                                },
+                                "properties": {
+                                  "amount": {
+                                    "type": "string",
+                                    "model": false,
+                                    "widget": {
+                                      "name": "info",
+                                      "options": {
+                                        "viewedValue": {
+                                          "$if": {
+                                            "condition": {
+                                              "$empty": {
+                                                "data": {
+                                                  "$subs": {
+                                                    "path": "#data.additional_services[].quantity"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "then": "",
+                                            "else": {
+                                              "$replace": {
+                                                "template": "{{quantity}} {{unit}}",
+                                                "data": {
+                                                  "quantity": {
+                                                    "$subs": {
+                                                      "path": "#data.additional_services[].quantity"
+                                                    }
+                                                  },
+                                                  "unit": {
+                                                    "$if": {
+                                                      "condition": {
+                                                        "$empty": {
+                                                          "data": {
+                                                            "$from-context": {
+                                                              "path": "$rowData.additionalService.unit"
+                                                            }
+                                                          }
+                                                        }
+                                                      },
+                                                      "then": "",
+                                                      "else": {
+                                                        "$from-context": {
+                                                          "path": "$rowData.additionalService.unit"
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "class": {
+                                        "group": "p-text-right",
+                                        "value": "p-jc-end"
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "totalPrice": {
+                                "type": "number",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "visible": false
+                                  }
+                                }
+                              },
+                              "totalPriceWithDiscountOrMarkup": {
+                                "type": "number",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "visible": false
+                                  }
+                                }
+                              },
+                              "totalPriceView": {
+                                "type": "object",
+                                "model": false,
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Общая стоимость (руб.)"
+                                  }
+                                },
+                                "properties": {
+                                  "price": {
+                                    "type": "string",
+                                    "model": false,
+                                    "widget": {
+                                      "name": "info",
+                                      "options": {
+                                        "formatter": "number:'0.2-2':'ru'",
+                                        "viewedValue": {
+                                          "$if": {
+                                            "condition": {
+                                              "===": {
+                                                "operand1": "no",
+                                                "operand2": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.discountOrMarkupFlag"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "then": {
+                                              "$from-context": {
+                                                "path": "$rowData.totalPrice"
+                                              }
+                                            },
+                                            "else": {
+                                              "$from-context": {
+                                                "path": "$rowData.totalPriceWithDiscountOrMarkup"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "class": {
+                                        "group": "p-text-right",
+                                        "value": "p-jc-end"
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "bookingPeriod": {
+                                "type": "array",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "visible": false
+                                  }
+                                },
+                                "items": {
+                                  "type": "string",
+                                  "widget": "info"
+                                }
+                              },
+                              "bookingPeriodView": {
+                                "type": "object",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Период бронирования"
+                                  }
+                                },
+                                "properties": {
+                                  "period": {
+                                    "type": "array",
+                                    "widget": {
+                                      "name": "info",
+                                      "options": {
+                                        "separator": "<br>",
+                                        "asList": "true",
+                                        "viewedValue": {
+                                          "$if": {
+                                            "condition": {
+                                              "$not-empty": {
+                                                "data": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.bookingPeriod"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "then": {
+                                              "$array-map": {
+                                                "array": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.bookingPeriod"
+                                                  }
+                                                },
+                                                "map": {
+                                                  "$switch": {
+                                                    "condition": {
+                                                      "$from-context": {
+                                                        "path": "$data"
+                                                      }
+                                                    },
+                                                    "cases": [
+                                                      {
+                                                        "value": "installation",
+                                                        "action": "Монтаж"
+                                                      },
+                                                      {
+                                                        "value": "event",
+                                                        "action": "Мероприятие"
+                                                      },
+                                                      {
+                                                        "value": "deinstallation",
+                                                        "action": "Демонтаж"
+                                                      }
+                                                    ]
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "else": []
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "items": {
+                                      "type": "string",
+                                      "widget": {
+                                        "name": "info"
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "bookingComment": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Комментарий"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "equipments": {
+                      "type": "object",
+                      "model": false,
+                      "widget": {
+                        "name": "container",
+                        "kind": "container-form-group-with-h3-style"
+                      },
+                      "properties": {
+                        "header": {
+                          "type": "object",
+                          "widget": {
+                            "name": "container",
+                            "options": {
+                              "label": "Оборудование"
+                            },
+                            "class": {
+                              "group": "flex-row p-grid mrg-b-lg mrg-t-0",
+                              "label": "h4 p-xs-12 p-md-4 p-xl-3 pdd-tb-0 mrg-md-b-md",
+                              "value": "p-xs-12 p-md-8 p-xl-9 pdd-tb-0"
+                            }
+                          }
+                        },
+                        "equipments": {
+                          "type": "array",
+                          "model": "#data.equipments",
+                          "value": {
+                            "$api-table-workflow-data": {
+                              "model": "#data.equipments",
+                              "query": "additional_facilities/list_for_booking",
+                              "id": {
+                                "$query-params": {
+                                  "name": "id"
+                                }
+                              },
+                              "variables": {
+                                "$assign-object": {
+                                  "object": {
+                                    "$graphql-event-variables": {
+                                      "data": {
+                                        "$element-event": {
+                                          "event": "lazyLoad"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "data": {
+                                    "eventId": {
+                                      "$from-context": {
+                                        "path": "@preload.booking.eventId"
+                                      }
+                                    },
+                                    "bookingId": {
+                                      "$query-params": {
+                                        "name": "id"
+                                      }
+                                    },
+                                    "facilityType": "equipment"
+                                  },
+                                  "path": ""
+                                }
+                              },
+                              "errors": {
+                                "default": {
+                                  "$message": {
+                                    "severity": "error",
+                                    "summary": "Ошибка",
+                                    "detail": "При загрузке данных произошла ошибка, повторите попытку позднее"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "widget": {
+                            "name": "table-lazy",
+                            "options": {
+                              "selectionKey": "id",
+                              "emptyMessage": "Не добавлено информации для отображения",
+                              "responsive": false,
+                              "first": 0,
+                              "lazy": true,
+                              "paginator": true,
+                              "rows": 10,
+                              "rowsPerPageOptions": [
+                                10,
+                                20,
+                                50
+                              ],
+                              "routerOptions": [
+                                "first",
+                                "rows"
+                              ],
+                              "sortField": "createdAt",
+                              "sortOrder": 1
+                            },
+                            "class": {
+                              "value": "data-table d-block mrg-b-lg"
+                            }
+                          },
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "visible": false
+                                  }
+                                }
+                              },
+                              "equipmentId": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "visible": false
+                                  }
+                                }
+                              },
+                              "number": {
+                                "type": "number",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "№",
+                                    "viewedValue": {
+                                      "$sum": {
+                                        "terms": [
+                                          {
+                                            "$collection": {
+                                              "action": "row-number"
+                                            }
+                                          },
+                                          {
+                                            "$element-option": {
+                                              "path": "#data.equipments",
+                                              "option": "first"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  "class": {
+                                    "header": "column_actions",
+                                    "cell": "column_actions"
+                                  }
+                                }
+                              },
+                              "equipment": {
+                                "type": "object",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Наименование"
+                                  }
+                                },
+                                "properties": {
+                                  "name": {
+                                    "type": "string",
+                                    "widget": {
+                                      "name": "info"
+                                    }
+                                  },
+                                  "nomenclatureNumber": {
+                                    "type": "string",
+                                    "widget": {
+                                      "name": "hidden"
+                                    }
+                                  },
+                                  "unitPrice": {
+                                    "type": "string",
+                                    "widget": {
+                                      "name": "hidden"
+                                    }
+                                  }
+                                }
+                              },
+                              "nomenclatureNumber": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Номенклатурный номер",
+                                    "viewedValue": {
+                                      "$from-context": {
+                                        "path": "$rowData.equipment.nomenclatureNumber"
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "discountOrMarkupFlag": {
+                                "type": "number",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "visible": false
+                                  }
+                                }
+                              },
+                              "unitPrice": {
+                                "type": "number",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "visible": false
+                                  }
+                                }
+                              },
+                              "unitPriceWithDiscountOrMarkup": {
+                                "type": "number",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "visible": false
+                                  }
+                                }
+                              },
+                              "unitPriceView": {
+                                "type": "object",
+                                "model": false,
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Цена за единицу (руб.)"
+                                  }
+                                },
+                                "properties": {
+                                  "price": {
+                                    "type": "string",
+                                    "model": false,
+                                    "widget": {
+                                      "name": "info",
+                                      "options": {
+                                        "formatter": "number:'0.2-2':'ru'",
+                                        "viewedValue": {
+                                          "$if": {
+                                            "condition": {
+                                              "===": {
+                                                "operand1": "no",
+                                                "operand2": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.discountOrMarkupFlag"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "then": {
+                                              "$from-context": {
+                                                "path": "$rowData.equipment.unitPrice"
+                                              }
+                                            },
+                                            "else": {
+                                              "$from-context": {
+                                                "path": "$rowData.unitPriceWithDiscountOrMarkup"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "class": {
+                                        "group": "p-text-right",
+                                        "value": "p-jc-end"
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "quantity": {
+                                "type": "number",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "visible": false
+                                  }
+                                }
+                              },
+                              "quantityView": {
+                                "type": "object",
+                                "model": false,
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Количество (шт.)"
+                                  }
+                                },
+                                "properties": {
+                                  "amount": {
+                                    "type": "string",
+                                    "model": false,
+                                    "widget": {
+                                      "name": "info",
+                                      "options": {
+                                        "viewedValue": {
+                                          "$subs": {
+                                            "path": "#data.equipments[].quantity"
+                                          }
+                                        }
+                                      },
+                                      "class": {
+                                        "group": "p-text-right",
+                                        "value": "p-jc-end"
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "totalPrice": {
+                                "type": "number",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "visible": false
+                                  }
+                                }
+                              },
+                              "totalPriceWithDiscountOrMarkup": {
+                                "type": "number",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "visible": false
+                                  }
+                                }
+                              },
+                              "totalPriceView": {
+                                "type": "object",
+                                "model": false,
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Общая стоимость (руб.)"
+                                  }
+                                },
+                                "properties": {
+                                  "price": {
+                                    "type": "string",
+                                    "model": false,
+                                    "widget": {
+                                      "name": "info",
+                                      "options": {
+                                        "formatter": "number:'0.2-2':'ru'",
+                                        "viewedValue": {
+                                          "$if": {
+                                            "condition": {
+                                              "===": {
+                                                "operand1": "no",
+                                                "operand2": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.discountOrMarkupFlag"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "then": {
+                                              "$from-context": {
+                                                "path": "$rowData.totalPrice"
+                                              }
+                                            },
+                                            "else": {
+                                              "$from-context": {
+                                                "path": "$rowData.totalPriceWithDiscountOrMarkup"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "class": {
+                                        "group": "p-text-right",
+                                        "value": "p-jc-end"
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "bookingPeriod": {
+                                "type": "array",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "visible": false
+                                  }
+                                },
+                                "items": {
+                                  "type": "string",
+                                  "widget": "info"
+                                }
+                              },
+                              "bookingPeriodView": {
+                                "type": "object",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Период бронирования"
+                                  }
+                                },
+                                "properties": {
+                                  "period": {
+                                    "type": "array",
+                                    "widget": {
+                                      "name": "info",
+                                      "options": {
+                                        "separator": "<br>",
+                                        "asList": "true",
+                                        "viewedValue": {
+                                          "$if": {
+                                            "condition": {
+                                              "$not-empty": {
+                                                "data": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.bookingPeriod"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "then": {
+                                              "$array-map": {
+                                                "array": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.bookingPeriod"
+                                                  }
+                                                },
+                                                "map": {
+                                                  "$switch": {
+                                                    "condition": {
+                                                      "$from-context": {
+                                                        "path": "$data"
+                                                      }
+                                                    },
+                                                    "cases": [
+                                                      {
+                                                        "value": "installation",
+                                                        "action": "Монтаж"
+                                                      },
+                                                      {
+                                                        "value": "event",
+                                                        "action": "Мероприятие"
+                                                      },
+                                                      {
+                                                        "value": "deinstallation",
+                                                        "action": "Демонтаж"
+                                                      }
+                                                    ]
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "else": []
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "items": {
+                                      "type": "string",
+                                      "widget": {
+                                        "name": "info"
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "bookingComment": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Комментарий"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "furniture": {
+                      "type": "object",
+                      "model": false,
+                      "widget": {
+                        "name": "container",
+                        "kind": "container-form-group-with-h3-style"
+                      },
+                      "properties": {
+                        "header": {
+                          "type": "object",
+                          "widget": {
+                            "name": "container",
+                            "options": {
+                              "label": "Мебель"
+                            },
+                            "class": {
+                              "group": "flex-row p-grid mrg-b-lg mrg-t-0",
+                              "label": "h4 p-xs-12 p-md-4 p-xl-3 pdd-tb-0 mrg-md-b-md",
+                              "value": "p-xs-12 p-md-8 p-xl-9 pdd-tb-0"
+                            }
+                          }
+                        },
+                        "furniture": {
+                          "type": "array",
+                          "model": "#data.furniture",
+                          "value": {
+                            "$api-table-workflow-data": {
+                              "model": "#data.furniture",
+                              "query": "additional_facilities/list_for_booking",
+                              "id": {
+                                "$query-params": {
+                                  "name": "id"
+                                }
+                              },
+                              "variables": {
+                                "$assign-object": {
+                                  "object": {
+                                    "$graphql-event-variables": {
+                                      "data": {
+                                        "$element-event": {
+                                          "event": "lazyLoad"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "data": {
+                                    "eventId": {
+                                      "$from-context": {
+                                        "path": "@preload.booking.eventId"
+                                      }
+                                    },
+                                    "bookingId": {
+                                      "$query-params": {
+                                        "name": "id"
+                                      }
+                                    },
+                                    "facilityType": "furniture"
+                                  },
+                                  "path": ""
+                                }
+                              },
+                              "errors": {
+                                "default": {
+                                  "$message": {
+                                    "severity": "error",
+                                    "summary": "Ошибка",
+                                    "detail": "При загрузке данных произошла ошибка, повторите попытку позднее"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "widget": {
+                            "name": "table-lazy",
+                            "options": {
+                              "selectionKey": "furnitureId",
+                              "emptyMessage": "Не добавлено информации для отображения",
+                              "responsive": false,
+                              "first": 0,
+                              "lazy": true,
+                              "paginator": true,
+                              "rows": 10,
+                              "rowsPerPageOptions": [
+                                10,
+                                20,
+                                50
+                              ],
+                              "routerOptions": [
+                                "first",
+                                "rows"
+                              ],
+                              "sortField": "createdAt",
+                              "sortOrder": 1
+                            },
+                            "class": {
+                              "value": "data-table d-block mrg-b-lg"
+                            }
+                          },
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "visible": false
+                                  }
+                                }
+                              },
+                              "furnitureId": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "visible": false
+                                  }
+                                }
+                              },
+                              "number": {
+                                "type": "number",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "№",
+                                    "viewedValue": {
+                                      "$sum": {
+                                        "terms": [
+                                          {
+                                            "$collection": {
+                                              "action": "row-number"
+                                            }
+                                          },
+                                          {
+                                            "$element-option": {
+                                              "path": "#data.furniture",
+                                              "option": "first"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  "class": {
+                                    "header": "column_actions",
+                                    "cell": "column_actions"
+                                  }
+                                }
+                              },
+                              "furniture": {
+                                "type": "object",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Наименование"
+                                  }
+                                },
+                                "properties": {
+                                  "name": {
+                                    "type": "string",
+                                    "widget": {
+                                      "name": "info"
+                                    }
+                                  },
+                                  "nomenclatureNumber": {
+                                    "type": "string",
+                                    "widget": {
+                                      "name": "hidden"
+                                    }
+                                  },
+                                  "unitPrice": {
+                                    "type": "string",
+                                    "widget": {
+                                      "name": "hidden"
+                                    }
+                                  }
+                                }
+                              },
+                              "nomenclatureNumber": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Номенклатурный номер",
+                                    "viewedValue": {
+                                      "$from-context": {
+                                        "path": "$rowData.furniture.nomenclatureNumber"
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "discountOrMarkupFlag": {
+                                "type": "number",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "visible": false
+                                  }
+                                }
+                              },
+                              "unitPrice": {
+                                "type": "number",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "visible": false
+                                  }
+                                }
+                              },
+                              "unitPriceWithDiscountOrMarkup": {
+                                "type": "number",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "visible": false
+                                  }
+                                }
+                              },
+                              "unitPriceView": {
+                                "type": "object",
+                                "model": false,
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Цена за единицу (руб.)"
+                                  }
+                                },
+                                "properties": {
+                                  "price": {
+                                    "type": "string",
+                                    "model": false,
+                                    "widget": {
+                                      "name": "info",
+                                      "options": {
+                                        "formatter": "number:'0.2-2':'ru'",
+                                        "viewedValue": {
+                                          "$if": {
+                                            "condition": {
+                                              "===": {
+                                                "operand1": "no",
+                                                "operand2": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.discountOrMarkupFlag"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "then": {
+                                              "$from-context": {
+                                                "path": "$rowData.furniture.unitPrice"
+                                              }
+                                            },
+                                            "else": {
+                                              "$from-context": {
+                                                "path": "$rowData.unitPriceWithDiscountOrMarkup"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "class": {
+                                        "group": "p-text-right",
+                                        "value": "p-jc-end"
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "quantity": {
+                                "type": "number",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "visible": false
+                                  }
+                                }
+                              },
+                              "quantityView": {
+                                "type": "object",
+                                "model": false,
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Количество (шт.)"
+                                  }
+                                },
+                                "properties": {
+                                  "amount": {
+                                    "type": "string",
+                                    "model": false,
+                                    "widget": {
+                                      "name": "info",
+                                      "options": {
+                                        "viewedValue": {
+                                          "$subs": {
+                                            "path": "#data.furniture[].quantity"
+                                          }
+                                        }
+                                      },
+                                      "class": {
+                                        "group": "p-text-right",
+                                        "value": "p-jc-end"
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "totalPrice": {
+                                "type": "number",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "visible": false
+                                  }
+                                }
+                              },
+                              "totalPriceWithDiscountOrMarkup": {
+                                "type": "number",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "visible": false
+                                  }
+                                }
+                              },
+                              "totalPriceView": {
+                                "type": "object",
+                                "model": false,
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Общая стоимость (руб.)"
+                                  }
+                                },
+                                "properties": {
+                                  "price": {
+                                    "type": "string",
+                                    "model": false,
+                                    "widget": {
+                                      "name": "info",
+                                      "options": {
+                                        "formatter": "number:'0.2-2':'ru'",
+                                        "viewedValue": {
+                                          "$if": {
+                                            "condition": {
+                                              "===": {
+                                                "operand1": "no",
+                                                "operand2": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.discountOrMarkupFlag"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "then": {
+                                              "$from-context": {
+                                                "path": "$rowData.totalPrice"
+                                              }
+                                            },
+                                            "else": {
+                                              "$from-context": {
+                                                "path": "$rowData.totalPriceWithDiscountOrMarkup"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "class": {
+                                        "group": "p-text-right",
+                                        "value": "p-jc-end"
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "bookingPeriod": {
+                                "type": "array",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "visible": false
+                                  }
+                                },
+                                "items": {
+                                  "type": "string",
+                                  "widget": "info"
+                                }
+                              },
+                              "bookingPeriodView": {
+                                "type": "object",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Период бронирования"
+                                  }
+                                },
+                                "properties": {
+                                  "period": {
+                                    "type": "array",
+                                    "widget": {
+                                      "name": "info",
+                                      "options": {
+                                        "separator": "<br>",
+                                        "asList": "true",
+                                        "viewedValue": {
+                                          "$if": {
+                                            "condition": {
+                                              "$not-empty": {
+                                                "data": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.bookingPeriod"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "then": {
+                                              "$array-map": {
+                                                "array": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.bookingPeriod"
+                                                  }
+                                                },
+                                                "map": {
+                                                  "$switch": {
+                                                    "condition": {
+                                                      "$from-context": {
+                                                        "path": "$data"
+                                                      }
+                                                    },
+                                                    "cases": [
+                                                      {
+                                                        "value": "installation",
+                                                        "action": "Монтаж"
+                                                      },
+                                                      {
+                                                        "value": "event",
+                                                        "action": "Мероприятие"
+                                                      },
+                                                      {
+                                                        "value": "deinstallation",
+                                                        "action": "Демонтаж"
+                                                      }
+                                                    ]
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "else": []
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "items": {
+                                      "type": "string",
+                                      "widget": {
+                                        "name": "info"
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "bookingComment": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "table-column",
+                                  "options": {
+                                    "label": "Комментарий"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actions-button-menu": {
+          "type": "array",
+          "model": "#data.actions",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "widget": "hidden"
+              },
+              "title": {
+                "type": "string",
+                "widget": "hidden"
+              },
+              "icon": {
+                "type": "string",
+                "widget": "hidden"
+              },
+              "url": {
+                "type": "string",
+                "widget": "hidden"
+              },
+              "routerLink": {
+                "type": "string",
+                "widget": "hidden"
+              },
+              "popup": {
+                "type": "string",
+                "widget": "hidden"
+              },
+              "hidden": {
+                "type": "string",
+                "widget": "hidden"
+              }
+            },
+            "widget": {
+              "name": "fieldset"
+            }
+          },
+          "value": [
+            {
+              "title": "К мероприятию",
+              "routerLink": {
+                "$replace": {
+                  "template": "/cabinet/event/view?id={{0}}",
+                  "data": [
+                    {
+                      "$from-context": {
+                        "path": "@preload.booking.eventId"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "widget": {
+            "name": "actions-menu",
+            "options": {
+              "labelKey": "title"
+            },
+            "class": {
+              "group": "actions-button-menu-widget"
+            },
+            "items": {
+              "$subs": {
+                "path": "#data.actions"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

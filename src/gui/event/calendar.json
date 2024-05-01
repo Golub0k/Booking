@@ -1,0 +1,443 @@
+{
+  "@title": "Календарь мероприятий",
+  "type": "object",
+  "widget": "container",
+  "model": "/",
+  "properties": {
+    "breadcrumbs": {
+      "type": "object",
+      "model": false,
+      "widget": {
+        "name": "breadcrumb",
+        "mobileItems": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          }
+        ],
+        "items": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          },
+          {
+            "label": "Календарь мероприятий"
+          }
+        ],
+        "class": {
+          "group": "p-xs-auto mrg-lg-b-xs mrg-b-xs"
+        }
+      }
+    },
+    "object": {
+      "type": "object",
+      "widget": {
+        "name": "accordion",
+        "options": {
+          "multiple": true
+        },
+        "class": {
+          "group": "filters-block_accordion",
+          "value": "p-ai-center p-flex-row"
+        }
+      },
+      "properties": {
+        "mainInfo": {
+          "type": "object",
+          "widget": {
+            "name": "accordion-tab",
+            "options": {
+              "label": "Этапы мероприятий",
+              "selected": true
+            },
+            "class": {
+              "group": "form-section",
+              "label": "h3 mrg-b-xs"
+            }
+          },
+          "properties": {
+            "legend": {
+              "type": "object",
+              "model": "#legend",
+              "widget": {
+                "name": "container",
+                "class": {
+                  "group": "p-xs-9 p-xl-9",
+                  "value": "p-ai-center p-flex-row"
+                }
+              },
+              "properties": {
+                "preBooking": {
+                  "type": "string",
+                  "value": "<style>.container{display:flex;align-items:center;}.circle{width:16px;height:16px;background-color:#E0E0E0;border-radius:50%;margin-right:20px;}.text{color:black;font-family: 'Helvetica Neue', sans-serif; font-weight: 400;}</style></head><body><div class=\"container\"><div class=\"circle\"></div><div class=\"text\">Предварительная бронь</div></div></body>",
+                  "widget": {
+                    "name": "html",
+                    "class": {
+                      "group": "p-xs-3 p-xl-3 mrg-tb-0"
+                    }
+                  }
+                },
+                "requested": {
+                  "type": "string",
+                  "value": "<style>.container2{display:flex;align-items:center;}.circle2{width:16px;height:16px;background-color:#FFFFCC;border-radius:50%;margin-right:20px;}.text2{color:black;font-family: 'Helvetica Neue', sans-serif; font-weight: 400;}</style></head><body><div class=\"container2\"><div class=\"circle2\"></div><div class=\"text2\">Получен запрос</div></div></body></html>",
+                  "widget": {
+                    "name": "html",
+                    "class": {
+                      "group": "p-xs-3 p-xl-3 mrg-tb-0"
+                    }
+                  }
+                },
+                "taskReceived": {
+                  "type": "string",
+                  "value": "<style>.container3{display:flex;align-items:center;}.circle3{width:16px;height:16px;background-color:#FFE5CC;border-radius:50%;margin-right:20px;}.text3{color:black;font-family: 'Helvetica Neue', sans-serif; font-weight: 400;}</style></head><body><div class=\"container3\"><div class=\"circle3\"></div><div class=\"text3\">Получено ТЗ</div></div></body></html>",
+                  "widget": {
+                    "name": "html",
+                    "class": {
+                      "group": "p-xs-3 p-xl-3 mrg-tb-0"
+                    }
+                  }
+                },
+                "agreed": {
+                  "type": "string",
+                  "value": "<style>.container4{display:flex;align-items:center;}.circle4{width:16px;height:16px;background-color:#E5FFCC;border-radius:50%;margin-right:20px;}.text4{color:black;font-family: 'Helvetica Neue', sans-serif; font-weight: 400;}</style></head><body><div class=\"container3\"><div class=\"circle4\"></div><div class=\"text4\">Согласована смета</div></div></body></html>",
+                  "widget": {
+                    "name": "html",
+                    "class": {
+                      "group": "p-xs-3 p-xl-3 mrg-tb-0"
+                    }
+                  }
+                },
+                "checkIn": {
+                  "type": "string",
+                  "value": "<style>.container5{display:flex;align-items:center;}.circle5{width:16px;height:16px;background-color:#CCE5FF;border-radius:50%;margin-right:20px;}.text5{color:black;font-family: 'Helvetica Neue', sans-serif; font-weight: 400;}</style></head><body><div class=\"container3\"><div class=\"circle5\"></div><div class=\"text5\">Пройден check-in</div></div></body></html>",
+                  "widget": {
+                    "name": "html",
+                    "class": {
+                      "group": "p-xs-3 p-xl-3 mrg-tb-0"
+                    }
+                  }
+                },
+                "checkOut": {
+                  "type": "string",
+                  "value": "<style>.container6{display:flex;align-items:center;}.circle6{width:16px;height:16px;background-color:#DBDBFF;border-radius:50%;margin-right:20px;}.text6{color:black;font-family: 'Helvetica Neue', sans-serif; font-weight: 400;}</style></head><body><div class=\"container3\"><div class=\"circle6\"></div><div class=\"text6\">Пройден check-out</div></div></body></html>",
+                  "widget": {
+                    "name": "html",
+                    "class": {
+                      "group": "p-xs-3 p-xl-3 mrg-tb-0"
+                    }
+                  }
+                },
+                "installation": {
+                  "type": "string",
+                  "value": "<style>.container7{display:flex;align-items:center;}.circle7{width:16px;height:16px;background-color:#A6FDD2;border-radius:50%;margin-right:20px;}.text7{color:black;font-family: 'Helvetica Neue', sans-serif; font-weight: 400;}</style></head><body><div class=\"container3\"><div class=\"circle7\"></div><div class=\"text7\">Монтаж</div></div></body></html>",
+                  "widget": {
+                    "name": "html",
+                    "class": {
+                      "group": "p-xs-3 p-xl-3 mrg-tb-0"
+                    }
+                  }
+                },
+                "deinstallation": {
+                  "type": "string",
+                  "value": "<style>.container8{display:flex;align-items:center;}.circle8{width:16px;height:16px;background-color:#FF9999;border-radius:50%;margin-right:20px;}.text8{color:black;font-family: 'Helvetica Neue', sans-serif; font-weight: 400;}</style></head><body><div class=\"container3\"><div class=\"circle8\"></div><div class=\"text8\">Демонтаж</div></div></body></html>",
+                  "widget": {
+                    "name": "html",
+                    "class": {
+                      "group": "p-xs-3 p-xl-3 mrg-tb-0"
+                    }
+                  }
+                }
+              }
+            },
+            "button": {
+              "type": "string",
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Добавить мероприятие",
+                  "visible": {
+                    "$active-user-has-permission": {
+                      "permission": "event.create"
+                    }
+                  }
+                },
+                "events": {
+                  "click": {
+                    "$waterfall": {
+                      "arrayFunctions": [
+                        {
+                          "$assign-context": {
+                            "path": "$eventNew",
+                            "data": {
+                              "$from-context": {
+                                "path": "$response.body.data.items",
+                                "data": {
+                                  "$api-data": {
+                                    "query": "event/get_new",
+                                    "variables": {
+                                      "creator": {
+                                        "$active-user": {
+                                          "field": "_id"
+                                        }
+                                      }
+                                    },
+                                    "options": {
+                                      "observe": "response"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$from-context": {
+                                    "path": "$eventNew"
+                                  }
+                                }
+                              }
+                            },
+                            "then": {
+                              "$go": {
+                                "workflow": "event",
+                                "action": "add",
+                                "id": {
+                                  "$from-context": {
+                                    "path": "$eventNew.0.id"
+                                  }
+                                }
+                              }
+                            },
+                            "else": {
+                              "$http-code": {
+                                "200": [
+                                  {
+                                    "$go": {
+                                      "workflow": "event",
+                                      "action": "add",
+                                      "id": {
+                                        "$from-context": {
+                                          "path": "$response.body.data.eventId"
+                                        }
+                                      }
+                                    }
+                                  }
+                                ],
+                                "422": [
+                                  {
+                                    "$validate": {
+                                      "errors": {
+                                        "$from-context": {
+                                          "path": "$response.error.errors"
+                                        }
+                                      }
+                                    }
+                                  }
+                                ],
+                                "client": {
+                                  "$api-workflow": {
+                                    "type": "post",
+                                    "options": {
+                                      "observe": "response"
+                                    },
+                                    "workflow": "event",
+                                    "action": "create"
+                                  }
+                                },
+                                "default": [
+                                  {
+                                    "$message": {
+                                      "severity": "error",
+                                      "summary": "Добавление мероприятия",
+                                      "detail": "Непредвиденная ошибка"
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "class": {
+                  "group": "p-xs-3 p-xl-3 p-ai-center",
+                  "value": "button_primary button_narrow button_h1 p-jc-xl-end"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "calendar_with_query": {
+      "type": "array",
+      "model": "#data.calendar_with_query",
+      "widget": {
+        "name": "expo-full-calendar",
+        "options": {
+          "visible": true,
+          "timezone": "+03:00",
+          "timeStep": "00:15",
+          "todayHighlight": "#FFFFE0",
+          "mode": "month",
+          "adaptiveCell": true
+        },
+        "events": {
+          "selectCell": {
+            "$from-context": {
+              "path": "$event"
+            }
+          },
+          "selectData": {
+            "$if": {
+              "condition": {
+                "===": {
+                  "operand1": {
+                    "$from-context": {
+                      "path": "$event.event.type"
+                    }
+                  },
+                  "operand2": "group"
+                }
+              },
+              "then": {
+                "$open-popup": {
+                  "workflow": "event_group",
+                  "action": "view-in-calendar",
+                  "id": {
+                    "$from-context": {
+                      "path": "$event.event.id"
+                    }
+                  }
+                }
+              },
+              "else": {
+                "$open-popup": {
+                  "workflow": "event",
+                  "action": "view-in-calendar",
+                  "id": {
+                    "$from-context": {
+                      "path": "$event.event.id"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "lazyload": {
+            "$populate": {
+              "path": "#data.calendar_with_query",
+              "data": {
+                "$fetch-object": {
+                  "path": "data.items",
+                  "data": {
+                    "$api-data": {
+                      "query": "event/calendar",
+                      "variables": {
+                        "start": {
+                          "$date-add": {
+                            "date": {
+                              "$element-option": {
+                                "option": "start",
+                                "path": "#data.calendar_with_query"
+                              }
+                            },
+                            "number": -3,
+                            "interval": "h"
+                          }
+                        },
+                        "end": {
+                          "$date-add": {
+                            "date": {
+                              "$element-option": {
+                                "option": "end",
+                                "path": "#data.calendar_with_query"
+                              }
+                            },
+                            "number": -3,
+                            "interval": "h"
+                          }
+                        }
+                      },
+                      "errors": {
+                        "default": {
+                          "$message": {
+                            "severity": "error",
+                            "summary": "Ошибка",
+                            "detail": "При загрузке данных произошла ошибка, повторите попытку позднее"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "class": {
+          "group": "form-item p-field p-grid",
+          "label": "form-label form-label_view",
+          "value": "form-item-element form-item-element_view",
+          "timeGrig": "mrg-r-sm"
+        }
+      },
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "widget": {
+              "name": "input"
+            }
+          },
+          "type": {
+            "type": "string",
+            "widget": {
+              "name": "input"
+            }
+          },
+          "color": {
+            "type": "string",
+            "widget": {
+              "name": "input"
+            }
+          },
+          "title": {
+            "type": "string",
+            "widget": {
+              "name": "input"
+            }
+          },
+          "start": {
+            "type": "string",
+            "widget": {
+              "name": "input"
+            }
+          },
+          "end": {
+            "type": "string",
+            "widget": {
+              "name": "input"
+            }
+          },
+          "description": {
+            "type": "string",
+            "widget": {
+              "name": "input"
+            }
+          }
+        },
+        "widget": {
+          "name": "fieldset"
+        }
+      }
+    }
+  }
+}

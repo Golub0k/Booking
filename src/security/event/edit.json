@@ -1,0 +1,56 @@
+{
+  "access-control": [
+    {
+      "rules": {
+        "===": {
+          "operand1": {
+            "$length": {
+              "data": {
+                "$fetch-object": {
+                  "path": "data.items.0.requests",
+                  "data": {
+                    "$api-data": {
+                      "query": "event/get_request",
+                      "variables": {
+                        "id": {
+                          "$from-context": {
+                            "path": "$actionContext.id"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "operand2": 0
+        }
+      },
+      "error": {
+        "status": 403,
+        "message": "Запрещено"
+      },
+      "states": [
+        "draft",
+        "pre_booking",
+        "requested",
+        "task_received",
+        "agreed",
+        "check_in"
+      ]
+    }
+  ],
+  "backend-validation": {
+    "enabled": true,
+    "options": {
+      "schema": "event/edit",
+      "data": {
+        "$post-params": {
+          "name": null
+        }
+      },
+      "path": "#data"
+    }
+  }
+}

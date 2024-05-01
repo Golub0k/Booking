@@ -1,0 +1,11 @@
+# @title: Обновить данные экземпляров объекта "Отрасль"
+
+mutation (
+  $id: [MongoID!]
+  $filter: FilterUpdateIndustryInput
+  $data: UpdateIndustryInput!
+) {
+  result: industryUpdate(_id: $id, filter: $filter, record: $data) {
+    numAffected
+  }
+}

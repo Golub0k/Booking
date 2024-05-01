@@ -1,0 +1,66 @@
+{
+  "type": "object",
+  "title": "Изменения в брони оснащения",
+  "properties": {
+    "requestDataType": {
+      "type": "string",
+      "fieldDescription": "Новые или старые данные",
+      "required": true,
+      "enum": [
+        "old",
+        "new"
+      ]
+    },
+    "bookingPeriod": [
+      {
+        "type": "string",
+        "fieldDescription": "Период бронирования оснащения",
+        "enum": [
+          "installation",
+          "event",
+          "deinstallation"
+        ]
+      }
+    ],
+    "bookingComment": {
+      "type": "string",
+      "trim": true,
+      "fieldDescription": "Текстовый комментарий с информацией об оснащении"
+    },
+    "quantity": {
+      "type": "number",
+      "fieldDescription": "Необходимое количество"
+    },
+    "unitPrice": {
+      "type": "number",
+      "fieldDescription": "Цена за единицу оснащения"
+    },
+    "totalPrice": {
+      "type": "number",
+      "fieldDescription": "Общая стоимость оснащения"
+    },
+    "discountOrMarkupFlag": {
+      "type": "string",
+      "fieldDescription": "Признак применения скидки или наценки",
+      "required": true,
+      "default": "no",
+      "enum": [
+        "no",
+        "discount",
+        "markup"
+      ]
+    },
+    "discountOrMarkup": {
+      "type": "number",
+      "fieldDescription": "Размер скидки или наценки в процентах"
+    },
+    "unitPriceWithDiscountOrMarkup": {
+      "type": "number",
+      "fieldDescription": "Цена за единицу оснащения со скидкой/наценкой"
+    },
+    "totalPriceWithDiscountOrMarkup": {
+      "type": "number",
+      "fieldDescription": "Общая стоимость оснащения со скидкой/наценкой"
+    }
+  }
+}

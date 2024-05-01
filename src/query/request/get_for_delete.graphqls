@@ -1,0 +1,11 @@
+query ($id: String!) {
+  items: requestGet(
+    filter: {
+      OR: [{ bookingId: $id }, { _filterRef: { facilitiesId: { bookingId: $id } } }, { facilitiesId: $id }]
+      state: "new"
+    }
+    sort: { field: createdAt, type: DESC }
+  ) {
+    id: _id
+  }
+}

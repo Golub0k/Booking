@@ -1,0 +1,51 @@
+{
+  "version": 2,
+  "objectType": "event",
+  "context": "event_history/context",
+  "description": "Жизненный цикл Истории изменений мероприятия",
+  "rbac": {
+    "visible": false,
+    "title": "Истории изменений мероприятия"
+  },
+  "actions": {
+    "initialActions": {
+      "create": {
+        "title": "Создание истории изменений мероприятия",
+        "grants": {
+          "rbac": {
+            "enabled": false,
+            "visible": false
+          },
+          "system": true
+        },
+        "views": {},
+        "functions": [
+          {
+            "$workflow-object-create": {
+              "objectType": "event_history",
+              "query": "event_history/create",
+              "variables": {
+                "data": {
+                  "$from-context": {
+                    "path": "data"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "active"
+        }
+      }
+    },
+    "globalActions": {},
+    "statesActions": {}
+  },
+  "states": {
+    "active": {
+      "title": "Активна",
+      "description": "История изменений мероприятия активна"
+    }
+  }
+}

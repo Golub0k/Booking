@@ -1,0 +1,987 @@
+{
+  "@title": "Редактирование записи стоп-листа",
+  "@preload": {
+    "stopListNote": {
+      "$from-context": {
+        "path": "$response.body.data.items.0",
+        "data": {
+          "$api-data": {
+            "query": "stop_list_note/get",
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            },
+            "options": {
+              "observe": "response"
+            },
+            "variables": {
+              "id": {
+                "$query-params": {
+                  "name": "id"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "widget": {
+    "name": "container"
+  },
+  "model": "/",
+  "properties": {
+    "booking": {
+      "type": "object",
+      "model": "#modalBooking",
+      "widget": {
+        "name": "form",
+        "options": {
+          "visible": {
+            "$subs": {
+              "path": "#selectBookingVisible"
+            }
+          }
+        }
+      },
+      "properties": {
+        "content": {
+          "type": "object",
+          "widget": {
+            "name": "container"
+          },
+          "properties": {
+            "header": {
+              "type": "string",
+              "widget": {
+                "name": "container",
+                "options": {
+                  "label": "Предупреждение о запланированных мероприятиях"
+                },
+                "kind": "container-popup-with-h1-no-form-collapsed-style"
+              }
+            },
+            "beforeTable": {
+              "type": "string",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "viewedValue": {
+                    "$replace": {
+                      "template": "В помещении \"{{room}}\" в рамках указанного срока запланированы следующие мероприятия:",
+                      "data": {
+                        "room": {
+                          "$from-context": {
+                            "path": "@preload.stopListNote.room.name"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "class": {
+                  "value": "mrg-b-md"
+                }
+              }
+            },
+            "table": {
+              "value": {},
+              "type": "array",
+              "model": "#booking",
+              "widget": {
+                "name": "table",
+                "options": {
+                  "first": 0,
+                  "paginator": true,
+                  "rows": 5,
+                  "rowsPerPageOptions": [
+                    5,
+                    10,
+                    20
+                  ],
+                  "routerOptions": [
+                    "first",
+                    "rows"
+                  ],
+                  "sortField": "name",
+                  "sortOrder": 1
+                },
+                "class": {
+                  "value": "data-table d-block mrg-b-s"
+                },
+                "events": {},
+                "subscriptions": {}
+              },
+              "items": {
+                "type": "object",
+                "properties": {
+                  "number": {
+                    "type": "number",
+                    "widget": {
+                      "name": "table-column",
+                      "options": {
+                        "label": "№",
+                        "viewedValue": {
+                          "$collection": {
+                            "action": "row-number"
+                          }
+                        }
+                      },
+                      "class": {
+                        "header": "column_actions",
+                        "cell": "column_actions"
+                      }
+                    }
+                  },
+                  "event": {
+                    "type": "object",
+                    "widget": {
+                      "name": "table-column",
+                      "options": {
+                        "visible": false
+                      }
+                    },
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "widget": {
+                          "name": "hidden"
+                        }
+                      },
+                      "state": {
+                        "type": "string",
+                        "widget": {
+                          "name": "hidden"
+                        }
+                      }
+                    }
+                  },
+                  "eventView": {
+                    "type": "object",
+                    "widget": {
+                      "name": "table-column",
+                      "options": {
+                        "label": "Мероприятие",
+                        "visible": true
+                      }
+                    },
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "widget": {
+                          "name": "info",
+                          "options": {
+                            "viewedValue": {
+                              "$from-context": {
+                                "path": "$rowData.event.name"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "bookingView": {
+                    "type": "string",
+                    "widget": {
+                      "name": "table-column",
+                      "options": {
+                        "label": "Даты брони помещения",
+                        "visible": true
+                      }
+                    },
+                    "value": {
+                      "$replace": {
+                        "template": "{{start}} - {{end}}",
+                        "data": {
+                          "start": {
+                            "$formatter": {
+                              "format": "$ref:operation-frontend:snippets/element/_active_user_timezone/datetime-formatter",
+                              "data": {
+                                "$from-context": {
+                                  "path": "$rowData.minDate"
+                                }
+                              }
+                            }
+                          },
+                          "end": {
+                            "$formatter": {
+                              "format": "$ref:operation-frontend:snippets/element/_active_user_timezone/datetime-formatter",
+                              "data": {
+                                "$from-context": {
+                                  "path": "$rowData.maxDate"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "status": {
+                    "type": "object",
+                    "widget": {
+                      "name": "table-column",
+                      "options": {
+                        "label": "Статус мероприятия"
+                      }
+                    },
+                    "properties": {
+                      "stateView": {
+                        "type": "string",
+                        "value": {
+                          "$from-context": {
+                            "path": "$rowData.event.state"
+                          }
+                        },
+                        "widget": {
+                          "name": "badge",
+                          "options": {
+                            "defaultLabel": "",
+                            "displayMapping": [
+                              {
+                                "color": "badge_default",
+                                "label": "Предварительная бронь",
+                                "value": "pre_booking"
+                              },
+                              {
+                                "color": "badge_warning",
+                                "label": "Получен запрос",
+                                "value": "requested"
+                              },
+                              {
+                                "color": "badge_custom_orange",
+                                "label": "Получено ТЗ",
+                                "value": "task_received"
+                              },
+                              {
+                                "color": "badge_active",
+                                "label": "Согласована смета",
+                                "value": "agreed"
+                              },
+                              {
+                                "color": "badge_accent",
+                                "label": "Пройден check-in",
+                                "value": "check_in"
+                              },
+                              {
+                                "color": "badge_canceled",
+                                "label": "Пройден check-out",
+                                "value": "check_out"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "afterTable": {
+              "type": "string",
+              "widget": {
+                "name": "info"
+              },
+              "value": "Вы уверены, что хотите добавить помещение в стоп-лист?"
+            },
+            "actions": {
+              "type": "object",
+              "widget": {
+                "name": "container",
+                "class": {
+                  "group": "form-actions p-field p-grid mrg-t-lg",
+                  "value": "p-jc-xs-end p-autolayout"
+                }
+              },
+              "properties": {
+                "confirm": {
+                  "widget": {
+                    "name": "submit-button",
+                    "options": {
+                      "label": "Подтвердить",
+                      "clientValidation": true,
+                      "dataForClientValidation": "/",
+                      "showClientValidationErrorsForElement": "form",
+                      "showClientValidationErrorMessage": true,
+                      "clientValidationErrorMessageSummary": "Ошибка",
+                      "clientValidationErrorMessageDetail": "Одно или несколько полей заполнены некорректно",
+                      "workflowAction": "stop_list_note.edit",
+                      "workflowObjectId": {
+                        "$query-params": {
+                          "name": "id"
+                        }
+                      },
+                      "dataForSubmit": {
+                        "$var": {
+                          "path": "#data"
+                        }
+                      },
+                      "showSuccessMessage": true,
+                      "successMessageSummary": "Редактирование записи стоп-листа",
+                      "successMessageDetail": "Данные записи стоп-листа успешно изменены",
+                      "urlInCaseOfSuccess": "/cabinet/stop_list_note/list",
+                      "showServerValidationErrorMessage": true,
+                      "serverValidationErrorMessageSummary": "Редактирование записи стоп-листа",
+                      "serverValidationErrorMessageDetail": "Форма содержит ошибки",
+                      "showOtherErrorMessageSummary": true,
+                      "otherErrorMessageSummary": "Редактирование записи стоп-листа",
+                      "otherErrorMessageDetail": "Непредвиденная ошибка",
+                      "reloadTable": true,
+                      "closePopup": false
+                    },
+                    "class": {
+                      "value": "mrg-r-sm"
+                    }
+                  }
+                },
+                "cancel": {
+                  "widget": {
+                    "name": "button",
+                    "options": {
+                      "label": "Отмена"
+                    },
+                    "events": {
+                      "click": {
+                        "$populate": {
+                          "path": "#selectBookingVisible",
+                          "data": false
+                        }
+                      }
+                    },
+                    "class": {
+                      "group": "form-item pdd-b-0 p-xs-6 p-md-3 p-xl-2 p-d-flex p-ai-end",
+                      "value": "button_outline "
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "selectBookingVisible": {
+      "model": "#selectBookingVisible",
+      "type": "boolean",
+      "widget": "hidden",
+      "value": false
+    },
+    "form": {
+      "type": "object",
+      "model": "#data",
+      "value": "$ref:operation-frontend:snippets/element/preload_delayed_value@@@preload.stopListNote",
+      "widget": {
+        "name": "form",
+        "options": {
+          "label": {
+            "$replace": {
+              "template": "Редактирование записи стоп-листа №{{number}}",
+              "data": {
+                "number": {
+                  "$from-context": {
+                    "path": "@preload.stopListNote.number"
+                  }
+                }
+              }
+            }
+          },
+          "visible": {
+            "$not": {
+              "data": {
+                "$subs": {
+                  "path": "#selectBookingVisible"
+                }
+              }
+            }
+          }
+        },
+        "kind": "form-popup-with-h1-no-form-collapsed-style"
+      },
+      "properties": {
+        "roomId": {
+          "type": "string",
+          "widget": {
+            "name": "dropdown",
+            "options": {
+              "label": "Помещение",
+              "optionLabel": "name",
+              "valueKey": "id",
+              "dataKey": "id",
+              "disabled": true,
+              "valueOptions": {
+                "$fetch-object": {
+                  "path": "body.data.items",
+                  "data": {
+                    "$api-data": {
+                      "id": {
+                        "$query-params": {
+                          "name": "id"
+                        }
+                      },
+                      "options": {
+                        "observe": "response"
+                      },
+                      "query": "room/get_for_dropdown"
+                    }
+                  }
+                }
+              }
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element p-xs-8 p-md-6 mrg-tb-xs"
+            }
+          }
+        },
+        "dateTimeFrom": {
+          "type": "datetime",
+          "widget": {
+            "name": "calendar",
+            "options": {
+              "dataType": "string",
+              "label": "Дата начала периода недоступности для бронирования:"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_required",
+              "value": "form-item-element p-xs-8 p-md-6 mrg-tb-xs"
+            },
+            "kind": "calendar-active-user-timezone-offset"
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$not-empty": {
+                    "data": {
+                      "$var": {
+                        "path": "."
+                      }
+                    }
+                  }
+                },
+                "message": "Поле обязательно для заполнения"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            },
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$if": {
+                    "condition": {
+                      "$not-empty": {
+                        "data": {
+                          "$var": {
+                            "path": "."
+                          }
+                        }
+                      }
+                    },
+                    "then": {
+                      ">=": {
+                        "operand1": {
+                          "$date-from": {
+                            "data": {
+                              "$var": {
+                                "path": "."
+                              }
+                            }
+                          }
+                        },
+                        "operand2": {
+                          "$datetime-now": {}
+                        }
+                      }
+                    },
+                    "else": true
+                  }
+                },
+                "message": "Указанная дата должна быть больше или равна текущей"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            }
+          ]
+        },
+        "dateTimeTo": {
+          "type": "datetime",
+          "widget": {
+            "name": "calendar",
+            "options": {
+              "dataType": "string",
+              "label": "Дата окончания периода недоступности для бронирования:"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_required",
+              "value": "form-item-element p-xs-8 p-md-6 mrg-tb-xs"
+            },
+            "kind": "calendar-active-user-timezone-offset"
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$if": {
+                    "condition": {
+                      "$not-empty": {
+                        "data": {
+                          "$var": {
+                            "path": "."
+                          }
+                        }
+                      }
+                    },
+                    "then": {
+                      ">": {
+                        "operand1": {
+                          "$date-from": {
+                            "data": {
+                              "$var": {
+                                "path": "."
+                              }
+                            }
+                          }
+                        },
+                        "operand2": {
+                          "$date-from": {
+                            "data": {
+                              "$subs": {
+                                "path": "#data.dateTimeFrom"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "else": true
+                  }
+                },
+                "message": "Указанная дата должна быть больше даты начала периода недоступности"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            },
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$not-empty": {
+                    "data": {
+                      "$var": {
+                        "path": "."
+                      }
+                    }
+                  }
+                },
+                "message": "Поле обязательно для заполнения"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            },
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$if": {
+                    "condition": {
+                      "$not-empty": {
+                        "data": {
+                          "$var": {
+                            "path": "."
+                          }
+                        }
+                      }
+                    },
+                    "then": {
+                      ">=": {
+                        "operand1": {
+                          "$date-from": {
+                            "data": {
+                              "$var": {
+                                "path": "."
+                              }
+                            }
+                          }
+                        },
+                        "operand2": {
+                          "$datetime-now": {}
+                        }
+                      }
+                    },
+                    "else": true
+                  }
+                },
+                "message": "Указанная дата и время должны быть больше текущих"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            }
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "widget": {
+            "name": "textarea",
+            "options": {
+              "label": "Причина"
+            },
+            "class": {
+              "group": "p-field p-grid p-fluid mrg-b-lg",
+              "label": "form-label form-label_required form-label_top p-col-12",
+              "value": "form-item-element p-col-12"
+            }
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$not-empty": {
+                    "data": {
+                      "$var": {
+                        "path": "."
+                      }
+                    }
+                  }
+                },
+                "message": "Поле обязательно для заполнения"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            }
+          ]
+        },
+        "actions": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "group": "form-actions p-field p-grid mrg-t-lg",
+              "value": "p-jc-xs-end p-autolayout"
+            }
+          },
+          "properties": {
+            "save": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Сохранить"
+                },
+                "class": {
+                  "value": "mrg-r-sm"
+                },
+                "events": {
+                  "click": {
+                    "$if": {
+                      "condition": {
+                        "$validate": {
+                          "path": "/"
+                        }
+                      },
+                      "then": {
+                        "$if": {
+                          "condition": {
+                            "$empty": {
+                              "data": {
+                                "$array-filter": {
+                                  "array": {
+                                    "$from-context": {
+                                      "path": "$response.body.data.items",
+                                      "data": {
+                                        "$api-data": {
+                                          "query": "booking/get_to_check",
+                                          "id": {
+                                            "$var": {
+                                              "path": "#data.roomId"
+                                            }
+                                          },
+                                          "options": {
+                                            "observe": "response"
+                                          },
+                                          "variables": {
+                                            "dateStart": {
+                                              "$var": {
+                                                "path": "#data.dateTimeFrom"
+                                              }
+                                            },
+                                            "dateEnd": {
+                                              "$var": {
+                                                "path": "#data.dateTimeTo"
+                                              }
+                                            }
+                                          },
+                                          "errors": {
+                                            "default": {
+                                              "$message": {
+                                                "severity": "error",
+                                                "summary": "Ошибка",
+                                                "detail": "При загрузке данных произошла ошибка, повторите попытку позднее"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "filter": {
+                                    "$in": {
+                                      "value": {
+                                        "$var": {
+                                          "path": "#data.roomId"
+                                        }
+                                      },
+                                      "array": {
+                                        "$array-pluck": {
+                                          "array": {
+                                            "$from-context": {
+                                              "path": "$data.rooms"
+                                            }
+                                          },
+                                          "key": "roomId"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "then": {
+                            "$waterfall": {
+                              "arrayFunctions": [
+                                {
+                                  "$http-code": {
+                                    "200": [
+                                      {
+                                        "$message": {
+                                          "severity": "success",
+                                          "summary": "Редактирование записи стоп-листа",
+                                          "detail": "Данные записи стоп-листа успешно изменены"
+                                        }
+                                      },
+                                      {
+                                        "$event-bus-publish": {
+                                          "type": "reload-table"
+                                        }
+                                      }
+                                    ],
+                                    "422": [
+                                      {
+                                        "$validate": {
+                                          "errors": {
+                                            "$from-context": {
+                                              "path": "$response.error.errors"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "client": {
+                                      "$api-workflow": {
+                                        "type": "post",
+                                        "options": {
+                                          "observe": "response"
+                                        },
+                                        "workflow": "stop_list_note",
+                                        "action": "edit",
+                                        "data": {
+                                          "$var": {
+                                            "path": "#data"
+                                          }
+                                        },
+                                        "id": {
+                                          "$query-params": {
+                                            "name": "id"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "default": [
+                                      {
+                                        "$message": {
+                                          "severity": "error",
+                                          "summary": "Редактирование записи стоп-листа",
+                                          "detail": "Непредвиденная ошибка"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                {
+                                  "$close-popup": null
+                                }
+                              ]
+                            }
+                          },
+                          "else": {
+                            "$waterfall": {
+                              "arrayFunctions": [
+                                {
+                                  "$populate": {
+                                    "path": "#selectBookingVisible",
+                                    "data": true
+                                  }
+                                },
+                                {
+                                  "$populate": {
+                                    "path": "#booking",
+                                    "data": {
+                                      "$array-map": {
+                                        "array": {
+                                          "$array-filter": {
+                                            "array": {
+                                              "$from-context": {
+                                                "path": "$response.body.data.items",
+                                                "data": {
+                                                  "$api-data": {
+                                                    "query": "booking/get_to_check",
+                                                    "id": {
+                                                      "$var": {
+                                                        "path": "#data.roomId"
+                                                      }
+                                                    },
+                                                    "options": {
+                                                      "observe": "response"
+                                                    },
+                                                    "variables": {
+                                                      "dateStart": {
+                                                        "$var": {
+                                                          "path": "#data.dateTimeFrom"
+                                                        }
+                                                      },
+                                                      "dateEnd": {
+                                                        "$var": {
+                                                          "path": "#data.dateTimeTo"
+                                                        }
+                                                      }
+                                                    },
+                                                    "errors": {
+                                                      "default": {
+                                                        "$message": {
+                                                          "severity": "error",
+                                                          "summary": "Ошибка",
+                                                          "detail": "При загрузке данных произошла ошибка, повторите попытку позднее"
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "filter": {
+                                              "$in": {
+                                                "value": {
+                                                  "$var": {
+                                                    "path": "#data.roomId"
+                                                  }
+                                                },
+                                                "array": {
+                                                  "$array-pluck": {
+                                                    "array": {
+                                                      "$from-context": {
+                                                        "path": "$data.rooms"
+                                                      }
+                                                    },
+                                                    "key": "roomId"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "map": {
+                                          "event": {
+                                            "$from-context": {
+                                              "path": "$data.event"
+                                            }
+                                          },
+                                          "bookingView": {
+                                            "$replace": {
+                                              "template": "{{start}} - {{end}}",
+                                              "data": {
+                                                "start": {
+                                                  "$formatter": {
+                                                    "format": "datetime:\"DD.MM.YYYY HH:mm\"",
+                                                    "data": {
+                                                      "$from-context": {
+                                                        "path": "$data.minDate"
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "end": {
+                                                  "$formatter": {
+                                                    "format": "datetime:\"DD.MM.YYYY HH:mm\"",
+                                                    "data": {
+                                                      "$from-context": {
+                                                        "path": "$data.maxDate"
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "status": {
+                                            "stateView": {
+                                              "$from-context": {
+                                                "path": "$data.event.state"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "cancel": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Отмена"
+                },
+                "events": {
+                  "click": {
+                    "$close-popup": null
+                  }
+                },
+                "kind": "button-btn-outline-last-style"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

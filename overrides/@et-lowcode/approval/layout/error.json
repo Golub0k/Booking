@@ -1,0 +1,53 @@
+{
+  "title": "Ошибки",
+  "description": "Используется для отображения ошибок",
+  "schema": {
+    "widget": {
+      "name": "layout",
+      "class": {
+        "value": "layout-wrapper layout-wrapper_public",
+        "layout": "layout-main_index container-private d-block p-jc-center",
+        "topbar": "topbar_private container-private p-jc-start"
+      },
+      "topbar": {
+        "type": "object",
+        "widget": {
+          "name": "container",
+          "class": {
+            "value": "p-autolayout p-jc-between p-ai-center"
+          }
+        },
+        "properties": {
+          "logo": {
+            "type": "string",
+            "value": "<img src=\"api/settings/file/LogoForPublicSite\">",
+            "widget": {
+              "name": "link",
+              "options": {
+                "displayAsHtml": true,
+                "routerLink": {
+                  "$if": {
+                    "condition": {
+                      "$not-empty": {
+                        "data": {
+                          "$active-user": {
+                            "field": "_id"
+                          }
+                        }
+                      }
+                    },
+                    "then": "/cabinet/event/list",
+                    "else": "/index/index"
+                  }
+                }
+              },
+              "class": {
+                "value": "layout-logo"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

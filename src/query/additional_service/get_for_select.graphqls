@@ -1,0 +1,46 @@
+# @title: Получить список всех дополнительных услуг
+
+query (
+  $first: Int
+  $rows: Int
+  $typeOrName: String
+  $name: String
+  $sort: [FieldSortAdditionalServiceInput]
+  $ids: [MongoID!]
+) {
+  pagination: additionalServicePagination(
+    limit: $rows
+    offset: $first
+    sort: $sort
+    filter: {
+      AND: [
+        {
+          OR: [
+            { _regexp: { field: name, filter: $typeOrName } }
+            {
+              _filterRef: {
+                serviceTypeId: { _regexp: { field: name, filter: $typeOrName } }
+              }
+            }
+          ]
+        }
+        { _operators: { state: { ne: "deleted" } } }
+        { _operators: { _id: { in: $ids } } }
+        { name: $name }
+      ]
+    }
+  ) {
+    count
+    items {
+      serviceId: _id
+      servicesType {
+        name
+      }
+      name
+      unit
+      unitPrice
+      comment
+      state
+    }
+  }
+}

@@ -1,0 +1,48 @@
+query ($id: String!, $type: EnumRequestType, $creatorId: String) {
+  items: requestGet(
+    filter: { bookingId: $id, state: "new", type: $type, creatorId: $creatorId }
+    sort: { field: createdAt, type: DESC }
+  ) {
+    id: _id
+    number
+    type
+    state
+    eventId
+    changeEventId
+    bookingId
+    changeBookingId
+    bookingNew {
+      name
+      seatingTypeId
+      numberOfPeople
+      comment
+      installationDates {
+        startTime
+        endTime
+      }
+      eventDates {
+        startTime
+        endTime
+      }
+      deinstallationDates {
+        startTime
+        endTime
+      }
+      partial
+      allSquare
+      file {
+        _id
+        name
+        size
+        create_date
+      }
+      discountOrMarkupFlag
+      discountOrMarkup
+      allPriceMeter
+      allPriceMeterWithDiscountOrMarkup
+      allPrice
+      allPriceWithDiscountOrMarkup
+    }
+    cancelReason
+  }
+}

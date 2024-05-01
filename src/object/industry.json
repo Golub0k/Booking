@@ -1,0 +1,14 @@
+{
+  "type": "object",
+  "title": "Отрасль",
+  "properties": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "maxLength": 255,
+      "index": true,
+      "trim": true,
+      "fieldDescription": "Наименование"
+    }
+  }
+}

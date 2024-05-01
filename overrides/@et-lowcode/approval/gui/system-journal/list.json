@@ -1,0 +1,546 @@
+{
+  "@title": "Журнал событий",
+  "type": "object",
+  "widget": {
+    "name": "container"
+  },
+  "properties": {
+    "breadcrumbs": {
+      "type": "object",
+      "widget": {
+        "name": "breadcrumb",
+        "mobileItems": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          }
+        ],
+        "items": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          },
+          {
+            "label": "Журнал событий"
+          }
+        ],
+        "class": {
+          "group": "p-xs-auto mrg-lg-b-xl mrg-b-md"
+        }
+      }
+    },
+    "header-with-button": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "options": {
+          "label": "Журнал событий"
+        },
+        "class": {
+          "group": "p-grid mrg-b-lg mrg-t-0",
+          "label": "h1 p-xs-9 p-xl-9 pdd-tb-0",
+          "value": "p-xs-3 p-xl-3 pdd-tb-0 p-jc-end p-as-end p-autolayout"
+        }
+      },
+      "properties": {
+        "filters-button-mobile": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "icon": "icon-filters",
+              "visible": {
+                "$is-between": {
+                  "value": {
+                    "$to-pixel": {
+                      "value": {
+                        "$get-window-breakpoint": {
+                          "subscriptionMode": true
+                        }
+                      }
+                    }
+                  },
+                  "upper_value": {
+                    "$to-pixel": {
+                      "value": "xl"
+                    }
+                  }
+                }
+              }
+            },
+            "events": {
+              "click": {
+                "$element-option": {
+                  "option": "visible",
+                  "path": "#modalMobileSearch",
+                  "value": true
+                }
+              }
+            },
+            "class": {
+              "value": "button_icon button_icon-shaded p-fluid w-48"
+            }
+          }
+        }
+      }
+    },
+    "table": {
+      "value": {
+        "$api-table-workflow-data": {
+          "model": "#data",
+          "query": "system-journal/list",
+          "options": {
+            "observe": "response"
+          },
+          "variables": {
+            "$graphql-event-variables": {
+              "data": {
+                "$element-event": {
+                  "event": "lazyLoad"
+                }
+              }
+            }
+          },
+          "errors": {
+            "default": "$ref:operation-frontend:snippets/element/_http_message/http-default-error-message-load"
+          }
+        }
+      },
+      "type": "array",
+      "model": "#data",
+      "widget": {
+        "name": "table-lazy",
+        "events": {
+          "lazyLoad": {
+            "$element-option": {
+              "path": "#data",
+              "option": "loading",
+              "value": true
+            }
+          }
+        },
+        "options": {
+          "emptyMessage": "Данные не найдены",
+          "responsive": false,
+          "first": 0,
+          "paginator": true,
+          "rows": 10,
+          "rowsPerPageOptions": [
+            10,
+            20,
+            50
+          ],
+          "routerOptions": [
+            "first",
+            "rows"
+          ]
+        },
+        "class": {
+          "group": "p-xxl-9 p-xs-12"
+        },
+        "subscriptions": {
+          "reload-table": {
+            "$element-event": {
+              "event": "reload",
+              "value": true
+            }
+          }
+        },
+        "kind": "table-old-data-table-default-options"
+      },
+      "items": {
+        "type": "object",
+        "properties": {
+          "createdAt": {
+            "type": "string",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "label": "Дата и время события",
+                "formatter": "datetime:\"DD.MM.YYYY HH:mm:ss\"",
+                "viewedValue": {
+                  "$from-context": {
+                    "path": "$rowData.createdAt"
+                  }
+                }
+              }
+            }
+          },
+          "type": {
+            "type": "string",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            }
+          },
+          "viewTitle": {
+            "type": "string",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            }
+          },
+          "viewPath": {
+            "type": "string",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            }
+          },
+          "user": {
+            "type": "object",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            },
+            "properties": {
+              "fullName": {
+                "type": "string",
+                "widget": "hidden"
+              },
+              "login": {
+                "type": "string",
+                "widget": "hidden"
+              }
+            }
+          },
+          "userView": {
+            "type": "object",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "label": "Пользователь"
+              }
+            },
+            "properties": {
+              "userInfo": {
+                "type": "string",
+                "widget": {
+                  "name": "html",
+                  "class": {
+                    "value": "d-block"
+                  }
+                },
+                "value": {
+                  "$replace": {
+                    "template": {
+                      "$if": {
+                        "condition": {
+                          "$not-empty": {
+                            "data": {
+                              "$from-context": {
+                                "path": "$rowData.organization"
+                              }
+                            }
+                          }
+                        },
+                        "then": "<div>{{fullName}}</div><div><b>Логин: </b>{{login}}</div><div><b>ip-адрес: </b>{{ip}}</div>",
+                        "else": "<div><b>ip-адрес: </b>{{ip}}</div>"
+                      }
+                    },
+                    "data": {
+                      "id": {
+                        "$from-context": {
+                          "path": "$rowData.organization._id"
+                        }
+                      },
+                      "fullName": {
+                        "$from-context": {
+                          "path": "$rowData.user.fullName"
+                        }
+                      },
+                      "shortName": {
+                        "$from-context": {
+                          "path": "$rowData.organization.shortName"
+                        }
+                      },
+                      "inn": {
+                        "$from-context": {
+                          "path": "$rowData.organization.inn"
+                        }
+                      },
+                      "kpp": {
+                        "$from-context": {
+                          "path": "$rowData.organization.kpp"
+                        }
+                      },
+                      "login": {
+                        "$from-context": {
+                          "path": "$rowData.user.login"
+                        }
+                      },
+                      "ip": {
+                        "$from-context": {
+                          "path": "$rowData.ip"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "eventView": {
+            "type": "object",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "label": "Событие"
+              }
+            },
+            "properties": {
+              "event": {
+                "type": "string",
+                "widget": {
+                  "name": "html",
+                  "class": {
+                    "value": "d-block"
+                  }
+                },
+                "value": {
+                  "$replace": {
+                    "template": {
+                      "$if": {
+                        "condition": {
+                          "==": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "$rowData.type"
+                              }
+                            },
+                            "operand2": "viewAction"
+                          }
+                        },
+                        "then": "<div>{{type}}</div><br><div><b>Форма: </b></div><div>{{viewTitle}}</div><div>{{viewPath}}</div>",
+                        "else": "<div>{{type}}</div>"
+                      }
+                    },
+                    "data": {
+                      "type": {
+                        "$switch": {
+                          "condition": {
+                            "$from-context": {
+                              "path": "$rowData.type"
+                            }
+                          },
+                          "default": "",
+                          "cases": [
+                            {
+                              "value": "viewAction",
+                              "action": "Открытие формы"
+                            },
+                            {
+                              "value": "workflowAction",
+                              "action": "Выполнение действия"
+                            }
+                          ]
+                        }
+                      },
+                      "viewTitle": {
+                        "$from-context": {
+                          "path": "$rowData.viewTitle"
+                        }
+                      },
+                      "viewPath": {
+                        "$from-context": {
+                          "path": "$rowData.viewPath"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "organization": {
+            "type": "object",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            },
+            "properties": {
+              "_id": {
+                "type": "string",
+                "widget": "hidden"
+              },
+              "shortName": {
+                "type": "string",
+                "widget": "hidden"
+              },
+              "inn": {
+                "type": "string",
+                "widget": "hidden"
+              },
+              "kpp": {
+                "type": "string",
+                "widget": "hidden"
+              }
+            }
+          },
+          "ip": {
+            "type": "string",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            }
+          },
+          "objectTitle": {
+            "type": "string",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            }
+          },
+          "objectType": {
+            "type": "string",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            }
+          },
+          "objectId": {
+            "type": "string",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            }
+          },
+          "workflow": {
+            "type": "string",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            }
+          },
+          "workflowTitle": {
+            "type": "string",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            }
+          },
+          "action": {
+            "type": "string",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            }
+          },
+          "actionTitle": {
+            "type": "string",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            }
+          },
+          "eventInfoContainer": {
+            "type": "object",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "label": "Параметры события"
+              }
+            },
+            "properties": {
+              "eventInfo": {
+                "type": "string",
+                "widget": {
+                  "name": "html",
+                  "class": {
+                    "value": "d-block"
+                  }
+                },
+                "value": {
+                  "$replace": {
+                    "template": "<div><b>Действие: </b></div><div>{{actionTitle}}</div><div>{{actionCode}}</div><br><div><b>Объект: </b></div><div>{{objectTitle}}</div><div>{{objectType}}</div><div>{{objectId}}</div>",
+                    "data": {
+                      "actionCode": {
+                        "$from-context": {
+                          "path": "$rowData.action"
+                        }
+                      },
+                      "actionTitle": {
+                        "$from-context": {
+                          "path": "$rowData.actionTitle"
+                        }
+                      },
+                      "workflowCode": {
+                        "$from-context": {
+                          "path": "$rowData.workflow"
+                        }
+                      },
+                      "workflowTitle": {
+                        "$from-context": {
+                          "path": "$rowData.workflowTitle"
+                        }
+                      },
+                      "objectTitle": {
+                        "$from-context": {
+                          "path": "$rowData.objectTitle"
+                        }
+                      },
+                      "objectType": {
+                        "$from-context": {
+                          "path": "$rowData.objectType"
+                        }
+                      },
+                      "objectId": {
+                        "$from-context": {
+                          "path": "$rowData.objectId"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "desktop-search": "$ref:fieldset:system-journal/desktop_search",
+    "mobile-search": {
+      "type": "object",
+      "model": "#modalMobileSearch",
+      "widget": {
+        "name": "dialog",
+        "options": {
+          "visible": false,
+          "closable": true
+        },
+        "class": {
+          "dialog": "no-radius filters-block-mobile",
+          "panel": "dialog-fixed-width"
+        }
+      },
+      "properties": {
+        "content": "$ref:fieldset:system-journal/mobile_search"
+      }
+    }
+  }
+}

@@ -1,0 +1,137 @@
+{
+  "@title": "Подтверждение возврата помещения из архива",
+  "@preload": {
+    "room": {
+      "$from-context": {
+        "path": "$response.body.data.object.0",
+        "data": {
+          "$api-data": {
+            "query": "room/get_name",
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            },
+            "options": {
+              "observe": "response"
+            },
+            "variables": {
+              "id": {
+                "$query-params": {
+                  "name": "id"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "widget": {
+    "name": "container"
+  },
+  "model": "/",
+  "properties": {
+    "form": {
+      "type": "object",
+      "model": "#data",
+      "widget": {
+        "name": "form",
+        "options": {
+          "label": "Подтверждение возврата из архива"
+        },
+        "kind": "form-popup-with-h1-style"
+      },
+      "properties": {
+        "text": {
+          "type": "string",
+          "widget": {
+            "name": "html",
+            "class": {
+              "value": "mrg-b-lg"
+            }
+          },
+          "value": {
+            "$replace": {
+              "template": "<p>Помещение \"{{0}}\" будет возвращено из архива и станет доступно для бронирования. Продолжить?</p>",
+              "data": [
+                {
+                  "$from-context": {
+                    "path": "@preload.room.name"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "actions": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "group": "form-actions p-field p-grid mrg-t-lg",
+              "value": "p-jc-xs-end p-autolayout"
+            }
+          },
+          "properties": {
+            "archive": {
+              "widget": {
+                "name": "submit-button",
+                "options": {
+                  "label": "Вернуть",
+                  "clientValidation": true,
+                  "dataForClientValidation": "/",
+                  "showClientValidationErrorsForElement": "form",
+                  "showClientValidationErrorMessage": true,
+                  "clientValidationErrorMessageSummary": "Ошибка",
+                  "clientValidationErrorMessageDetail": "Одно или несколько полей заполнены некорректно",
+                  "workflowAction": "room.extract_from_archive",
+                  "workflowObjectId": {
+                    "$query-params": {
+                      "name": "id"
+                    }
+                  },
+                  "dataForSubmit": {
+                    "$var": {
+                      "path": "#data"
+                    }
+                  },
+                  "showSuccessMessage": true,
+                  "successMessageSummary": "Возврат помещения из архива",
+                  "successMessageDetail": "Помещение успешно возвращено из архива",
+                  "urlInCaseOfSuccess": "/cabinet/room/list",
+                  "showServerValidationErrorMessage": true,
+                  "serverValidationErrorMessageSummary": "Возврат помещения из архива",
+                  "serverValidationErrorMessageDetail": "Форма содержит ошибки",
+                  "showOtherErrorMessageSummary": true,
+                  "otherErrorMessageSummary": "Возврат помещения из архива",
+                  "otherErrorMessageDetail": "Непредвиденная ошибка",
+                  "reloadTable": true,
+                  "closePopup": false
+                },
+                "class": {
+                  "value": "mrg-r-sm"
+                }
+              }
+            },
+            "cancel": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Отмена"
+                },
+                "events": {
+                  "click": {
+                    "$close-popup": null
+                  }
+                },
+                "kind": "button-btn-outline-last-style"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

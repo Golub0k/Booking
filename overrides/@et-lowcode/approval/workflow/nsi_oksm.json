@@ -1,0 +1,35 @@
+{
+  "version": 2,
+  "objectType": "nsi_oksm",
+  "context": "nsi_oksm/context",
+  "description": "Жизненный цикл страны",
+  "rbac": {
+    "visible": false,
+    "title": "Справочник стран"
+  },
+  "actions": {
+    "globalActions": {
+      "list": {
+        "title": "Просмотреть реестр",
+        "description": "Просмотреть реестр стран",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": false,
+            "title": "Просмотреть реестр стран"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "nsi_oksm/list"
+          },
+          "availableQueriesInViews": [
+            "nsi_oksm/list",
+            "nsi_update_dates/get"
+          ]
+        }
+      }
+    }
+  },
+  "states": {}
+}

@@ -1,0 +1,12 @@
+{
+  "meta": {
+    "title": "Выражение close-modal-furniture"
+  },
+  "schema": {
+    "$element-option": {
+      "option": "visible",
+      "path": "#modalSelectFurniture",
+      "value": false
+    }
+  }
+}

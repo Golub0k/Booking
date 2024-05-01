@@ -1,0 +1,7 @@
+# @title: Получить контекст для объекта "Вид мероприятий"
+
+query ($id: [MongoID!]) {
+  items: eventTypeGet(_id: $id) {
+    id: _id
+  }
+}

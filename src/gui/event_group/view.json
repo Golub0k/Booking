@@ -1,0 +1,611 @@
+{
+  "@title": "Просмотр информации о группе мероприятий",
+  "@preload": {
+    "$from-context": {
+      "path": "$response.body.data.items.0",
+      "data": {
+        "$api-data": {
+          "id": {
+            "$query-params": {
+              "name": "id"
+            }
+          },
+          "options": {
+            "observe": "response"
+          },
+          "variables": {
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            }
+          },
+          "query": "event_group/get"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "model": "#data",
+  "widget": {
+    "name": "form"
+  },
+  "properties": {
+    "breadcrumbs": {
+      "type": "object",
+      "model": false,
+      "widget": {
+        "name": "breadcrumb",
+        "mobileItems": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          }
+        ],
+        "items": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          },
+          {
+            "label": "Реестр групп мероприятий",
+            "routerLink": "/cabinet/event_group/list"
+          },
+          {
+            "label": {
+              "$from-context": {
+                "path": "@preload.name"
+              }
+            }
+          }
+        ],
+        "class": {
+          "group": "p-xs-auto mrg-lg-b-xl mrg-b-md"
+        }
+      }
+    },
+    "tabs-content-container": {
+      "type": "object",
+      "model": false,
+      "widget": {
+        "name": "container",
+        "class": {
+          "value": "tabview-with-actions-menu"
+        }
+      },
+      "properties": {
+        "header": {
+          "type": "object",
+          "model": false,
+          "widget": {
+            "name": "container",
+            "options": {
+              "label": {
+                "$from-context": {
+                  "path": "@preload.name"
+                }
+              }
+            },
+            "class": {
+              "group": "header-badge-container mrg-b-lg",
+              "label": "h1 width-fit-content",
+              "value": "width-fit-content"
+            }
+          }
+        },
+        "object": {
+          "type": "object",
+          "model": false,
+          "widget": {
+            "name": "container"
+          },
+          "properties": {
+            "mainInfo": {
+              "type": "object",
+              "model": false,
+              "widget": {
+                "name": "container",
+                "options": {
+                  "emptyText": "Не указано",
+                  "label": "Общие данные"
+                },
+                "class": {
+                  "group": "form-section",
+                  "label": "h2 mrg-b-xl"
+                }
+              },
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "value": {
+                    "$from-context": {
+                      "path": "@preload.name"
+                    }
+                  },
+                  "widget": {
+                    "name": "info",
+                    "options": {
+                      "emptyText": "Не указано",
+                      "label": "Наименование группы"
+                    },
+                    "class": {
+                      "group": "form-item p-field p-grid p-fluid",
+                      "label": "form-label p-xs-12 p-md-4 p-xl-3",
+                      "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+                    }
+                  }
+                },
+                "comment": {
+                  "type": "string",
+                  "value": {
+                    "$from-context": {
+                      "path": "@preload.comment"
+                    }
+                  },
+                  "widget": {
+                    "name": "info",
+                    "options": {
+                      "emptyText": "Не указано",
+                      "label": "Комментарий"
+                    },
+                    "class": {
+                      "group": "form-item p-field p-grid p-fluid",
+                      "label": "form-label p-xs-12 p-md-4 p-xl-3",
+                      "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+                    }
+                  }
+                }
+              }
+            },
+            "eventList": {
+              "type": "object",
+              "widget": {
+                "name": "container"
+              },
+              "properties": {
+                "header": {
+                  "type": "object",
+                  "model": false,
+                  "widget": {
+                    "name": "container",
+                    "options": {
+                      "label": "Мероприятия"
+                    },
+                    "class": {
+                      "group": "flex-row p-grid mrg-b-lg mrg-t-0",
+                      "label": "h2  p-xs-12 p-md-4 p-xl-3 pdd-tb-0 mrg-md-b-md",
+                      "value": "p-xs-12 p-md-8 p-xl-9 pdd-tb-0"
+                    }
+                  }
+                },
+                "table": {
+                  "type": "array",
+                  "value": {
+                    "$fetch-object": {
+                      "path": "data.pagination.items",
+                      "data": {
+                        "$api-data": {
+                          "query": "event/list_for_add_group",
+                          "id": {
+                            "$query-params": {
+                              "name": "id"
+                            }
+                          },
+                          "variables": {
+                            "eventId": {
+                              "$if": {
+                                "condition": {
+                                  "$not-empty": {
+                                    "data": {
+                                      "$from-context": {
+                                        "path": "@preload.events"
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "$array-pluck": {
+                                    "array": {
+                                      "$from-context": {
+                                        "path": "@preload.events"
+                                      }
+                                    },
+                                    "key": "eventId"
+                                  }
+                                },
+                                "else": {
+                                  "$query-params": {
+                                    "name": "id"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "widget": {
+                    "name": "table",
+                    "options": {
+                      "emptyMessage": "Данные не найдены",
+                      "responsive": false,
+                      "first": 0,
+                      "lazy": true,
+                      "paginator": true,
+                      "rows": 10,
+                      "rowsPerPageOptions": [
+                        10,
+                        20,
+                        50
+                      ],
+                      "routerOptions": [
+                        "first",
+                        "rows"
+                      ]
+                    },
+                    "class": {
+                      "group": "p-xxl-8 p-xs-12"
+                    },
+                    "events": {
+                      "lazyLoad": {
+                        "$element-option": {
+                          "path": "#data",
+                          "option": "loading",
+                          "value": true
+                        }
+                      }
+                    }
+                  },
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "eventId": {
+                        "type": "string",
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "visible": false
+                          }
+                        }
+                      },
+                      "number": {
+                        "type": "string",
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "label": "Номер"
+                          },
+                          "class": {
+                            "header": "column_actions",
+                            "cell": "column_actions"
+                          }
+                        }
+                      },
+                      "name": {
+                        "type": "string",
+                        "widget": {
+                          "name": "hidden",
+                          "options": {
+                            "visible": false
+                          }
+                        }
+                      },
+                      "nameView": {
+                        "type": "object",
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "label": "Наименование мероприятия"
+                          }
+                        },
+                        "properties": {
+                          "nameText": {
+                            "type": "string",
+                            "widget": {
+                              "name": "info",
+                              "options": {
+                                "visible": {
+                                  "$not": {
+                                    "data": {
+                                      "$active-user-has-permission": {
+                                        "permission": "event.view"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "value": {
+                              "$from-context": {
+                                "path": "$rowData.name"
+                              }
+                            }
+                          },
+                          "nameLink": {
+                            "type": "string",
+                            "widget": {
+                              "name": "link",
+                              "options": {
+                                "target": "_blank",
+                                "routerLink": "/cabinet/event/view",
+                                "queryParams": {
+                                  "id": {
+                                    "$from-context": {
+                                      "path": "$rowData.eventId"
+                                    }
+                                  }
+                                },
+                                "visible": {
+                                  "$active-user-has-permission": {
+                                    "permission": "event.view"
+                                  }
+                                }
+                              }
+                            },
+                            "value": {
+                              "$from-context": {
+                                "path": "$rowData.name"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "organizers": {
+                        "type": "array",
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "label": "Организатор"
+                          }
+                        },
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "partner": {
+                              "type": "object",
+                              "properties": {
+                                "partnerId": {
+                                  "type": "string",
+                                  "widget": "hidden"
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "widget": "hidden"
+                                },
+                                "nameText": {
+                                  "type": "string",
+                                  "widget": {
+                                    "name": "info",
+                                    "options": {
+                                      "visible": {
+                                        "$not": {
+                                          "data": {
+                                            "$active-user-has-permission": {
+                                              "permission": "partner.view"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "value": {
+                                    "$subs": {
+                                      "path": "#data.eventList.table[].organizers[].partner.name"
+                                    }
+                                  }
+                                },
+                                "nameLink": {
+                                  "type": "string",
+                                  "widget": {
+                                    "name": "html",
+                                    "options": {
+                                      "visible": {
+                                        "$active-user-has-permission": {
+                                          "permission": "partner.view"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "value": {
+                                    "$replace": {
+                                      "template": "<a href=\"/cabinet/partner/view/?id={{id}}\" target=\"_blank\">{{linkName}}</a>",
+                                      "data": {
+                                        "id": {
+                                          "$subs": {
+                                            "path": "#data.eventList.table[].organizers[].partner.partnerId"
+                                          }
+                                        },
+                                        "linkName": {
+                                          "$subs": {
+                                            "path": "#data.eventList.table[].organizers[].partner.name"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "widget": {
+                                "name": "fieldset"
+                              }
+                            }
+                          },
+                          "widget": {
+                            "name": "fieldset"
+                          }
+                        }
+                      },
+                      "state": {
+                        "type": "string",
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "visible": false
+                          }
+                        }
+                      },
+                      "statusName": {
+                        "type": "object",
+                        "widget": {
+                          "name": "table-column",
+                          "options": {
+                            "label": "Статус"
+                          }
+                        },
+                        "properties": {
+                          "state": {
+                            "type": "string",
+                            "value": {
+                              "$from-context": {
+                                "path": "$rowData.state"
+                              }
+                            },
+                            "widget": {
+                              "name": "badge",
+                              "options": {
+                                "displayMapping": [
+                                  {
+                                    "color": "badge_default",
+                                    "label": "Черновик",
+                                    "value": "draft"
+                                  },
+                                  {
+                                    "color": "badge_default",
+                                    "label": "Предварительная бронь",
+                                    "value": "pre_booking"
+                                  },
+                                  {
+                                    "color": "badge_warning",
+                                    "label": "Получен запрос",
+                                    "value": "requested"
+                                  },
+                                  {
+                                    "color": "badge_custom_orange",
+                                    "label": "Получено ТЗ",
+                                    "value": "task_received"
+                                  },
+                                  {
+                                    "color": "badge_active",
+                                    "label": "Согласована смета",
+                                    "value": "agreed"
+                                  },
+                                  {
+                                    "color": "badge_accent",
+                                    "label": "Пройден check-in",
+                                    "value": "check_in"
+                                  },
+                                  {
+                                    "color": "badge_canceled",
+                                    "label": "Пройден check-out",
+                                    "value": "check_out"
+                                  },
+                                  {
+                                    "color": "badge_error",
+                                    "label": "Отменено",
+                                    "value": "canceled"
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actions-button-menu": {
+          "type": "string",
+          "widget": {
+            "name": "actions-menu",
+            "options": {
+              "labelKey": "title"
+            },
+            "class": {
+              "group": "actions-button-menu-widget"
+            },
+            "items": {
+              "$array-push": {
+                "array": {
+                  "$from-context": {
+                    "path": "$response.body.0",
+                    "data": {
+                      "$http-code": {
+                        "200": {},
+                        "422": [
+                          {
+                            "$validate": {
+                              "errors": {
+                                "$from-context": {
+                                  "path": "$response.error.errors"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "client": {
+                          "$api-workflow-actions": {
+                            "options": {
+                              "observe": "response"
+                            },
+                            "type": "get",
+                            "id": {
+                              "$query-params": {
+                                "name": "id"
+                              }
+                            }
+                          }
+                        },
+                        "finalize": {
+                          "$waterfall": {
+                            "arrayFunctions": [
+                              {
+                                "$element-option": {
+                                  "option": "disabled",
+                                  "value": false
+                                }
+                              },
+                              {
+                                "$element-option": {
+                                  "option": "loading",
+                                  "value": false
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "default": [
+                          {
+                            "$message": {
+                              "severity": "error",
+                              "summary": "Действие не выполнено",
+                              "detail": "Непредвиденная ошибка"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "data": {
+                  "title": "К реестру групп",
+                  "visible": {
+                    "$active-user-has-permission": {
+                      "permission": "event_group.list"
+                    }
+                  },
+                  "hidden": false,
+                  "routerLink": "/cabinet/event_group/list"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

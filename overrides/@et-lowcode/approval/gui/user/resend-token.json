@@ -1,0 +1,141 @@
+{
+  "@title": "Отправить повторно email для подтверждения учетной записи пользователя",
+  "@preload": {
+    "user": {
+      "$from-context": {
+        "path": "$response.body.data.user",
+        "data": {
+          "$http-code": {
+            "client": {
+              "$api-data": {
+                "query": "user/get_full_name",
+                "id": {
+                  "$query-params": {
+                    "name": "id"
+                  }
+                },
+                "options": {
+                  "observe": "response"
+                },
+                "variables": {
+                  "id": {
+                    "$query-params": {
+                      "name": "id"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "widget": {
+    "name": "container"
+  },
+  "model": "/",
+  "properties": {
+    "form": {
+      "type": "object",
+      "model": "#data",
+      "widget": {
+        "name": "form",
+        "options": {
+          "label": "Повторная отправка e-mail для подтверждения учетной записи пользователя"
+        },
+        "kind": "form-popup-with-h1-style"
+      },
+      "properties": {
+        "text": {
+          "type": "string",
+          "widget": {
+            "name": "html"
+          },
+          "value": {
+            "$replace": {
+              "template": "<p>Вы действительно хотите повторно отправить e-mail с ключом подтверждения пользователю {{0}}?</p>",
+              "data": [
+                {
+                  "$from-context": {
+                    "path": "@preload.user.fullName"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "actions": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "group": "form-actions p-field p-grid mrg-t-lg",
+              "value": "p-jc-xs-end p-autolayout"
+            }
+          },
+          "properties": {
+            "save": {
+              "widget": {
+                "name": "submit-button",
+                "options": {
+                  "label": "Отправить",
+                  "clientValidation": true,
+                  "dataForClientValidation": "/",
+                  "showClientValidationErrorsForElement": "form",
+                  "showClientValidationErrorMessage": true,
+                  "clientValidationErrorMessageSummary": "Ошибка",
+                  "clientValidationErrorMessageDetail": "Одно или несколько полей заполнены некорректно",
+                  "workflowAction": "user.resend-token",
+                  "workflowObjectId": {
+                    "$query-params": {
+                      "name": "id"
+                    }
+                  },
+                  "dataForSubmit": {
+                    "$var": {
+                      "path": "#data"
+                    }
+                  },
+                  "showSuccessMessage": true,
+                  "successMessageSummary": "Повторная отправка ключа подтверждения",
+                  "successMessageDetail": "На почту пользователя отправлено письмо с ссылкой для подтверждения учетной записи",
+                  "urlInCaseOfSuccess": "/cabinet/user/list",
+                  "showServerValidationErrorMessage": true,
+                  "serverValidationErrorMessageSummary": "Повторная отправка ключа подтверждения",
+                  "serverValidationErrorMessageDetail": "Форма содержит ошибки",
+                  "showOtherErrorMessageSummary": true,
+                  "otherErrorMessageSummary": "Повторная отправка ключа подтверждения",
+                  "otherErrorMessageDetail": "Непредвиденная ошибка",
+                  "reloadTable": true,
+                  "closePopup": false
+                },
+                "class": {
+                  "value": "mrg-r-sm"
+                }
+              }
+            },
+            "cancel": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Отмена"
+                },
+                "events": {
+                  "click": {
+                    "$go": {
+                      "workflow": "user",
+                      "action": "list"
+                    }
+                  }
+                },
+                "kind": "button-btn-outline-last-style"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

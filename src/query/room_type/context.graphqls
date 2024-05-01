@@ -1,0 +1,9 @@
+# @title: Получить контекст для объекта "Тип помещения"
+
+query($id: [MongoID!]) {
+  items: roomTypeGet(_id: $id)
+  {
+    id: _id
+    state
+  }
+}

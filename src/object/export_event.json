@@ -1,0 +1,70 @@
+{
+  "type": "object",
+  "title": "Сведения об экспортируемых данных export_event",
+  "properties": {
+    "templateHash": {
+      "type": "string",
+      "fieldDescription": "Хеш шаблона отчета (template), используемого для экспорта",
+      "required": true
+    },
+    "dataHash": {
+      "type": "string",
+      "fieldDescription": "Хеш данных, используемых для экспорта",
+      "required": true
+    },
+    "serviceVersion": {
+      "type": "string",
+      "fieldDescription": "Версия сервиса, на которой был собран отчет",
+      "required": true
+    },
+    "type": {
+      "type": "string",
+      "fieldDescription": "Тип отчета (csv,xlsx)",
+      "required": true
+    },
+    "documentName": {
+      "type": "string",
+      "fieldDescription": "Имя файла отчета",
+      "required": true
+    },
+    "error": {
+      "fieldDescription": "Ошибка при генерации отчета",
+      "message": {
+        "type": "string",
+        "fieldDescription": "Текст ошибки",
+        "required": true
+      },
+      "stack": {
+        "type": "string",
+        "fieldDescription": "Техническое описание ошибки",
+        "required": true
+      }
+    },
+    "file": {
+      "type": "file",
+      "fieldDescription": "Файл отчета",
+      "required": false
+    },
+    "dataFileId": {
+      "type": "string",
+      "fieldDescription": "Id json-файла в s3 c данными отчета",
+      "required": false
+    },
+    "userId": {
+      "type": "string",
+      "fieldDescription": "Пользователь создавший отчет",
+      "required": false,
+      "ref": "User",
+      "refAlias": "user",
+      "refField": "_id"
+    },
+    "reportFields": {
+      "fieldDescription": "Объект с custom полями для коллекции export_event",
+      "reportType": {
+        "type": "string",
+        "fieldDescription": "Тип отчета",
+        "required": true
+      }
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "meta": {
+    "title": "Выражение phone_view"
+  },
+  "schema": {
+    "$if": {
+      "condition": {
+        "$not-empty": {
+          "data": {
+            "$subs": {
+              "path": "@@model.num"
+            }
+          }
+        }
+      },
+      "then": {
+        "$replace": {
+          "template": "{{code}} {{num}}{{extCode}}",
+          "data": {
+            "code": {
+              "$subs": {
+                "path": "@@model.prefix"
+              }
+            },
+            "num": {
+              "$subs": {
+                "path": "@@model.num"
+              }
+            },
+            "extCode": {
+              "$if": {
+                "condition": {
+                  "$not-empty": {
+                    "data": {
+                      "$subs": {
+                        "path": "@@model.ext"
+                      }
+                    }
+                  }
+                },
+                "then": {
+                  "$replace": {
+                    "template": " доб. {{ext}}",
+                    "data": {
+                      "ext": {
+                        "$var": {
+                          "path": "@@model.ext"
+                        }
+                      }
+                    }
+                  }
+                },
+                "else": ""
+              }
+            }
+          }
+        }
+      },
+      "else": "Не указано"
+    }
+  }
+}

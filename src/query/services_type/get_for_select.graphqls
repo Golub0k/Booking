@@ -1,0 +1,8 @@
+# @title: Получить для списка выбора данные экземпляров объекта "Тип услуг"
+
+query {
+  items: servicesTypeGet(filter: { _operators: { state: { ne: "deleted" } } }) {
+    id: _id
+    name
+  }
+}

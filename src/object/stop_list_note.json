@@ -1,0 +1,38 @@
+{
+  "type": "object",
+  "title": "Запись стоп-листа",
+  "properties": {
+    "roomId": {
+      "type": "string",
+      "required": true,
+      "index": true,
+      "fieldDescription": "Помещение, занесенное в стоп-лист",
+      "ref": "Room",
+      "refAlias": "room"
+    },
+    "number": {
+      "type": "string",
+      "unique": true,
+      "index": true,
+      "fieldDescription": "Номер записи стоп-листа"
+    },
+    "dateTimeFrom": {
+      "type": "datetime",
+      "fieldDescription": "Дата начала блокировки помещения",
+      "index": true,
+      "required": true
+    },
+    "dateTimeTo": {
+      "type": "datetime",
+      "fieldDescription": "Дата окончания блокировки помещения",
+      "index": true,
+      "required": true
+    },
+    "reason": {
+      "type": "string",
+      "trim": true,
+      "fieldDescription": "Причина занесения помещения в стоп-лист",
+      "required": true
+    }
+  }
+}

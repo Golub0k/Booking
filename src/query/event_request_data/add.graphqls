@@ -1,0 +1,7 @@
+# @title: Создать экземпляр объекта "Мероприятие"
+
+mutation ($data: CreateOneEventRequestDataInput!) {
+  object: eventRequestDataCreateOne(record: $data) {
+    id: _id
+  }
+}

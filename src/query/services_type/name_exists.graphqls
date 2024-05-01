@@ -1,0 +1,13 @@
+# @title: Кол-во экземпляров объекта "Тип услуг" с заданным наименование
+
+query ($name: String!, $except: MongoID) {
+  count: servicesTypeCount(
+    filter: {
+      AND: [
+        { _operators: { _id: { ne: $except } } }
+        { _operators: { state: { ne: "deleted" } } }
+        { name: $name }
+      ]
+    }
+  )
+}

@@ -1,0 +1,7 @@
+# @title: Создать экземпляры объекта "Дополнительная услуга"
+
+mutation($data: [CreateAdditionalServiceInput!]!) {
+  object: additionalServiceCreate(records: $data) {
+    id: recordIds
+  }
+}

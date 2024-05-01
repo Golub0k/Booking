@@ -1,0 +1,411 @@
+{
+  "@title": "Отклонение заявки",
+  "@preload": {
+    "request": {
+      "$from-context": {
+        "path": "$response.body.data.items.0",
+        "data": {
+          "$api-data": {
+            "query": "request/get_name",
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            },
+            "options": {
+              "observe": "response"
+            },
+            "variables": {
+              "id": {
+                "$query-params": {
+                  "name": "id"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "widget": {
+    "name": "container"
+  },
+  "model": "/",
+  "properties": {
+    "form": {
+      "type": "object",
+      "model": "#data",
+      "widget": {
+        "name": "form",
+        "options": {
+          "label": "Отклонение заявки"
+        },
+        "kind": "form-popup-with-h1-style"
+      },
+      "properties": {
+        "text": {
+          "type": "string",
+          "model": false,
+          "widget": {
+            "name": "html",
+            "class": {
+              "value": "mrg-b-lg"
+            }
+          },
+          "value": {
+            "$replace": {
+              "template": "<p>Вы действительно хотите отклонить заявку №{{number}} на {{type}} \"{{name}}\"?</p>",
+              "data": {
+                "number": {
+                  "$from-context": {
+                    "path": "@preload.request.number"
+                  }
+                },
+                "type": {
+                  "$switch": {
+                    "condition": {
+                      "$from-context": {
+                        "path": "@preload.request.type"
+                      }
+                    },
+                    "default": "",
+                    "cases": [
+                      {
+                        "value": "cancel",
+                        "action": "отмену мероприятия"
+                      },
+                      {
+                        "value": "edit_event",
+                        "action": "изменение мероприятия"
+                      },
+                      {
+                        "value": "edit_cost",
+                        "action": "изменение стоимости мероприятия"
+                      },
+                      {
+                        "value": "edit_booking",
+                        "action": "изменение брони помещения"
+                      },
+                      {
+                        "value": "edit_booking_cost",
+                        "action": "изменение стоимости брони помещения"
+                      },
+                      {
+                        "value": "edit_facilities",
+                        "action": "изменение брони оснащения"
+                      },
+                      {
+                        "value": "edit_facilities_cost",
+                        "action": "изменение стоимости брони оснащения"
+                      }
+                    ]
+                  }
+                },
+                "name": {
+                  "$switch": {
+                    "condition": {
+                      "$from-context": {
+                        "path": "@preload.request.type"
+                      }
+                    },
+                    "default": "",
+                    "cases": [
+                      {
+                        "value": "cancel",
+                        "action": {
+                          "$from-context": {
+                            "path": "@preload.request.eventMain.name"
+                          }
+                        }
+                      },
+                      {
+                        "value": "edit_event",
+                        "action": {
+                          "$from-context": {
+                            "path": "@preload.request.eventMain.name"
+                          }
+                        }
+                      },
+                      {
+                        "value": "edit_cost",
+                        "action": {
+                          "$from-context": {
+                            "path": "@preload.request.eventMain.name"
+                          }
+                        }
+                      },
+                      {
+                        "value": "edit_booking",
+                        "action": {
+                          "$from-context": {
+                            "path": "@preload.request.bookingMain.name"
+                          }
+                        }
+                      },
+                      {
+                        "value": "edit_booking_cost",
+                        "action": {
+                          "$from-context": {
+                            "path": "@preload.request.bookingMain.name"
+                          }
+                        }
+                      },
+                      {
+                        "value": "edit_facilities",
+                        "action": {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$from-context": {
+                                    "path": "@preload.request.additionalFacilitiesMain.additionalService.name"
+                                  }
+                                }
+                              }
+                            },
+                            "then": {
+                              "$from-context": {
+                                "path": "@preload.request.additionalFacilitiesMain.additionalService.name"
+                              }
+                            },
+                            "else": {
+                              "$if": {
+                                "condition": {
+                                  "$not-empty": {
+                                    "data": {
+                                      "$from-context": {
+                                        "path": "@preload.request.additionalFacilitiesMain.furniture.name"
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "$from-context": {
+                                    "path": "@preload.request.additionalFacilitiesMain.furniture.name"
+                                  }
+                                },
+                                "else": {
+                                  "$from-context": {
+                                    "path": "@preload.request.additionalFacilitiesMain.equipment.name"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "value": "edit_facilities_cost",
+                        "action": {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$from-context": {
+                                    "path": "@preload.request.additionalFacilitiesMain.additionalService.name"
+                                  }
+                                }
+                              }
+                            },
+                            "then": {
+                              "$from-context": {
+                                "path": "@preload.request.additionalFacilitiesMain.additionalService.name"
+                              }
+                            },
+                            "else": {
+                              "$if": {
+                                "condition": {
+                                  "$not-empty": {
+                                    "data": {
+                                      "$from-context": {
+                                        "path": "@preload.request.additionalFacilitiesMain.furniture.name"
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "$from-context": {
+                                    "path": "@preload.request.additionalFacilitiesMain.furniture.name"
+                                  }
+                                },
+                                "else": {
+                                  "$from-context": {
+                                    "path": "@preload.request.additionalFacilitiesMain.equipment.name"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "reason": {
+          "type": "string",
+          "widget": {
+            "name": "textarea",
+            "options": {
+              "label": "Причина отклонения"
+            },
+            "class": {
+              "group": "form-item p-field p-grid p-fluid",
+              "label": "form-label_required form-label p-xs-12 p-md-4 p-xl-3",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$not-empty": {
+                    "data": {
+                      "$var": {
+                        "path": "."
+                      }
+                    }
+                  }
+                },
+                "message": "Обязательно для заполнения"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            }
+          ]
+        },
+        "actions": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "group": "form-actions p-field p-grid mrg-t-lg",
+              "value": "p-jc-xl-end p-autolayout"
+            }
+          },
+          "properties": {
+            "save": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Отклонить"
+                },
+                "events": {
+                  "click": {
+                    "$if": {
+                      "condition": {
+                        "$validate": {
+                          "path": "/"
+                        }
+                      },
+                      "then": {
+                        "$waterfall": {
+                          "arrayFunctions": [
+                            "$ref:operation-frontend:snippets/element/_loading/onclick-loading-enable",
+                            {
+                              "$http-code": {
+                                "200": [
+                                  {
+                                    "$event-bus-publish": {
+                                      "type": "reload-table"
+                                    }
+                                  },
+                                  {
+                                    "$navigate": {
+                                      "commands": [
+                                        "/cabinet/request/list"
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "$message": {
+                                      "severity": "success",
+                                      "summary": "Отклонение заявки",
+                                      "detail": "Заявка успешно отклонена"
+                                    }
+                                  }
+                                ],
+                                "422": [
+                                  "$ref:operation-frontend:snippets/element/_loading/onclick-loading-disable",
+                                  {
+                                    "$validate": {
+                                      "errors": {
+                                        "$from-context": {
+                                          "path": "$response.error.errors"
+                                        }
+                                      }
+                                    }
+                                  }
+                                ],
+                                "client": {
+                                  "$api-workflow": {
+                                    "type": "post",
+                                    "options": {
+                                      "observe": "response"
+                                    },
+                                    "workflow": "request",
+                                    "action": "reject",
+                                    "id": {
+                                      "$query-params": {
+                                        "name": "id"
+                                      }
+                                    },
+                                    "data": {
+                                      "$var": {
+                                        "path": "#data"
+                                      }
+                                    }
+                                  }
+                                },
+                                "default": [
+                                  "$ref:operation-frontend:snippets/element/_loading/onclick-loading-disable",
+                                  {
+                                    "$message": {
+                                      "severity": "error",
+                                      "summary": "Отклонение заявки",
+                                      "detail": "Непредвиденная ошибка"
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "else": {
+                        "$form-control-mark": {
+                          "key": "form"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "cancel": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Отмена"
+                },
+                "events": {
+                  "click": {
+                    "$close-popup": null
+                  }
+                },
+                "kind": "button-btn-outline-last-style"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

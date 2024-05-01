@@ -1,0 +1,124 @@
+{
+  "@title": "Подтверждение возврата оборудования из архива",
+  "@preload": {
+    "$from-context": {
+      "path": "$response.body.data.object.0",
+      "data": {
+        "$api-data": {
+          "id": {
+            "$query-params": {
+              "name": "id"
+            }
+          },
+          "options": {
+            "observe": "response"
+          },
+          "variables": {
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            }
+          },
+          "query": "equipment/get_name"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "model": "#data",
+  "widget": {
+    "name": "container",
+    "options": {
+      "label": "Подтверждение возврата из архива"
+    },
+    "class": {
+      "group": "popup",
+      "label": "h1 mrg-b-lg",
+      "value": "form-group_popup-collapse"
+    }
+  },
+  "properties": {
+    "object": {
+      "type": "string",
+      "widget": {
+        "name": "info",
+        "options": {
+          "viewedValue": {
+            "$replace": {
+              "template": "Оборудование \"{{title}}\" будет возвращено из архива и станет доступно для бронирования. Продолжить?",
+              "data": {
+                "title": {
+                  "$from-context": {
+                    "path": "@preload.name"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "form-actions p-field p-grid mrg-t-lg",
+          "value": "p-jc-xs-end p-autolayout"
+        }
+      },
+      "properties": {
+        "accept": {
+          "widget": {
+            "name": "submit-button",
+            "options": {
+              "label": "Вернуть",
+              "clientValidation": false,
+              "workflowAction": "equipment.extract_from_archive",
+              "workflowObjectId": {
+                "$query-params": {
+                  "name": "id"
+                }
+              },
+              "showSuccessMessage": true,
+              "successMessageSummary": "Возврат оборудования из архива",
+              "successMessageDetail": "Оборудование успешно возвращено из архива",
+              "urlInCaseOfSuccess": "/cabinet/equipment/list",
+              "showServerValidationErrorMessage": true,
+              "serverValidationErrorMessageSummary": "Возврат оборудования из архива",
+              "serverValidationErrorMessageDetail": "Форма содержит ошибки",
+              "showOtherErrorMessageSummary": true,
+              "otherErrorMessageSummary": "Возврат оборудования из архива",
+              "otherErrorMessageDetail": "Непредвиденная ошибка",
+              "reloadTable": true,
+              "closePopup": true
+            },
+            "class": {
+              "value": "mrg-r-sm"
+            }
+          }
+        },
+        "cancel": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Отмена"
+            },
+            "events": {
+              "click": {
+                "$go": {
+                  "workflow": "equipment",
+                  "action": "list"
+                }
+              }
+            },
+            "class": {
+              "value": "button_outline mrg-r-0 mrg-b-0"
+            }
+          }
+        }
+      }
+    }
+  }
+}

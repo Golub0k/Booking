@@ -1,0 +1,14 @@
+{
+  "backend-validation": {
+    "enabled": true,
+    "options": {
+      "schema": "room/add_to_stop_list",
+      "data": {
+        "$post-params": {
+          "name": null
+        }
+      },
+      "path": "#data"
+    }
+  }
+}

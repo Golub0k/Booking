@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "title": "Филдсет получения информации об объекте для навигационной цепочки"
+  },
+  "schema": {
+    "$from-context": {
+      "path": "$response.body.data.items.0",
+      "data": {
+        "$api-data": {
+          "id": {
+            "$query-params": {
+              "name": "id"
+            }
+          },
+          "options": {
+            "observe": "response"
+          },
+          "variables": {
+            "id": {
+              "$query-params": {
+                "name": "objectId"
+              }
+            }
+          },
+          "query": "request/get_preview"
+        }
+      }
+    }
+  }
+}

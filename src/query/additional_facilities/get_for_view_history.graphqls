@@ -1,0 +1,5 @@
+query ($eventId: MongoID) {
+  items: additionalFacilitiesGet(filter: { AND: [{ _filterRef: { eventId: { _id: $eventId } } }] }) {
+    id: _id
+  }
+}

@@ -1,0 +1,446 @@
+{
+  "@title": "Подтверждение удаления оборудования",
+  "@preload": {
+    "equipment": {
+      "$from-context": {
+        "path": "$response.body.data.object.0",
+        "data": {
+          "$api-data": {
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            },
+            "options": {
+              "observe": "response"
+            },
+            "variables": {
+              "id": {
+                "$query-params": {
+                  "name": "id"
+                }
+              }
+            },
+            "query": "equipment/get_name"
+          }
+        }
+      }
+    },
+    "count": {
+      "$fetch-object": {
+        "path": "data.pagination.count",
+        "data": {
+          "$api-data": {
+            "query": "additional_facilities/get_for_info",
+            "variables": {
+              "equipmentOrFurniture": {
+                "$query-params": {
+                  "name": "id"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "model": "#data",
+  "widget": {
+    "name": "container",
+    "options": {
+      "label": {
+        "$if": {
+          "condition": {
+            "===": {
+              "operand1": 0,
+              "operand2": {
+                "$from-context": {
+                  "path": "@preload.count"
+                }
+              }
+            }
+          },
+          "then": "Подтверждение удаления",
+          "else": "Удаление"
+        }
+      }
+    },
+    "class": {
+      "group": "popup",
+      "label": "h1 mrg-b-lg",
+      "value": "form-group_popup-collapse"
+    }
+  },
+  "properties": {
+    "object": {
+      "type": "string",
+      "widget": {
+        "name": "info",
+        "options": {
+          "viewedValue": {
+            "$if": {
+              "condition": {
+                "===": {
+                  "operand1": 0,
+                  "operand2": {
+                    "$from-context": {
+                      "path": "@preload.count"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "$replace": {
+                  "template": "Вы действительно хотите удалить оборудование \"{{title}}\"?",
+                  "data": {
+                    "title": {
+                      "$from-context": {
+                        "path": "@preload.equipment.name"
+                      }
+                    }
+                  }
+                }
+              },
+              "else": {
+                "$replace": {
+                  "template": "Оборудование \"{{title}}\" невозможно удалить по причине наличия брони на следующих мероприятиях:",
+                  "data": {
+                    "title": {
+                      "$from-context": {
+                        "path": "@preload.equipment.name"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "table": {
+      "type": "array",
+      "model": "#data.table",
+      "value": {
+        "$api-table-workflow-data": {
+          "model": "#data.table",
+          "query": "additional_facilities/get_for_info",
+          "id": {
+            "$query-params": {
+              "name": "id"
+            }
+          },
+          "variables": {
+            "$assign-object": {
+              "object": {
+                "$graphql-event-variables": {
+                  "data": {
+                    "$element-event": {
+                      "event": "lazyLoad"
+                    }
+                  }
+                }
+              },
+              "data": {
+                "equipmentOrFurniture": {
+                  "$query-params": {
+                    "name": "id"
+                  }
+                }
+              },
+              "path": ""
+            }
+          },
+          "errors": {
+            "default": {
+              "$message": {
+                "severity": "error",
+                "summary": "Ошибка",
+                "detail": "При загрузке данных произошла ошибка, повторите попытку позднее"
+              }
+            }
+          }
+        }
+      },
+      "widget": {
+        "name": "table-lazy",
+        "options": {
+          "visible": {
+            "$if": {
+              "condition": {
+                "===": {
+                  "operand1": 0,
+                  "operand2": {
+                    "$from-context": {
+                      "path": "@preload.count"
+                    }
+                  }
+                }
+              },
+              "then": false,
+              "else": true
+            }
+          }
+        },
+        "class": {
+          "value": "data-table d-block mrg-b-lg"
+        }
+      },
+      "items": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "type": "number",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "label": "№",
+                "viewedValue": {
+                  "$collection": {
+                    "action": "row-number"
+                  }
+                }
+              },
+              "class": {
+                "header": "column_actions",
+                "cell": "column_actions"
+              }
+            }
+          },
+          "eventId": {
+            "type": "string",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            }
+          },
+          "event": {
+            "type": "object",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            },
+            "properties": {
+              "name": {
+                "type": "string",
+                "widget": {
+                  "name": "hidden"
+                }
+              },
+              "state": {
+                "type": "string",
+                "widget": {
+                  "name": "hidden"
+                }
+              }
+            }
+          },
+          "booking": {
+            "type": "object",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            },
+            "properties": {
+              "name": {
+                "type": "string",
+                "widget": {
+                  "name": "hidden"
+                }
+              }
+            }
+          },
+          "eventView": {
+            "type": "object",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "label": "Мероприятие"
+              }
+            },
+            "properties": {
+              "name": {
+                "type": "string",
+                "widget": {
+                  "name": "info",
+                  "options": {
+                    "viewedValue": {
+                      "$from-context": {
+                        "path": "$rowData.event.name"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "bookingView": {
+            "type": "object",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "label": "Помещение"
+              }
+            },
+            "properties": {
+              "name": {
+                "type": "string",
+                "widget": {
+                  "name": "info",
+                  "options": {
+                    "viewedValue": {
+                      "$from-context": {
+                        "path": "$rowData.booking.name"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "status": {
+            "type": "object",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "label": "Статус мероприятия"
+              }
+            },
+            "properties": {
+              "stateView": {
+                "type": "string",
+                "value": {
+                  "$from-context": {
+                    "path": "$rowData.event.state"
+                  }
+                },
+                "widget": {
+                  "name": "badge",
+                  "options": {
+                    "defaultLabel": "",
+                    "displayMapping": [
+                      {
+                        "color": "badge_default",
+                        "label": "Предварительная бронь",
+                        "value": "pre_booking"
+                      },
+                      {
+                        "color": "badge_warning",
+                        "label": "Получен запрос",
+                        "value": "requested"
+                      },
+                      {
+                        "color": "badge_custom_orange",
+                        "label": "Получено ТЗ",
+                        "value": "task_received"
+                      },
+                      {
+                        "color": "badge_active",
+                        "label": "Согласована смета",
+                        "value": "agreed"
+                      },
+                      {
+                        "color": "badge_accent",
+                        "label": "Пройден check-in",
+                        "value": "check_in"
+                      },
+                      {
+                        "color": "badge_canceled",
+                        "label": "Пройден check-out",
+                        "value": "check_out"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "form-actions p-field p-grid mrg-t-lg",
+          "value": "p-jc-xs-end p-autolayout"
+        }
+      },
+      "properties": {
+        "accept": {
+          "widget": {
+            "name": "submit-button",
+            "options": {
+              "label": "Удалить",
+              "visible": {
+                "$if": {
+                  "condition": {
+                    "===": {
+                      "operand1": 0,
+                      "operand2": {
+                        "$from-context": {
+                          "path": "@preload.count"
+                        }
+                      }
+                    }
+                  },
+                  "then": true,
+                  "else": false
+                }
+              },
+              "clientValidation": false,
+              "workflowAction": "equipment.delete",
+              "workflowObjectId": {
+                "$query-params": {
+                  "name": "id"
+                }
+              },
+              "showSuccessMessage": true,
+              "successMessageSummary": "Удаление оборудования",
+              "successMessageDetail": "Оборудование успешно удалено",
+              "urlInCaseOfSuccess": "/cabinet/equipment/list",
+              "showServerValidationErrorMessage": true,
+              "serverValidationErrorMessageSummary": "Удаление оборудования",
+              "serverValidationErrorMessageDetail": "Форма содержит ошибки",
+              "showOtherErrorMessageSummary": true,
+              "otherErrorMessageSummary": "Удаление оборудования",
+              "otherErrorMessageDetail": "Непредвиденная ошибка",
+              "reloadTable": true,
+              "closePopup": true
+            },
+            "class": {
+              "value": "mrg-r-sm"
+            }
+          }
+        },
+        "cancel": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Отмена"
+            },
+            "events": {
+              "click": {
+                "$go": {
+                  "workflow": "equipment",
+                  "action": "list"
+                }
+              }
+            },
+            "class": {
+              "value": "button_outline mrg-r-0 mrg-b-0"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,903 @@
+{
+  "@preload": {
+    "$from-context": {
+      "path": "$response.body.data.object",
+      "data": {
+        "$api-data": {
+          "query": "notification_template_settings/get",
+          "id": {
+            "$query-params": {
+              "name": "id"
+            }
+          },
+          "options": {
+            "observe": "response"
+          },
+          "variables": {
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "model": "/",
+  "widget": {
+    "name": "container"
+  },
+  "properties": {
+    "time-info": "$ref:fieldset:snippets/element/time_info",
+    "breadcrumbs": {
+      "type": "object",
+      "widget": {
+        "name": "breadcrumb",
+        "mobileItems": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          }
+        ],
+        "items": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          },
+          {
+            "label": "Шаблоны рассылки",
+            "routerLink": "/cabinet/notification-template-settings/list"
+          },
+          {
+            "label": "Редактирование"
+          }
+        ],
+        "kind": "breadcrumb-breadcrumbs-container-style"
+      }
+    },
+    "form": {
+      "type": "object",
+      "model": "#data",
+      "widget": {
+        "name": "form",
+        "options": {
+          "label": "Редактирование шаблона"
+        },
+        "kind": "form-form-group-with-h1-style"
+      },
+      "value": {
+        "$json-model": {
+          "alias": "#data",
+          "data": {
+            "$from-context": {
+              "path": "@preload"
+            }
+          }
+        }
+      },
+      "properties": {
+        "commonInfoHeader": {
+          "type": "string",
+          "model": false,
+          "value": "Общие данные",
+          "widget": {
+            "name": "info",
+            "class": {
+              "value": "h2 mrg-b-md"
+            }
+          }
+        },
+        "event": {
+          "type": "object",
+          "widget": {
+            "name": "container"
+          },
+          "properties": {
+            "name": {
+              "type": "string",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Событие"
+                },
+                "kind": "info-form-item-text-view-style"
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$not-empty": {
+                        "data": {
+                          "$var": {
+                            "path": "."
+                          }
+                        }
+                      }
+                    },
+                    "message": "Поле обязательно для заполнения"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            },
+            "keys": {
+              "type": "array",
+              "widget": "hidden",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "widget": "info"
+                  },
+                  "description": {
+                    "type": "string",
+                    "widget": "info"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "possibleKeys": {
+          "type": "array",
+          "model": "#possibleKeys",
+          "widget": "hidden",
+          "items": {
+            "type": "string"
+          },
+          "value": {
+            "$merge": {
+              "data": [
+                {
+                  "$array-map": {
+                    "array": {
+                      "$subs": {
+                        "path": "#data.event.keys"
+                      }
+                    },
+                    "map": {
+                      "$from-context": {
+                        "path": "$data.name"
+                      }
+                    }
+                  }
+                },
+                [
+                  "{{else}}",
+                  "{{end}}"
+                ]
+              ]
+            }
+          }
+        },
+        "templateInfo": {
+          "type": "object",
+          "widget": {
+            "name": "container"
+          },
+          "properties": {
+            "templateVisualName": {
+              "type": "string",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": "Наименование"
+                },
+                "kind": "input-text-input-required-style"
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$not-empty": {
+                        "data": {
+                          "$var": {
+                            "path": "."
+                          }
+                        }
+                      }
+                    },
+                    "message": "Поле обязательно для заполнения"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            },
+            "templateDescription": {
+              "type": "string",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "label": "Описание"
+                },
+                "kind": "input-text-input-style"
+              }
+            }
+          }
+        },
+        "sendParamsCheckboxWrap": {
+          "type": "object",
+          "model": false,
+          "widget": {
+            "name": "container",
+            "class": {
+              "value": "mrg-b-md"
+            }
+          },
+          "properties": {
+            "isSystemWrap": {
+              "type": "boolean",
+              "model": "#data.isSystem",
+              "widget": {
+                "name": "checkbox",
+                "options": {
+                  "optionLabel": "Дублировать рассылку на e-mail пользователя"
+                },
+                "append": {
+                  "type": "string",
+                  "model": false,
+                  "value": "<i class=\"icon-info-sm icon_secondary d-block\"></i>",
+                  "widget": {
+                    "name": "html",
+                    "options": {
+                      "tooltip": "Рассылка будет дублироваться на e-mail пользователя независимо от признака \"Дублировать уведомления на e-mail\" в личном кабинете",
+                      "tooltipPosition": {
+                        "$if": {
+                          "condition": {
+                            "!==": {
+                              "operand1": {
+                                "$device": {
+                                  "infoType": "type"
+                                }
+                              },
+                              "operand2": "desktop"
+                            }
+                          },
+                          "then": "left",
+                          "else": "bottom"
+                        }
+                      }
+                    },
+                    "class": {
+                      "group": "p-col-align-center mrg-l-xxs",
+                      "value": "form-item-element"
+                    },
+                    "kind": "html-mobile_tooltip_event"
+                  }
+                },
+                "class": {
+                  "group": "form-item_checkbox",
+                  "value": "form-item-element form-item-element_checkbox p-fluid p-xs-12 p-md-8 p-md-offset-4 p-xl-offset-3 p-xs-offset-0 flex-nowrap p-autolayout"
+                }
+              }
+            },
+            "isPushWrap": {
+              "type": "object",
+              "model": false,
+              "widget": {
+                "name": "container",
+                "class": {
+                  "value": "p-grid p-fluid p-xs-12 p-md-8 p-md-offset-4 p-xl-offset-3 p-xs-offset-0"
+                }
+              },
+              "properties": {
+                "isPush": {
+                  "type": "boolean",
+                  "model": "#data.sendParams.pushSend.enabled",
+                  "widget": {
+                    "name": "checkbox",
+                    "options": {
+                      "optionLabel": "Отправка уведомления посредством Push"
+                    },
+                    "class": {
+                      "group": "form-item_checkbox",
+                      "value": "form-item-element form-item-element_checkbox"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "messageHeader": {
+          "type": "string",
+          "model": false,
+          "value": "Уведомление",
+          "widget": {
+            "name": "info",
+            "class": {
+              "value": "h2 mrg-b-md"
+            }
+          }
+        },
+        "subject": {
+          "type": "string",
+          "widget": {
+            "name": "input",
+            "options": {
+              "label": "Тема"
+            },
+            "kind": "input-text-input-required-style"
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$not-empty": {
+                    "data": {
+                      "$var": {
+                        "path": "."
+                      }
+                    }
+                  }
+                },
+                "message": "Поле обязательно для заполнения"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            },
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$empty": {
+                    "data": {
+                      "$array-filter": {
+                        "array": {
+                          "$match": {
+                            "pattern": "{{([^}]*)}}",
+                            "flags": "g",
+                            "data": {
+                              "$var": {
+                                "path": "."
+                              }
+                            }
+                          }
+                        },
+                        "filter": {
+                          "$and": {
+                            "operands": [
+                              {
+                                "$not": {
+                                  "data": {
+                                    "$in": {
+                                      "value": {
+                                        "$apply-func": {
+                                          "func": "$ref:js:prepare-key",
+                                          "args": {
+                                            "key": {
+                                              "$from-context": {
+                                                "path": "$data.0"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "array": {
+                                        "$var": {
+                                          "path": "#possibleKeys"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "$not": {
+                                  "data": {
+                                    "$in": {
+                                      "value": {
+                                        "$apply-func": {
+                                          "func": "$ref:js:prepare-key",
+                                          "args": {
+                                            "key": {
+                                              "$from-context": {
+                                                "path": "$data.0"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "array": {
+                                        "$var": {
+                                          "path": "#possibleSettings"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "$not": {
+                                  "data": {
+                                    "$in": {
+                                      "value": {
+                                        "$apply-func": {
+                                          "func": "$ref:js:prepare-key",
+                                          "args": {
+                                            "key": {
+                                              "$from-context": {
+                                                "path": "$data.0"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "array": [
+                                        "{{.recipient.timezone.offset}}"
+                                      ]
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "message": "В теме уведомления используются недоступные ключи для данного события"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            }
+          ]
+        },
+        "template": {
+          "type": "object",
+          "widget": {
+            "name": "container"
+          },
+          "properties": {
+            "template": {
+              "type": "string",
+              "widget": {
+                "name": "text-editor",
+                "options": {
+                  "label": "Текст уведомления",
+                  "style": {
+                    "height": "200px"
+                  }
+                },
+                "class": {
+                  "group": "form-item mrg-b-xl p-field p-grid p-fluid",
+                  "label": "form-label form-label_required mrg-t-0 p-col-12 p-md-4 p-xl-3",
+                  "value": "form-item-element p-col-12 p-md-6 p-xl-4"
+                }
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$not-empty": {
+                        "data": {
+                          "$var": {
+                            "path": "."
+                          }
+                        }
+                      }
+                    },
+                    "message": "Поле обязательно для заполнения"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                },
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$empty": {
+                        "data": {
+                          "$array-filter": {
+                            "array": {
+                              "$match": {
+                                "pattern": "{{([^}]*)}}",
+                                "flags": "g",
+                                "data": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                }
+                              }
+                            },
+                            "filter": {
+                              "$and": {
+                                "operands": [
+                                  {
+                                    "$not": {
+                                      "data": {
+                                        "$in": {
+                                          "value": {
+                                            "$apply-func": {
+                                              "func": "$ref:js:prepare-key",
+                                              "args": {
+                                                "key": {
+                                                  "$from-context": {
+                                                    "path": "$data.0"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "array": {
+                                            "$var": {
+                                              "path": "#possibleKeys"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "$not": {
+                                      "data": {
+                                        "$in": {
+                                          "value": {
+                                            "$apply-func": {
+                                              "func": "$ref:js:prepare-key",
+                                              "args": {
+                                                "key": {
+                                                  "$from-context": {
+                                                    "path": "$data.0"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "array": {
+                                            "$var": {
+                                              "path": "#possibleSettings"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "$not": {
+                                      "data": {
+                                        "$in": {
+                                          "value": {
+                                            "$apply-func": {
+                                              "func": "$ref:js:prepare-key",
+                                              "args": {
+                                                "key": {
+                                                  "$from-context": {
+                                                    "path": "$data.0"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "array": [
+                                            "{{.recipient.timezone.offset}}"
+                                          ]
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "message": "В тексте уведомления используются недоступные ключи для данного события"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "keysHeader": {
+          "type": "string",
+          "model": false,
+          "value": "Доступные ключи",
+          "widget": {
+            "name": "info",
+            "class": {
+              "value": "h2 mrg-b-md"
+            }
+          }
+        },
+        "event.keys": {
+          "type": "array",
+          "value": {
+            "$subs": {
+              "path": "#data.event.keys"
+            }
+          },
+          "widget": {
+            "name": "table-old",
+            "columns": {
+              "name": {
+                "label": "Ключ"
+              },
+              "description": {
+                "label": "Описание"
+              }
+            },
+            "class": {
+              "value": "data-table d-block mrg-b-lg"
+            }
+          },
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "widget": "info"
+              },
+              "description": {
+                "type": "string",
+                "widget": "info"
+              }
+            }
+          }
+        },
+        "settingsHeader": {
+          "type": "string",
+          "model": false,
+          "value": "Доступные системные настройки",
+          "widget": {
+            "name": "info",
+            "class": {
+              "value": "h2 mrg-b-md"
+            }
+          }
+        },
+        "settings": {
+          "type": "array",
+          "model": "#settings",
+          "value": {
+            "$api-table-workflow-data": {
+              "model": "#settings",
+              "query": "settings/list-for-notifications",
+              "id": {
+                "$query-params": {
+                  "name": "id"
+                }
+              },
+              "errors": {
+                "default": {
+                  "$message": {
+                    "severity": "error",
+                    "summary": "Ошибка",
+                    "detail": "При загрузке данных произошла ошибка, повторите попытку позднее"
+                  }
+                }
+              }
+            }
+          },
+          "widget": {
+            "name": "table-old",
+            "columns": {
+              "key": {
+                "label": "Ключ"
+              },
+              "name": {
+                "label": "Описание"
+              }
+            },
+            "class": {
+              "value": "data-table d-block mrg-b-lg"
+            }
+          },
+          "items": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "widget": "hidden"
+              },
+              "name": {
+                "type": "string",
+                "widget": "info"
+              },
+              "key": {
+                "type": "string",
+                "widget": "info",
+                "value": {
+                  "$replace": {
+                    "template": "{{.settings.{{0}}}}",
+                    "data": [
+                      {
+                        "$subs": {
+                          "path": "#settings[].code"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "possibleSettings": {
+          "type": "array",
+          "model": "#possibleSettings",
+          "widget": "hidden",
+          "items": {
+            "type": "string"
+          },
+          "value": {
+            "$merge": {
+              "data": [
+                {
+                  "$array-map": {
+                    "array": {
+                      "$subs": {
+                        "path": "#settings"
+                      }
+                    },
+                    "map": {
+                      "$from-context": {
+                        "path": "$data.key"
+                      }
+                    }
+                  }
+                },
+                [
+                  "{{else}}",
+                  "{{end}}"
+                ]
+              ]
+            }
+          }
+        },
+        "actions": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "group": "form-actions p-field p-grid mrg-t-lg",
+              "value": "p-jc-xs-end p-autolayout"
+            }
+          },
+          "properties": {
+            "save": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Сохранить"
+                },
+                "events": {
+                  "click": {
+                    "$if": {
+                      "condition": {
+                        "$validate": {
+                          "path": "/"
+                        }
+                      },
+                      "then": {
+                        "$waterfall": {
+                          "arrayFunctions": [
+                            "$ref:operation-frontend:snippets/element/_loading/onclick-loading-enable",
+                            {
+                              "$http-code": {
+                                "200": [
+                                  {
+                                    "$navigate-by-url": {
+                                      "url": "/cabinet/notification-template-settings/list"
+                                    }
+                                  },
+                                  {
+                                    "$message": {
+                                      "severity": "success",
+                                      "summary": "Сохранение шаблона",
+                                      "detail": "Шаблон успешно изменен"
+                                    }
+                                  }
+                                ],
+                                "422": [
+                                  "$ref:operation-frontend:snippets/element/_loading/onclick-loading-disable",
+                                  "$ref:operation-frontend:snippets/element/_http_message/http-errors-from-response"
+                                ],
+                                "client": {
+                                  "$api-workflow": {
+                                    "data": {
+                                      "$exclude": {
+                                        "data": {
+                                          "$var": {
+                                            "path": "#data"
+                                          }
+                                        },
+                                        "exclude": [
+                                          "commonInfoHeader",
+                                          "event"
+                                        ]
+                                      }
+                                    },
+                                    "type": "post",
+                                    "options": {
+                                      "observe": "response"
+                                    },
+                                    "id": {
+                                      "$if": {
+                                        "condition": {
+                                          "$not-empty": {
+                                            "data": {
+                                              "$query-params": {
+                                                "name": "id",
+                                                "filter": false
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": {
+                                          "$query-params": {
+                                            "name": "id",
+                                            "filter": false
+                                          }
+                                        },
+                                        "else": ""
+                                      }
+                                    }
+                                  }
+                                },
+                                "default": [
+                                  "$ref:operation-frontend:snippets/element/_loading/onclick-loading-disable",
+                                  "$ref:operation-frontend:snippets/element/_http_message/http-default-error-message-action"
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "else": {
+                        "$form-control-mark": {
+                          "key": "form"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "cancel": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Отменить"
+                },
+                "events": {
+                  "click": {
+                    "$navigate-by-url": {
+                      "url": "/cabinet/notification-template-settings/list"
+                    }
+                  }
+                },
+                "kind": "button-btn-outline-last-style"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

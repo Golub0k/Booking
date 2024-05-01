@@ -1,0 +1,198 @@
+{
+  "type": "object",
+  "title": "Бронь помещений",
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "fieldDescription": "Ссылка на мероприятие, к которому привязана бронь помещения",
+      "ref": "Event",
+      "refAlias": "event",
+      "inversedBy": "bookings"
+    },
+    "rooms": [
+      {
+        "roomId": {
+          "type": "string",
+          "fieldDescription": "Бронируемое помещение",
+          "ref": "Room",
+          "refAlias": "room",
+          "inversedBy": "bookings"
+        }
+      }
+    ],
+    "name": {
+      "type": "string",
+      "trim": true,
+      "fieldDescription": "Наименование помещения или конфигурации помещений",
+      "required": true
+    },
+    "configuration": {
+      "type": "boolean",
+      "fieldDescription": "Признак объединения помещений в конфигурацию",
+      "required": true,
+      "default": false
+    },
+    "seatingTypeId": {
+      "type": "string",
+      "fieldDescription": "Код типа рассадки, используемой в бронируемом помещении",
+      "ref": "SeatingType",
+      "refAlias": "seatingType"
+    },
+    "numberOfPeople": {
+      "type": "number",
+      "fieldDescription": "Количество человек"
+    },
+    "comment": {
+      "type": "string",
+      "trim": true,
+      "fieldDescription": "Комментарий",
+      "required": false
+    },
+    "minDate": {
+      "type": "datetime",
+      "required": false,
+      "index": true,
+      "fieldDescription": "Минимальная дата из всех периодов бронирования"
+    },
+    "maxDate": {
+      "type": "datetime",
+      "required": false,
+      "index": true,
+      "fieldDescription": "Максимальная дата из всех периодов бронирования"
+    },
+    "minInstallationDates": {
+      "type": "datetime",
+      "required": false,
+      "index": true,
+      "fieldDescription": "Минимальная дата из периода монтажа"
+    },
+    "maxInstallationDates": {
+      "type": "datetime",
+      "required": false,
+      "index": true,
+      "fieldDescription": "Максимальная дата из периода монтажа"
+    },
+    "minEventDates": {
+      "type": "datetime",
+      "required": false,
+      "index": true,
+      "fieldDescription": "Минимальная дата из периода проведения мероприятия"
+    },
+    "maxEventDates": {
+      "type": "datetime",
+      "required": false,
+      "index": true,
+      "fieldDescription": "Максимальная дата из периода проведения мероприятия"
+    },
+    "minDeinstallationDates": {
+      "type": "datetime",
+      "required": false,
+      "index": true,
+      "fieldDescription": "Минимальная дата из периода демонтажа"
+    },
+    "maxDeinstallationDates": {
+      "type": "datetime",
+      "required": false,
+      "index": true,
+      "fieldDescription": "Максимальная дата из периода демонтажа"
+    },
+    "installationDates": [
+      {
+        "startTime": {
+          "type": "datetime",
+          "required": false,
+          "index": true,
+          "fieldDescription": "Дата начала монтажа"
+        },
+        "endTime": {
+          "type": "datetime",
+          "required": false,
+          "index": true,
+          "fieldDescription": "Дата окончания монтажа"
+        }
+      }
+    ],
+    "eventDates": [
+      {
+        "startTime": {
+          "type": "datetime",
+          "required": false,
+          "index": true,
+          "fieldDescription": "Дата начала мероприятия"
+        },
+        "endTime": {
+          "type": "datetime",
+          "required": false,
+          "index": true,
+          "fieldDescription": "Дата окончания мероприятия"
+        }
+      }
+    ],
+    "deinstallationDates": [
+      {
+        "startTime": {
+          "type": "datetime",
+          "required": false,
+          "index": true,
+          "fieldDescription": "Дата начала демонтажа"
+        },
+        "endTime": {
+          "type": "datetime",
+          "required": false,
+          "index": true,
+          "fieldDescription": "Дата окончания демонтажа"
+        }
+      }
+    ],
+    "partial": {
+      "type": "boolean",
+      "fieldDescription": "Признак частичного бронирования помещения",
+      "required": false,
+      "default": false
+    },
+    "allSquare": {
+      "type": "number",
+      "fieldDescription": "Площадь"
+    },
+    "file": {
+      "type": "file",
+      "properties": {
+        "hash": {
+          "type": "string",
+          "trim": true
+        }
+      }
+    },
+    "discountOrMarkupFlag": {
+      "type": "string",
+      "fieldDescription": "Признак наличия скидки/наценки",
+      "required": true,
+      "default": "no",
+      "enum": [
+        "no",
+        "discount",
+        "markup"
+      ]
+    },
+    "discountOrMarkup": {
+      "type": "number",
+      "fieldDescription": "Размер скидки или наценки в процентах"
+    },
+    "allPriceMeter": {
+      "type": "number",
+      "fieldDescription": "Стоимость брони помещения за кв.м."
+    },
+    "allPriceMeterWithDiscountOrMarkup": {
+      "type": "number",
+      "fieldDescription": "Стоимость брони помещения за кв.м. с учетом применяемой скидки/наценки"
+    },
+    "allPrice": {
+      "type": "number",
+      "fieldDescription": "Общая стоимость брони помещения без учета скидок/наценок"
+    },
+    "allPriceWithDiscountOrMarkup": {
+      "type": "number",
+      "fieldDescription": "Общая стоимость брони помещения с учетом применяемой скидки/наценки"
+    }
+  }
+}

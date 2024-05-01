@@ -1,0 +1,8 @@
+# @title: Получить наименование брони помещений
+
+query ($id: [MongoID!]) {
+  object: bookingGet(filter: { _operators: { _id: { in: $id } } }) {
+    _id
+    name
+  }
+}

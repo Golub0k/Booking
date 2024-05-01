@@ -1,0 +1,13 @@
+query ($id: [MongoID]) {
+  items: roomGet(
+    filter: {
+      AND: [
+        { _operators: { _id: { in: $id } } }
+        { _operators: { state: { ne: "deleted" } } }
+      ]
+    }
+  ) {
+    id: _id
+    name
+  }
+}

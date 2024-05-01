@@ -1,0 +1,834 @@
+{
+  "defaultWorkflowAction": "index.index",
+  "title": "Личный кабинет",
+  "description": "Используется для закрытой части системы",
+  "schema": {
+    "widget": {
+      "name": "layout",
+      "options": {
+        "leftSidebarOptions": {
+          "visible": true,
+          "collapsed": false
+        }
+      },
+      "class": {
+        "value": "private layout-wrapper_private",
+        "layout": "layout-main layout-main_private container-private",
+        "topbar": "topbar_private container-private",
+        "leftSidebar": "sidebar_private",
+        "footer": "footer_private container-private"
+      },
+      "topbar": {
+        "type": "object",
+        "widget": {
+          "name": "container",
+          "class": {
+            "value": "p-autolayout p-jc-between p-ai-center"
+          }
+        },
+        "properties": {
+          "sidebar-trigger": {
+            "type": "string",
+            "widget": {
+              "name": "icon",
+              "options": {
+                "visible": {
+                  "$in": {
+                    "value": {
+                      "$get-window-breakpoint": {
+                        "subscriptionMode": true
+                      }
+                    },
+                    "array": [
+                      "xs",
+                      "sm",
+                      "md"
+                    ]
+                  }
+                }
+              },
+              "class": {
+                "icon": "icon-sidebar-trigger cursor-pointer"
+              },
+              "events": {
+                "click": {
+                  "$element-option": {
+                    "path": "#layout",
+                    "option": "leftSidebarOptions",
+                    "value": {
+                      "$assign-object": {
+                        "object": {
+                          "$element-option": {
+                            "path": "#layout",
+                            "option": "leftSidebarOptions"
+                          }
+                        },
+                        "path": "visible",
+                        "data": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "topbar-logo": {
+            "type": "string",
+            "widget": {
+              "name": "link",
+              "options": {
+                "displayAsHtml": true,
+                "routerLink": "/cabinet/event/list",
+                "viewedValue": "<img src=\"api/settings/file/LogoForPersonalAccount\">"
+              },
+              "class": {
+                "group": "d-block d-lg-none",
+                "link": "layout-logo"
+              }
+            }
+          },
+          "topbar-icons": {
+            "type": "object",
+            "widget": {
+              "name": "container",
+              "class": {
+                "group": "mrg-min-lg-l-auto",
+                "value": "topbar-icons p-autolayout p-jc-end"
+              }
+            },
+            "properties": {
+              "notifications": {
+                "type": "object",
+                "widget": {
+                  "name": "container",
+                  "options": {
+                    "visible": false
+                  },
+                  "events": {
+                    "click": {
+                      "$navigate": {
+                        "commands": [
+                          "/cabinet/notification/list"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "properties": {
+                  "notification-counter": {
+                    "type": "string",
+                    "widget": {
+                      "name": "notification-counter",
+                      "methods": {
+                        "getNotificationCount": {
+                          "$api-data": {
+                            "workflow": "notification",
+                            "action": "count",
+                            "query": "notification/count-new",
+                            "variables": {
+                              "userId": {
+                                "$active-user": {
+                                  "field": "_id"
+                                }
+                              }
+                            },
+                            "disableLoader": true
+                          }
+                        }
+                      },
+                      "class": {
+                        "badge-wrap": "icon-notifications profile__notifications",
+                        "badge": "badge_brand"
+                      }
+                    }
+                  }
+                }
+              },
+              "logout": {
+                "widget": {
+                  "name": "icon",
+                  "options": {
+                    "title": "Выйти"
+                  },
+                  "class": {
+                    "group": "d-lg-flex d-none",
+                    "icon": "icon-logout icon_button"
+                  },
+                  "events": {
+                    "click": {
+                      "$auth-logout": {
+                        "redirect": "/index/index"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "leftSidebar": {
+        "type": "object",
+        "widget": {
+          "name": "container",
+          "class": {
+            "group": "height-100",
+            "value": "d-block"
+          }
+        },
+        "properties": {
+          "topbar": {
+            "type": "object",
+            "widget": {
+              "name": "container",
+              "class": {
+                "group": "sidebar-top"
+              }
+            },
+            "properties": {
+              "logo-expanded": {
+                "type": "string",
+                "widget": {
+                  "name": "link",
+                  "options": {
+                    "displayAsHtml": true,
+                    "routerLink": "/cabinet/event/list",
+                    "viewedValue": "<img src=\"api/settings/file/LogoForPersonalAccount\">",
+                    "displayNone": {
+                      "===": {
+                        "operand1": {
+                          "$fetch-object": {
+                            "path": "collapsed",
+                            "data": {
+                              "$element-option": {
+                                "path": "#layout",
+                                "option": "leftSidebarOptions$"
+                              }
+                            }
+                          }
+                        },
+                        "operand2": true
+                      }
+                    }
+                  },
+                  "class": {
+                    "group": "d-none d-lg-flex",
+                    "link": "layout-logo"
+                  }
+                }
+              },
+              "logo-collapsed": {
+                "type": "string",
+                "widget": {
+                  "name": "link",
+                  "options": {
+                    "displayAsHtml": true,
+                    "routerLink": "/cabinet/event/list",
+                    "viewedValue": "<img src=\"api/settings/file/LogomarkForPersonalAccount\">",
+                    "displayNone": {
+                      "===": {
+                        "operand1": {
+                          "$fetch-object": {
+                            "path": "collapsed",
+                            "data": {
+                              "$element-option": {
+                                "path": "#layout",
+                                "option": "leftSidebarOptions$"
+                              }
+                            }
+                          }
+                        },
+                        "operand2": false
+                      }
+                    }
+                  },
+                  "class": {
+                    "group": "d-none d-lg-flex",
+                    "value": "p-jc-center",
+                    "link": "layout-logo"
+                  }
+                }
+              },
+              "logo-mobile": {
+                "type": "string",
+                "widget": {
+                  "name": "link",
+                  "options": {
+                    "visible": {
+                      "$in": {
+                        "value": {
+                          "$get-window-breakpoint": {
+                            "subscriptionMode": true
+                          }
+                        },
+                        "array": [
+                          "xs",
+                          "sm",
+                          "md"
+                        ]
+                      }
+                    },
+                    "displayAsHtml": true,
+                    "routerLink": "/cabinet/event/list",
+                    "viewedValue": "<img src=\"api/settings/file/LogoForPersonalAccount\">"
+                  },
+                  "class": {
+                    "link": "layout-logo"
+                  },
+                  "events": {
+                    "click": {
+                      "$if": {
+                        "condition": {
+                          "$in": {
+                            "value": {
+                              "$get-window-breakpoint": {
+                                "subscriptionMode": true
+                              }
+                            },
+                            "array": [
+                              "xs",
+                              "sm",
+                              "md"
+                            ]
+                          }
+                        },
+                        "then": {
+                          "$element-option": {
+                            "path": "#layout",
+                            "option": "leftSidebarOptions",
+                            "value": {
+                              "$assign-object": {
+                                "object": {
+                                  "$element-option": {
+                                    "path": "#layout",
+                                    "option": "leftSidebarOptions"
+                                  }
+                                },
+                                "path": "visible",
+                                "data": false
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "scrollPanel": {
+            "type": "object",
+            "widget": {
+              "name": "scroll-panel"
+            },
+            "properties": {
+              "menu": {
+                "type": "object",
+                "widget": {
+                  "name": "menu",
+                  "events": {
+                    "menuLinkClick": {
+                      "$if": {
+                        "condition": {
+                          "$in": {
+                            "value": {
+                              "$get-window-breakpoint": {
+                                "subscriptionMode": true
+                              }
+                            },
+                            "array": [
+                              "xs",
+                              "sm",
+                              "md"
+                            ]
+                          }
+                        },
+                        "then": {
+                          "$element-option": {
+                            "path": "#layout",
+                            "option": "leftSidebarOptions",
+                            "value": {
+                              "$assign-object": {
+                                "object": {
+                                  "$element-option": {
+                                    "path": "#layout",
+                                    "option": "leftSidebarOptions"
+                                  }
+                                },
+                                "path": "visible",
+                                "data": false
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "options": {
+                    "orientation": "vertical"
+                  }
+                },
+                "properties": "$ref:menu:cabinet"
+              },
+              "placeholder": {
+                "type": "string",
+                "widget": {
+                  "name": "info",
+                  "class": {
+                    "group": "flex-1"
+                  }
+                }
+              },
+              "bottom": {
+                "type": "object",
+                "widget": {
+                  "name": "container",
+                  "class": {
+                    "value": "sidebar-bottom"
+                  }
+                },
+                "properties": {
+                  "toggle": {
+                    "type": "object",
+                    "widget": {
+                      "name": "container",
+                      "class": {
+                        "group": "d-none d-lg-flex",
+                        "value": "sidebar-toggle p-autolayout"
+                      },
+                      "events": {
+                        "click": {
+                          "$element-option": {
+                            "path": "#layout",
+                            "option": "leftSidebarOptions",
+                            "value": {
+                              "$assign-object": {
+                                "object": {
+                                  "$element-option": {
+                                    "path": "#layout",
+                                    "option": "leftSidebarOptions"
+                                  }
+                                },
+                                "path": "collapsed",
+                                "data": {
+                                  "$not": {
+                                    "data": {
+                                      "$fetch-object": {
+                                        "path": "collapsed",
+                                        "data": {
+                                          "$element-option": {
+                                            "path": "#layout",
+                                            "option": "leftSidebarOptions"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "properties": {
+                      "icon": {
+                        "type": "string",
+                        "widget": {
+                          "name": "icon",
+                          "class": {
+                            "icon": {
+                              "$switch": {
+                                "condition": {
+                                  "$fetch-object": {
+                                    "path": "collapsed",
+                                    "data": {
+                                      "$element-option": {
+                                        "path": "#layout",
+                                        "option": "leftSidebarOptions$"
+                                      }
+                                    }
+                                  }
+                                },
+                                "default": "",
+                                "cases": [
+                                  {
+                                    "value": true,
+                                    "action": "icon-sidebar-collapsed"
+                                  },
+                                  {
+                                    "value": false,
+                                    "action": "icon-sidebar-expanded"
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "collapse": {
+                        "type": "string",
+                        "value": "Свернуть панель",
+                        "widget": {
+                          "name": "info",
+                          "options": {
+                            "displayNone": {
+                              "===": {
+                                "operand1": {
+                                  "$fetch-object": {
+                                    "path": "collapsed",
+                                    "data": {
+                                      "$element-option": {
+                                        "path": "#layout",
+                                        "option": "leftSidebarOptions$"
+                                      }
+                                    }
+                                  }
+                                },
+                                "operand2": true
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "separator": {
+                    "type": "string",
+                    "widget": {
+                      "name": "info",
+                      "class": {
+                        "group": "menu-separator"
+                      }
+                    }
+                  },
+                  "profile-expanded-wrap": {
+                    "type": "object",
+                    "widget": {
+                      "name": "container",
+                      "options": {
+                        "displayNone": {
+                          "===": {
+                            "operand1": {
+                              "$fetch-object": {
+                                "path": "collapsed",
+                                "data": {
+                                  "$element-option": {
+                                    "path": "#layout",
+                                    "option": "leftSidebarOptions$"
+                                  }
+                                }
+                              }
+                            },
+                            "operand2": true
+                          }
+                        }
+                      },
+                      "class": {
+                        "value": "profile sidebar-profile_expanded"
+                      },
+                      "events": {
+                        "click": {
+                          "$waterfall": {
+                            "arrayFunctions": [
+                              {
+                                "$navigate": {
+                                  "commands": [
+                                    "/cabinet/user/my-profile"
+                                  ]
+                                }
+                              },
+                              {
+                                "$if": {
+                                  "condition": {
+                                    "$in": {
+                                      "value": {
+                                        "$get-window-breakpoint": {
+                                          "subscriptionMode": true
+                                        }
+                                      },
+                                      "array": [
+                                        "xs",
+                                        "sm",
+                                        "md"
+                                      ]
+                                    }
+                                  },
+                                  "then": {
+                                    "$element-option": {
+                                      "path": "#layout",
+                                      "option": "leftSidebarOptions",
+                                      "value": {
+                                        "$assign-object": {
+                                          "object": {
+                                            "$element-option": {
+                                              "path": "#layout",
+                                              "option": "leftSidebarOptions"
+                                            }
+                                          },
+                                          "path": "visible",
+                                          "data": false
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    "properties": {
+                      "profile": {
+                        "type": "object",
+                        "widget": {
+                          "name": "container",
+                          "class": {
+                            "group": "profile-user",
+                            "value": "profile-info"
+                          }
+                        },
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "widget": {
+                              "name": "info",
+                              "options": {
+                                "viewedValue": {
+                                  "$replace": {
+                                    "template": "{{lastName}} {{firstName}}{{middleName}}",
+                                    "data": {
+                                      "lastName": {
+                                        "$active-user": {
+                                          "field": "lastName"
+                                        }
+                                      },
+                                      "firstName": {
+                                        "$active-user": {
+                                          "field": "firstName"
+                                        }
+                                      },
+                                      "middleName": {
+                                        "$apply-func": {
+                                          "func": "return middleName ? (' ' + middleName.slice(0, 1) + '.') : '';",
+                                          "args": {
+                                            "middleName": {
+                                              "$active-user": {
+                                                "field": "middleName"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "class": {
+                                "value": "profile-info__name"
+                              }
+                            }
+                          },
+                          "organization": {
+                            "type": "string",
+                            "widget": {
+                              "name": "info",
+                              "options": {
+                                "viewedValue": {
+                                  "$if": {
+                                    "condition": {
+                                      "$not-empty": {
+                                        "data": {
+                                          "$active-user": {
+                                            "field": "organization.shortName"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "then": {
+                                      "$active-user": {
+                                        "field": "organization.shortName"
+                                      }
+                                    },
+                                    "else": {
+                                      "$if": {
+                                        "condition": {
+                                          "$not-empty": {
+                                            "data": {
+                                              "$active-user": {
+                                                "field": "organization.fullName"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": {
+                                          "$active-user": {
+                                            "field": "organization.fullName"
+                                          }
+                                        },
+                                        "else": ""
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "class": {
+                                "value": "profile-info__organization"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "profile-collapsed-wrap": {
+                    "type": "object",
+                    "widget": {
+                      "name": "container",
+                      "options": {
+                        "displayNone": {
+                          "===": {
+                            "operand1": {
+                              "$fetch-object": {
+                                "path": "collapsed",
+                                "data": {
+                                  "$element-option": {
+                                    "path": "#layout",
+                                    "option": "leftSidebarOptions$"
+                                  }
+                                }
+                              }
+                            },
+                            "operand2": false
+                          }
+                        }
+                      },
+                      "class": {
+                        "group": "d-lg-flex d-none",
+                        "value": "sidebar-profile_collapsed"
+                      },
+                      "events": {
+                        "click": {
+                          "$waterfall": {
+                            "arrayFunctions": [
+                              {
+                                "$navigate": {
+                                  "commands": [
+                                    "/cabinet/user/my-profile"
+                                  ]
+                                }
+                              },
+                              {
+                                "$if": {
+                                  "condition": {
+                                    "$in": {
+                                      "value": {
+                                        "$get-window-breakpoint": {
+                                          "subscriptionMode": true
+                                        }
+                                      },
+                                      "array": [
+                                        "xs",
+                                        "sm",
+                                        "md"
+                                      ]
+                                    }
+                                  },
+                                  "then": {
+                                    "$element-option": {
+                                      "path": "#layout",
+                                      "option": "leftSidebarOptions",
+                                      "value": {
+                                        "$assign-object": {
+                                          "object": {
+                                            "$element-option": {
+                                              "path": "#layout",
+                                              "option": "leftSidebarOptions"
+                                            }
+                                          },
+                                          "path": "visible",
+                                          "data": false
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    "properties": {
+                      "icon": {
+                        "type": "string",
+                        "widget": {
+                          "name": "icon",
+                          "class": {
+                            "value": "p-jc-center",
+                            "icon": "icon-user"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "logout": {
+                    "type": "object",
+                    "widget": {
+                      "name": "container",
+                      "class": {
+                        "group": "d-lg-none d-flex",
+                        "value": "p-autolayout sidebar-logout"
+                      },
+                      "events": {
+                        "click": {
+                          "$auth-logout": {}
+                        }
+                      }
+                    },
+                    "properties": {
+                      "icon": {
+                        "type": "string",
+                        "widget": {
+                          "name": "icon",
+                          "class": {
+                            "icon": "icon-logout"
+                          }
+                        }
+                      },
+                      "text": {
+                        "type": "string",
+                        "value": "Выйти",
+                        "widget": "info"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "footer": {
+        "type": "object",
+        "widget": {
+          "name": "container"
+        },
+        "properties": {
+          "developer": {
+            "type": "string",
+            "value": "<a href=\"https://www.effective-group.ru/\" title=\"Перейти на сайт Effective Technologies\" target=\"_blank\" class=\"footer__item__link\">\n        <span class=\"footer__item__content d-none d-xs-block\">\n          <span class=\"item-title\">Разработано в</span>\n        </span>\n        <i class=\"footer__item__right-icon icon-developer\"></i>\n      </a>",
+            "widget": {
+              "name": "html",
+              "class": {
+                "value": "footer__item footer__item_developer"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

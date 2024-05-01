@@ -1,0 +1,8 @@
+# @title: Получить данные экземпляра объекта "Группа мероприятий"
+
+query ($id: MongoID!) {
+  items: eventGroupOne(filter: { _id: $id }) {
+    _id
+    name
+  }
+}

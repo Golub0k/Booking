@@ -1,0 +1,8 @@
+# @title: Получить наименование мебели
+
+query ($id: MongoID!) {
+  object: furnitureGet(filter: { _id: $id }) {
+    _id
+    name
+  }
+}

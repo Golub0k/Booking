@@ -1,0 +1,631 @@
+[
+    {
+        "$match": {
+            "$and": [
+                {
+                    "actual": {
+                        "$ne": false
+                    }
+                },
+                {
+                    "state": {
+                        "$nin": [
+                            "deleted",
+                            "new",
+                            "draft"
+                        ]
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "$match": {
+            "$expr": {
+                "$in": [
+                    "$type",
+                    $typeParam
+                ]
+            }
+        }
+    },
+    {
+        "$match": {
+            "$expr": {
+                "$in": [
+                    "$state",
+                    $stateParam
+                ]
+            }
+        }
+    },
+    {
+        "$match": {
+            "$expr": {
+                "$in": [
+                    "$state",
+                    $stateTabsParam
+                ]
+            }
+        }
+    },
+    {
+        "$match": {
+            "$or": [
+                {
+                    "name": {
+                        "$regex": $searchParam,
+                        "$options": "i"
+                    }
+                },
+                {
+                    "number": {
+                        "$regex": $searchParam,
+                        "$options": "i"
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "$addFields": {
+            "dateTimeFrom": $dateTimeFromParam
+        }
+    },
+    {
+        "$addFields": {
+            "dateTimeTo": $dateTimeToParam
+        }
+    },
+    {
+        "$match": {
+            "$expr": {
+                "$or": [
+                    {
+                        "$and": [
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            "$dateTimeFrom",
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$gte": [
+                                            "$installationStart",
+                                            {
+                                                "$toDate": "$dateTimeFrom"
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            "$dateTimeTo",
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$lte": [
+                                            "$installationStart",
+                                            {
+                                                "$toDate": "$dateTimeTo"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "$and": [
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            "$dateTimeFrom",
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$gte": [
+                                            "$eventStart",
+                                            {
+                                                "$toDate": "$dateTimeFrom"
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            "$dateTimeTo",
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$lte": [
+                                            "$eventStart",
+                                            {
+                                                "$toDate": "$dateTimeTo"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "$and": [
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            "$dateTimeFrom",
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$gte": [
+                                            "$deinstallationStart",
+                                            {
+                                                "$toDate": "$dateTimeFrom"
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            "$dateTimeTo",
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$lte": [
+                                            "$deinstallationStart",
+                                            {
+                                                "$toDate": "$dateTimeTo"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "$and": [
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            "$dateTimeFrom",
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$gte": [
+                                            "$installationEnd",
+                                            {
+                                                "$toDate": "$dateTimeFrom"
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            "$dateTimeTo",
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$lte": [
+                                            "$installationEnd",
+                                            {
+                                                "$toDate": "$dateTimeTo"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "$and": [
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            "$dateTimeFrom",
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$gte": [
+                                            "$eventEnd",
+                                            {
+                                                "$toDate": "$dateTimeFrom"
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            "$dateTimeTo",
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$lte": [
+                                            "$eventEnd",
+                                            {
+                                                "$toDate": "$dateTimeTo"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "$and": [
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            "$dateTimeFrom",
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$gte": [
+                                            "$deinstallationEnd",
+                                            {
+                                                "$toDate": "$dateTimeFrom"
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            "$dateTimeTo",
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$lte": [
+                                            "$deinstallationEnd",
+                                            {
+                                                "$toDate": "$dateTimeTo"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "$and": [
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            "$dateTimeFrom",
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$gte": [
+                                            "$installationEnd",
+                                            {
+                                                "$toDate": "$dateTimeFrom"
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            "$dateTimeTo",
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$lte": [
+                                            "$installationStart",
+                                            {
+                                                "$toDate": "$dateTimeTo"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "$and": [
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            "$dateTimeFrom",
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$gte": [
+                                            "$eventEnd",
+                                            {
+                                                "$toDate": "$dateTimeFrom"
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            "$dateTimeTo",
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$lte": [
+                                            "$eventStart",
+                                            {
+                                                "$toDate": "$dateTimeTo"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "$and": [
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            "$dateTimeFrom",
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$gte": [
+                                            "$deinstallationEnd",
+                                            {
+                                                "$toDate": "$dateTimeFrom"
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            "$dateTimeTo",
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$lte": [
+                                            "$deinstallationStart",
+                                            {
+                                                "$toDate": "$dateTimeTo"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "$addFields": {
+            "curatorsArray": {
+                "$map": {
+                    "input": "$curators",
+                    "as": "curator",
+                    "in": "$$curator.userId"
+                }
+            }
+        }
+    },
+    {
+        "$unwind": {
+            "path": "$curatorsArray",
+            "preserveNullAndEmptyArrays": true
+        }
+    },
+    {
+        "$match": {
+            "$expr": {
+                "$in": [
+                    "$curatorsArray", $curatorsParam
+                ]
+            }
+        }
+    },
+    {
+        "$match": {
+            "curatorsArray": $currentUserParam
+        }
+    },
+    {
+        "$addFields": {
+            "organizersArray": {
+                "$map": {
+                    "input": "$organizers",
+                    "as": "organizer",
+                    "in": "$$organizer.organizerId"
+                }
+            }
+        }
+    },
+    {
+        "$unwind": {
+            "path": "$organizersArray",
+            "preserveNullAndEmptyArrays": true
+        }
+    },
+    {
+        "$match": {
+            "$expr": {
+                "$in": [
+                    "$organizersArray", $organizersParam
+                ]
+            }
+        }
+    },
+    {
+        "$lookup": {
+            "from": "request",
+            "let": {
+                "eventId": "$_id"
+            },
+            "pipeline": [
+                {
+                    "$match": {
+                        "$and": [
+                            {
+                                "$expr": {
+                                    "$eq": [
+                                        {
+                                            "$toString": "$$eventId"
+                                        },
+                                        "$eventId"
+                                    ]
+                                }
+                            },
+                            {
+                                "$or":
+                                    [
+                                        {
+                                            "$expr": {
+                                            "$eq": [
+                                                "$state",
+                                          "on_approve"
+                                      ]
+                                      }
+                                    },
+                                    {
+                                    "$expr": {
+                                      "$eq": [
+                                          "$state",
+                                          "new"
+                                      ]
+                                      }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ],
+            "as": "requests"
+        }
+    },
+    {
+        "$lookup": {
+            "from": "event_group",
+            "let": {
+                "eventId": "$_id"
+            },
+            "pipeline": [
+                {
+                    "$match": {
+                        "$and": [
+                            {
+                                "$expr": {
+                                    "$in": [
+                                        {
+                                            "$toString": "$$eventId"
+                                        },
+                                        "$events.eventId"
+                                    ]
+                                }
+                            },
+                            {
+                                "$expr": {
+                                    "$eq": [
+                                        "$state",
+                                        "active"
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ],
+            "as": "eventGroup"
+        }
+    },
+    {
+        "$group": {
+            "_id": "$_id",
+            "event": {
+                "$first": "$$ROOT"
+            }
+        }
+    },
+    {
+        "$replaceRoot": {
+            "newRoot": "$event"
+        }
+    },
+    {
+        "$addFields": {
+            "numberInt": {
+                "$toInt": "$number"
+            }
+        }
+    },
+    {
+        "$sort": {
+            "numberInt": -1
+        }
+    }
+]

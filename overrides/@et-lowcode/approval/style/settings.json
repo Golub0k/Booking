@@ -1,0 +1,31 @@
+{
+    "colors": {
+        "main": {
+          "brand": "#004F8B",
+          "brandTint": "#003F6F",
+          "brandTintLighter": "#397AC7",
+          "brandTintLighter-2": "#F2F6FA",
+          "brandTintLighter-3": "#F2F6FA",
+          "warning": "#FFDD63",
+          "invalid": "#FF3055"
+        },
+        "text": {
+          "active": "#1F1F20"
+        },
+        "link": {
+          "link": "#1178F1",
+          "linkActive": "#1178F1"
+        },
+        "toast": {
+          "success": "#00AB59",
+          "info": "#2F88F0",
+          "warning": "#FFDD63",
+          "error": "#FF3055"
+        },
+        "misc": {
+          "menuItemActiveBackground": "#CEE0F4",
+          "badgeActiveBackground": "#EAFAF3",
+          "badgeActive": "#30CC85"
+        }
+      }
+}

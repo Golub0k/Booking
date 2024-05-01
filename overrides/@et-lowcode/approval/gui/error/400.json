@@ -1,0 +1,27 @@
+{
+  "@title": "Страница 400 ошибки",
+  "type": "string",
+  "widget": {
+    "name": "layout-error",
+    "options": {
+      "code": 400,
+      "summary": "Ошибка запроса",
+      "detail": "Возможно, введен некорректный адрес или страница недоступна для просмотра.",
+      "backLink": {
+        "$if": {
+          "condition": {
+            "$not-empty": {
+              "data": {
+                "$active-user": {
+                  "field": "_id"
+                }
+              }
+            }
+          },
+          "then": "/cabinet/event/list",
+          "else": "/"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,87 @@
+query ($id: MongoID!) {
+  object: eventOne(filter: { _id: $id }) {
+    name
+    type
+    country
+    industry
+    description
+    numberOfPeople
+    numberOfExhibitors
+    numberOfCountries
+    standardBuilding
+    buildingAreaNet
+    sitePlacement
+    protocolEvent
+    contractSigned
+    actSigned
+    comment
+    organizers {
+      organizerId
+    }
+    curators {
+      userId
+    }
+
+    installationStart
+    installationEnd
+    eventStart
+    eventEnd
+    deinstallationStart
+    deinstallationEnd
+    arrival
+    secondImport
+    openingOfExhibition
+    closingOfExhibition
+    departure
+    departureOnLastDay
+
+    discountOrMarkupFlag
+    discountOrMarkup
+    totalEventCost
+    totalEventCostWithDiscountOrMarkup
+    documents {
+      fileLogo {
+        _id
+        name
+        size
+        create_date
+      }
+      fileCostings {
+        _id
+        name
+        size
+        create_date
+      }
+      fileListOfExhibitors {
+        _id
+        name
+        size
+        create_date
+      }
+      filesExpoplan {
+        _id
+        name
+        size
+        create_date
+      }
+      filesProtocol {
+        _id
+        name
+        size
+        create_date
+      }
+      filePresidentProgram {
+        _id
+        name
+        size
+        create_date
+      }
+      filesOther {
+        _id
+        name
+        size
+        create_date
+      }
+    }
+  }
+}

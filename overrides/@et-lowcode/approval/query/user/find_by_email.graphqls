@@ -1,0 +1,9 @@
+# @title: Получить данные экземпляра объекта "Пользователь" с указанным email
+
+query ($email: String!) {
+  user: userOne(filter: { AND: [{ email: $email }, { _operators: { state: { ne: "deleted" } } }] }) {
+    _id
+    userAD
+    state
+  }
+}

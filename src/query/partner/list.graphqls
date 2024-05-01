@@ -1,0 +1,62 @@
+# @title: Получить список экземпляров объекта "Контрагент"
+
+query (
+  $first: Int
+  $rows: Int
+  $search: String
+  $client: [Boolean]
+  $supplier: [Boolean]
+  $state: [String]
+  $dateFrom: DateTime
+  $dateTo: DateTime
+) {
+  pagination: partnerPagination(
+    limit: $rows
+    offset: $first
+    filter: {
+      AND: [
+        {
+          OR: [
+            { _regexp: { field: name, filter: $search } }
+            { _regexp: { field: inn, filter: $search } }
+            { _regexp: { field: kpp, filter: $search } }
+            { _regexp: { field: ogrn, filter: $search } }
+            { _regexp: { field: mainContactPerson__fullName, filter: $search } }
+            { _regexp: { field: mainContactPerson__phone, filter: $search } }
+          ]
+        }
+        { _operators: { state: { ne: "deleted" } } }
+        {
+          OR: [
+            { _operators: { isClient: { in: $client } } }
+            { _operators: { isSupplier: { in: $supplier } } }
+          ]
+        }
+        { _operators: { state: { in: $state } } }
+        { _operators: { createdAt: { gte: $dateFrom } } }
+        { _operators: { createdAt: { lte: $dateTo } } }
+      ]
+    }
+    sort: { field: name, type: ASC }
+  ) {
+    count
+    items {
+      isClient
+      isSupplier
+      id: _id
+      name
+      inn
+      kpp
+      ogrn
+      createdAt
+      mainContactPerson {
+        fullName
+        phone
+      }
+
+      state
+      blockReason
+      createdAt
+    }
+  }
+}

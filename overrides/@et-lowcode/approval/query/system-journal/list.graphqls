@@ -1,0 +1,55 @@
+# @title: Получить список событий
+
+query (
+  $first: Int!
+  $rows: Int!
+  $objectType: [String!]
+  $ip: String
+  $organization: [String!]
+  $user: [String!]
+  $login: String
+  $createdAtFrom: DateTime
+  $createdAtTo: DateTime
+) {
+  pagination: RpcEventLoggerFindPagination(
+    offset: $first
+    limit: $rows
+    filter: {
+      objectType: $objectType
+      ip: $ip
+      organizationId: $organization
+      userId: $user
+      login: $login
+      dateFromParam: $createdAtFrom
+      dateToParam: $createdAtTo
+    }
+    sort: { field: "createdAt", type: "DESC" }
+  ) {
+    count
+    items {
+      id: _id
+      type
+      user {
+        fullName
+        login
+      }
+      organization {
+        _id
+        inn
+        kpp
+        shortName
+      }
+      ip
+      objectType
+      objectTitle
+      workflow
+      workflowTitle
+      action
+      actionTitle
+      viewPath
+      viewTitle
+      objectId
+      createdAt
+    }
+  }
+}

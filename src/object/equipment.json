@@ -1,0 +1,43 @@
+{
+  "type": "object",
+  "title": "Оборудование",
+  "properties": {
+    "owner": {
+      "type": "string",
+      "required": true,
+      "index": true,
+      "fieldDescription": "Собственник",
+      "ref": "OwnerCode",
+      "refAlias": "ownerCode"
+    },
+    "name": {
+      "type": "string",
+      "required": true,
+      "index": true,
+      "fieldDescription": "Наименование оборудования"
+    },
+    "nomenclatureNumber": {
+      "type": "string",
+      "required": true,
+      "index": true,
+      "fieldDescription": "Номенклатурный номер оборудования"
+    },
+    "unitPrice": {
+      "type": "number",
+      "required": true,
+      "index": true,
+      "fieldDescription": "Цена за единицу оборудования"
+    },
+    "availableQuantity": {
+      "type": "number",
+      "trim": true,
+      "fieldDescription": "Доступное количество",
+      "required": false
+    },
+    "comment": {
+      "type": "string",
+      "required": false,
+      "fieldDescription": "Примечание"
+    }
+  }
+}

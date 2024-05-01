@@ -1,0 +1,3382 @@
+{
+  "version": 2,
+  "objectType": "booking",
+  "context": "booking/context",
+  "description": "Жизненный цикл брони помещений",
+  "rbac": {
+    "visible": true,
+    "title": "Брони помещений"
+  },
+  "actions": {
+    "initialActions": {
+      "add": {
+        "title": "Добавить",
+        "grants": {
+          "rbac": {
+            "enabled": false,
+            "visible": false,
+            "title": "Добавить бронь помещения"
+          }
+        },
+        "functions": [
+          {
+            "$workflow-object-create": {
+              "query": "booking/add",
+              "variables": {
+                "data": {
+                  "$from-context": {
+                    "path": "data"
+                  }
+                }
+              },
+              "responsePath": "object"
+            }
+          },
+          {
+            "$workflow-run": {
+              "workflowName": "event_history",
+              "action": "create",
+              "data": {
+                "bookingId": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                },
+                "actionTitle": "Добавление брони помещения",
+                "userId": {
+                  "$from-context": {
+                    "path": "$activeUserId"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "conditional": [
+            {
+              "conditions": {
+                "===": {
+                  "operand1": {
+                    "$from-context": {
+                      "path": "data.state"
+                    }
+                  },
+                  "operand2": "in_group"
+                }
+              },
+              "state": "in_group"
+            }
+          ],
+          "unconditional": "not_filled"
+        }
+      },
+      "copy": {
+        "title": "Копировать",
+        "grants": {
+          "rbac": {
+            "enabled": false,
+            "visible": false,
+            "title": "Копировать бронь помещения"
+          }
+        },
+        "functions": [
+          {
+            "$assign-context": {
+              "path": "$bookingFacilities",
+              "data": {
+                "$from-context": {
+                  "path": "data.additionalFacilities"
+                }
+              }
+            }
+          },
+          {
+            "$workflow-object-create": {
+              "query": "booking/add",
+              "variables": {
+                "data": {
+                  "$exclude": {
+                    "data": {
+                      "$from-context": {
+                        "path": "data"
+                      }
+                    },
+                    "exclude": [
+                      "additionalFacilities"
+                    ]
+                  }
+                },
+                "responsePath": "object"
+              }
+            }
+          },
+          {
+            "$workflow-run-from-collection": {
+              "workflowName": "additional_facilities",
+              "action": "copy",
+              "collection": {
+                "$array-map": {
+                  "array": {
+                    "$from-context": {
+                      "path": "$bookingFacilities"
+                    }
+                  },
+                  "map": {
+                    "$assign-object": {
+                      "path": "",
+                      "data": {
+                        "discountOrMarkupFlag": "no",
+                        "eventId": {
+                          "$from-context": {
+                            "path": "data.eventId"
+                          }
+                        },
+                        "bookingId": {
+                          "$from-context": {
+                            "path": "$apiResponse.id.0"
+                          }
+                        }
+                      },
+                      "object": {
+                        "$from-context": {
+                          "path": "$data"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "filled"
+        }
+      }
+    },
+    "globalActions": {
+      "mass_add": {
+        "title": "Массовое добавление броней помещений",
+        "grants": {
+          "rbac": {
+            "enabled": false
+          }
+        },
+        "views": {},
+        "functions": [
+          {
+            "$if": {
+              "condition": {
+                "$not-empty": {
+                  "data": {
+                    "$from-context": {
+                      "path": "data.rooms"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "$waterfall": {
+                  "arrayFunctions": [
+                    {
+                      "$assign-context": {
+                        "path": "$preparedData",
+                        "data": {
+                          "$apply-func": {
+                            "func": "let result = []; rooms.forEach(room => {result.push({ eventId: eventId, rooms: {roomId: room._id }, name: room.name, configuration: configuration, discountOrMarkupFlag: discountOrMarkupFlag }); }); return result;",
+                            "args": {
+                              "rooms": {
+                                "$api-data-query": {
+                                  "query": "room/get_name",
+                                  "variables": {
+                                    "id": {
+                                      "$from-context": {
+                                        "path": "data.rooms"
+                                      }
+                                    }
+                                  },
+                                  "responsePath": "object"
+                                }
+                              },
+                              "eventId": {
+                                "$from-context": {
+                                  "path": "data.eventId"
+                                }
+                              },
+                              "configuration": false,
+                              "discountOrMarkupFlag": "no"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "$workflow-run-from-collection": {
+                        "workflowName": "booking",
+                        "action": "add",
+                        "collection": {
+                          "$from-context": {
+                            "path": "$preparedData"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      "group": {
+        "title": "Объединение броней помещений в группу",
+        "grants": {
+          "rbac": {
+            "enabled": false
+          }
+        },
+        "views": {},
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "booking/get",
+              "variables": {
+                "id": {
+                  "$from-context": {
+                    "path": "data.bookingIds"
+                  }
+                }
+              },
+              "responsePath": "object",
+              "resultPath": "$bookings"
+            }
+          },
+          {
+            "$workflow-run": {
+              "workflowName": "booking",
+              "action": "add",
+              "data": {
+                "configuration": true,
+                "eventId": {
+                  "$from-context": {
+                    "path": "data.eventId"
+                  }
+                },
+                "rooms": {
+                  "$apply-func": {
+                    "func": "let mergedRooms = []; arr.forEach(item => { item.rooms.forEach(room => { mergedRooms.push({roomId: room.roomId}); }); }); return mergedRooms;",
+                    "args": {
+                      "arr": {
+                        "$from-context": {
+                          "path": "$bookings"
+                        }
+                      }
+                    }
+                  }
+                },
+                "name": "Конфигурация",
+                "discountOrMarkupFlag": "no",
+                "allSquare": {
+                  "$array-sum": {
+                    "data": {
+                      "$from-context": {
+                        "path": "$bookings"
+                      }
+                    },
+                    "keyPath": "rooms.0.room.square"
+                  }
+                },
+                "file": {
+                  "create_date": null,
+                  "name": null,
+                  "size": null,
+                  "_id": null
+                }
+              }
+            }
+          },
+          {
+            "$workflow-run-from-collection": {
+              "workflowName": "booking",
+              "action": "to_group",
+              "collection": {
+                "$from-context": {
+                  "path": "data.bookingIds"
+                }
+              },
+              "objectIdPath": ""
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "additional_facilities/get_for_delete",
+              "variables": {
+                "bookingIds": {
+                  "$from-context": {
+                    "path": "data.bookingIds"
+                  }
+                }
+              },
+              "responsePath": "facilities",
+              "resultPath": "$facilities"
+            }
+          },
+          {
+            "$workflow-run-from-collection": {
+              "workflowName": "additional_facilities",
+              "action": "delete",
+              "collection": {
+                "$from-context": {
+                  "path": "$facilities"
+                }
+              },
+              "objectIdPath": "id"
+            }
+          },
+          {
+            "$workflow-run": {
+              "workflowName": "event_history",
+              "action": "create",
+              "data": {
+                "eventId": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                },
+                "actionTitle": "Объединение броней помещений в группу",
+                "userId": {
+                  "$from-context": {
+                    "path": "$activeUserId"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "edit_part": {
+        "title": "При редактировании необходимо согласование только в случае применения скидок/наценок",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "При редактировании необходимо согласование только в случае применения скидок/наценок"
+          }
+        },
+        "views": {},
+        "functions": []
+      }
+    },
+    "statesActions": {
+      "view": {
+        "title": "Просмотреть",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "permissionCode": "event.view",
+            "title": "Просмотреть бронь помещения"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "booking/view",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "additional_facilities/list_for_booking"
+          ]
+        }
+      },
+      "edit": {
+        "title": "Редактировать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "permissionCode": "event.edit",
+            "title": "Редактировать бронь помещения"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "booking/edit",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "room_type/get_for_dropdown",
+            "seating_type/get_for_dropdown",
+            "additional_service/get_for_select",
+            "equipment/get_for_select",
+            "furniture/get_for_select",
+            "additional_facilities/list_for_booking",
+            "additional_facilities/list_not_filled",
+            "additional_facilities/get_for_select_in_booking",
+            "additional_service/get_name_for_select",
+            "equipment/get_name_for_select",
+            "furniture/get_name_for_select",
+            "booking/get_for_info",
+            "stop_list_note/get_for_booking_validate"
+          ]
+        },
+        "functions": [
+          {
+            "$assign-object": {
+              "path": "installationDates",
+              "data": {
+                "$array-map": {
+                  "array": {
+                    "$from-context": {
+                      "path": "data.installationDates"
+                    }
+                  },
+                  "map": {
+                    "$exclude": {
+                      "data": {
+                        "$from-context": {
+                          "path": "$data"
+                        }
+                      },
+                      "exclude": [
+                        "number",
+                        "day"
+                      ]
+                    }
+                  }
+                }
+              },
+              "object": {
+                "$from-context": {
+                  "path": "data"
+                }
+              }
+            }
+          },
+          {
+            "$assign-object": {
+              "path": "eventDates",
+              "data": {
+                "$array-map": {
+                  "array": {
+                    "$from-context": {
+                      "path": "data.eventDates"
+                    }
+                  },
+                  "map": {
+                    "$exclude": {
+                      "data": {
+                        "$from-context": {
+                          "path": "$data"
+                        }
+                      },
+                      "exclude": [
+                        "number",
+                        "day"
+                      ]
+                    }
+                  }
+                }
+              },
+              "object": {
+                "$from-context": {
+                  "path": "data"
+                }
+              }
+            }
+          },
+          {
+            "$assign-object": {
+              "path": "deinstallationDates",
+              "data": {
+                "$array-map": {
+                  "array": {
+                    "$from-context": {
+                      "path": "data.deinstallationDates"
+                    }
+                  },
+                  "map": {
+                    "$exclude": {
+                      "data": {
+                        "$from-context": {
+                          "path": "$data"
+                        }
+                      },
+                      "exclude": [
+                        "number",
+                        "day"
+                      ]
+                    }
+                  }
+                }
+              },
+              "object": {
+                "$from-context": {
+                  "path": "data"
+                }
+              }
+            }
+          },
+          {
+            "$assign-object": {
+              "path": "",
+              "data": {
+                "$if": {
+                  "condition": {
+                    "$empty": {
+                      "data": {
+                        "$from-context": {
+                          "path": "data.maxDate"
+                        }
+                      }
+                    }
+                  },
+                  "then": {
+                    "$exclude": {
+                      "data": {
+                        "$from-context": {
+                          "path": "data"
+                        }
+                      },
+                      "exclude": [
+                        "maxDate"
+                      ]
+                    }
+                  },
+                  "else": {
+                    "$from-context": {
+                      "path": "data"
+                    }
+                  }
+                }
+              },
+              "object": {
+                "$from-context": {
+                  "path": "data"
+                }
+              }
+            }
+          },
+          {
+            "$assign-object": {
+              "path": "",
+              "data": {
+                "$if": {
+                  "condition": {
+                    "$empty": {
+                      "data": {
+                        "$from-context": {
+                          "path": "data.minDate"
+                        }
+                      }
+                    }
+                  },
+                  "then": {
+                    "$exclude": {
+                      "data": {
+                        "$from-context": {
+                          "path": "data"
+                        }
+                      },
+                      "exclude": [
+                        "minDate"
+                      ]
+                    }
+                  },
+                  "else": {
+                    "$from-context": {
+                      "path": "data"
+                    }
+                  }
+                }
+              },
+              "object": {
+                "$from-context": {
+                  "path": "data"
+                }
+              }
+            }
+          },
+          {
+            "$if": {
+              "condition": {
+                "$not-empty": {
+                  "data": {
+                    "$from-context": {
+                      "path": "data.installationDates"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "$waterfall": {
+                  "arrayFunctions": [
+                    {
+                      "$assign-object": {
+                        "path": "minInstallationDates",
+                        "data": {
+                          "$apply-func": {
+                            "func": "var min_dt = all_dates[0],  min_dtObj = new Date(all_dates[0]); all_dates.forEach(function(dt, index)  {  if ( new Date( dt ) < min_dtObj)  {  min_dt = dt;  min_dtObj = new Date(dt);  }  }); return min_dt;",
+                            "args": {
+                              "all_dates": {
+                                "$array-pluck": {
+                                  "array": {
+                                    "$from-context": {
+                                      "path": "data.installationDates"
+                                    }
+                                  },
+                                  "key": "startTime"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "object": {
+                          "$from-context": {
+                            "path": "data"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "$assign-object": {
+                        "path": "maxInstallationDates",
+                        "data": {
+                          "$apply-func": {
+                            "func": "var max_dt = all_dates[0],  max_dtObj = new Date(all_dates[0]); all_dates.forEach(function(dt, index)  {  if ( new Date( dt ) > max_dtObj)  {  max_dt = dt;  max_dtObj = new Date(dt);  }  }); return max_dt;",
+                            "args": {
+                              "all_dates": {
+                                "$array-pluck": {
+                                  "array": {
+                                    "$from-context": {
+                                      "path": "data.installationDates"
+                                    }
+                                  },
+                                  "key": "endTime"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "object": {
+                          "$from-context": {
+                            "path": "data"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "else": {
+                "$waterfall": {
+                  "arrayFunctions": [
+                    {
+                      "$assign-object": {
+                        "path": "minInstallationDates",
+                        "data": null,
+                        "object": {
+                          "$from-context": {
+                            "path": "data"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "$assign-object": {
+                        "path": "maxInstallationDates",
+                        "data": null,
+                        "object": {
+                          "$from-context": {
+                            "path": "data"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "$if": {
+              "condition": {
+                "$not-empty": {
+                  "data": {
+                    "$from-context": {
+                      "path": "data.deinstallationDates"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "$waterfall": {
+                  "arrayFunctions": [
+                    {
+                      "$assign-object": {
+                        "path": "minDeinstallationDates",
+                        "data": {
+                          "$apply-func": {
+                            "func": "var min_dt = all_dates[0],  min_dtObj = new Date(all_dates[0]); all_dates.forEach(function(dt, index)  {  if ( new Date( dt ) < min_dtObj)  {  min_dt = dt;  min_dtObj = new Date(dt);  }  }); return min_dt;",
+                            "args": {
+                              "all_dates": {
+                                "$array-pluck": {
+                                  "array": {
+                                    "$from-context": {
+                                      "path": "data.deinstallationDates"
+                                    }
+                                  },
+                                  "key": "startTime"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "object": {
+                          "$from-context": {
+                            "path": "data"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "$assign-object": {
+                        "path": "maxDeinstallationDates",
+                        "data": {
+                          "$apply-func": {
+                            "func": "var max_dt = all_dates[0],  max_dtObj = new Date(all_dates[0]); all_dates.forEach(function(dt, index)  {  if ( new Date( dt ) > max_dtObj)  {  max_dt = dt;  max_dtObj = new Date(dt);  }  }); return max_dt;",
+                            "args": {
+                              "all_dates": {
+                                "$array-pluck": {
+                                  "array": {
+                                    "$from-context": {
+                                      "path": "data.deinstallationDates"
+                                    }
+                                  },
+                                  "key": "endTime"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "object": {
+                          "$from-context": {
+                            "path": "data"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "else": {
+                "$waterfall": {
+                  "arrayFunctions": [
+                    {
+                      "$assign-object": {
+                        "path": "minDeinstallationDates",
+                        "data": null,
+                        "object": {
+                          "$from-context": {
+                            "path": "data"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "$assign-object": {
+                        "path": "maxDeinstallationDates",
+                        "data": null,
+                        "object": {
+                          "$from-context": {
+                            "path": "data"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "$if": {
+              "condition": {
+                "$not-empty": {
+                  "data": {
+                    "$from-context": {
+                      "path": "data.eventDates"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "$waterfall": {
+                  "arrayFunctions": [
+                    {
+                      "$assign-object": {
+                        "path": "minEventDates",
+                        "data": {
+                          "$apply-func": {
+                            "func": "var min_dt = all_dates[0],  min_dtObj = new Date(all_dates[0]); all_dates.forEach(function(dt, index)  {  if ( new Date( dt ) < min_dtObj)  {  min_dt = dt;  min_dtObj = new Date(dt);  }  }); return min_dt;",
+                            "args": {
+                              "all_dates": {
+                                "$array-pluck": {
+                                  "array": {
+                                    "$from-context": {
+                                      "path": "data.eventDates"
+                                    }
+                                  },
+                                  "key": "startTime"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "object": {
+                          "$from-context": {
+                            "path": "data"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "$assign-object": {
+                        "path": "maxEventDates",
+                        "data": {
+                          "$apply-func": {
+                            "func": "var max_dt = all_dates[0],  max_dtObj = new Date(all_dates[0]); all_dates.forEach(function(dt, index)  {  if ( new Date( dt ) > max_dtObj)  {  max_dt = dt;  max_dtObj = new Date(dt);  }  }); return max_dt;",
+                            "args": {
+                              "all_dates": {
+                                "$array-pluck": {
+                                  "array": {
+                                    "$from-context": {
+                                      "path": "data.eventDates"
+                                    }
+                                  },
+                                  "key": "endTime"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "object": {
+                          "$from-context": {
+                            "path": "data"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "else": {
+                "$waterfall": {
+                  "arrayFunctions": [
+                    {
+                      "$assign-object": {
+                        "path": "minEventDates",
+                        "data": null,
+                        "object": {
+                          "$from-context": {
+                            "path": "data"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "$assign-object": {
+                        "path": "maxEventDates",
+                        "data": null,
+                        "object": {
+                          "$from-context": {
+                            "path": "data"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "$if": {
+              "condition": {
+                "$or": {
+                  "operands": [
+                    {
+                      "===": {
+                        "operand1": "accept_request",
+                        "operand2": {
+                          "$from-context": {
+                            "path": "data.hasPermission"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "$and": {
+                        "operands": [
+                          {
+                            "===": {
+                              "operand1": {
+                                "$from-context": {
+                                  "path": "data.discountOrMarkupFlag"
+                                }
+                              },
+                              "operand2": "no"
+                            }
+                          },
+                          {
+                            "$in": {
+                              "value": {
+                                "$from-context": {
+                                  "path": "data.eventState"
+                                }
+                              },
+                              "array": [
+                                "draft",
+                                "pre_booking"
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              "then": {
+                "$api-data-query": {
+                  "query": "booking/update",
+                  "variables": {
+                    "data": {
+                      "$exclude": {
+                        "data": {
+                          "$from-context": {
+                            "path": "data"
+                          }
+                        },
+                        "exclude": [
+                          "hasPermission",
+                          "eventState"
+                        ]
+                      }
+                    },
+                    "id": {
+                      "$from-context": {
+                        "path": "objectId"
+                      }
+                    }
+                  },
+                  "responsePath": "object"
+                }
+              },
+              "else": {
+                "$if": {
+                  "condition": {
+                    "===": {
+                      "operand1": {
+                        "$api-data-query": {
+                          "query": "booking/get_state",
+                          "variables": {
+                            "id": {
+                              "$from-context": {
+                                "path": "objectId"
+                              }
+                            }
+                          },
+                          "responsePath": "object.0.state"
+                        }
+                      },
+                      "operand2": "filled"
+                    }
+                  },
+                  "then": {
+                    "$if": {
+                      "condition": {
+                        "===": {
+                          "operand1": "edit_part",
+                          "operand2": {
+                            "$from-context": {
+                              "path": "data.hasPermission"
+                            }
+                          }
+                        }
+                      },
+                      "then": {
+                        "$if": {
+                          "condition": {
+                            "===": {
+                              "operand1": {
+                                "$from-context": {
+                                  "path": "data.discountOrMarkupFlag"
+                                }
+                              },
+                              "operand2": "no"
+                            }
+                          },
+                          "then": {
+                            "$api-data-query": {
+                              "query": "booking/update",
+                              "variables": {
+                                "data": {
+                                  "$exclude": {
+                                    "data": {
+                                      "$from-context": {
+                                        "path": "data"
+                                      }
+                                    },
+                                    "exclude": [
+                                      "hasPermission",
+                                      "eventState"
+                                    ]
+                                  }
+                                },
+                                "id": {
+                                  "$from-context": {
+                                    "path": "objectId"
+                                  }
+                                }
+                              },
+                              "responsePath": "object"
+                            }
+                          },
+                          "else": {
+                            "$waterfall": {
+                              "arrayFunctions": [
+                                {
+                                  "$assign-context": {
+                                    "path": "$requests",
+                                    "data": {
+                                      "$api-data-query": {
+                                        "query": "request/get_count_for_booking",
+                                        "variables": {
+                                          "id": {
+                                            "$from-context": {
+                                              "path": "objectId"
+                                            }
+                                          },
+                                          "type": "edit_booking_cost",
+                                          "creatorId": {
+                                            "$active-user": {
+                                              "field": "_id"
+                                            }
+                                          }
+                                        },
+                                        "responsePath": "items"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "$if": {
+                                    "condition": {
+                                      ">=": {
+                                        "operand1": {
+                                          "$length": {
+                                            "data": {
+                                              "$from-context": {
+                                                "path": "$requests"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "operand2": 1
+                                      }
+                                    },
+                                    "then": {
+                                      "$waterfall": {
+                                        "arrayFunctions": [
+                                          {
+                                            "$api-data-query": {
+                                              "query": "booking_request_data/update",
+                                              "variables": {
+                                                "id": {
+                                                  "$from-context": {
+                                                    "path": "$requests.0.changeBookingId"
+                                                  }
+                                                },
+                                                "data": {
+                                                  "$exclude": {
+                                                    "data": {
+                                                      "$from-context": {
+                                                        "path": "data"
+                                                      }
+                                                    },
+                                                    "exclude": [
+                                                      "hasPermission",
+                                                      "eventState",
+                                                      "eventId",
+                                                      "rooms",
+                                                      "configuration"
+                                                    ]
+                                                  }
+                                                }
+                                              },
+                                              "responsePath": "object"
+                                            }
+                                          },
+                                          {
+                                            "$api-data-query": {
+                                              "query": "booking/update",
+                                              "variables": {
+                                                "data": {
+                                                  "$exclude": {
+                                                    "data": {
+                                                      "$from-context": {
+                                                        "path": "data"
+                                                      }
+                                                    },
+                                                    "exclude": [
+                                                      "hasPermission",
+                                                      "eventState",
+                                                      "discountOrMarkupFlag",
+                                                      "discountOrMarkup",
+                                                      "allPriceMeterWithDiscountOrMarkup",
+                                                      "allPriceWithDiscountOrMarkup"
+                                                    ]
+                                                  }
+                                                },
+                                                "id": {
+                                                  "$from-context": {
+                                                    "path": "objectId"
+                                                  }
+                                                }
+                                              },
+                                              "responsePath": "object"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "else": {
+                                      "$waterfall": {
+                                        "arrayFunctions": [
+                                          {
+                                            "$assign-context": {
+                                              "path": "$bookingRequestData",
+                                              "data": {
+                                                "$api-data-query": {
+                                                  "query": "booking_request_data/add",
+                                                  "variables": {
+                                                    "data": {
+                                                      "$assign-object": {
+                                                        "object": {
+                                                          "$exclude": {
+                                                            "data": {
+                                                              "$from-context": {
+                                                                "path": "data"
+                                                              }
+                                                            },
+                                                            "exclude": [
+                                                              "hasPermission",
+                                                              "eventState",
+                                                              "eventId",
+                                                              "rooms",
+                                                              "configuration"
+                                                            ]
+                                                          }
+                                                        },
+                                                        "data": {
+                                                          "requestDataType": "new"
+                                                        },
+                                                        "path": ""
+                                                      }
+                                                    }
+                                                  },
+                                                  "responsePath": "object"
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "$api-data-query": {
+                                              "query": "booking/update",
+                                              "variables": {
+                                                "data": {
+                                                  "$exclude": {
+                                                    "data": {
+                                                      "$from-context": {
+                                                        "path": "data"
+                                                      }
+                                                    },
+                                                    "exclude": [
+                                                      "hasPermission",
+                                                      "eventState",
+                                                      "discountOrMarkupFlag",
+                                                      "discountOrMarkup",
+                                                      "allPriceMeterWithDiscountOrMarkup",
+                                                      "allPriceWithDiscountOrMarkup"
+                                                    ]
+                                                  }
+                                                },
+                                                "id": {
+                                                  "$from-context": {
+                                                    "path": "objectId"
+                                                  }
+                                                }
+                                              },
+                                              "responsePath": "object"
+                                            }
+                                          },
+                                          {
+                                            "$workflow-run": {
+                                              "workflowName": "request",
+                                              "action": "add",
+                                              "data": {
+                                                "$assign-object": {
+                                                  "path": "",
+                                                  "data": {
+                                                    "type": "edit_booking_cost",
+                                                    "bookingId": {
+                                                      "$from-context": {
+                                                        "path": "objectId"
+                                                      }
+                                                    },
+                                                    "changeBookingId": {
+                                                      "$from-context": {
+                                                        "path": "$bookingRequestData.id"
+                                                      }
+                                                    },
+                                                    "creatorId": {
+                                                      "$active-user": {
+                                                        "field": "_id"
+                                                      }
+                                                    },
+                                                    "createDate": {
+                                                      "$datetime-now": {}
+                                                    }
+                                                  },
+                                                  "object": {}
+                                                }
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      "else": {
+                        "$waterfall": {
+                          "arrayFunctions": [
+                            {
+                              "$assign-context": {
+                                "path": "$requests",
+                                "data": {
+                                  "$api-data-query": {
+                                    "query": "request/get_count_for_booking",
+                                    "variables": {
+                                      "id": {
+                                        "$from-context": {
+                                          "path": "objectId"
+                                        }
+                                      },
+                                      "type": "edit_booking",
+                                      "creatorId": {
+                                        "$active-user": {
+                                          "field": "_id"
+                                        }
+                                      }
+                                    },
+                                    "responsePath": "items"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "$if": {
+                                "condition": {
+                                  ">=": {
+                                    "operand1": {
+                                      "$length": {
+                                        "data": {
+                                          "$from-context": {
+                                            "path": "$requests"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "operand2": 1
+                                  }
+                                },
+                                "then": {
+                                  "$api-data-query": {
+                                    "query": "booking_request_data/update",
+                                    "variables": {
+                                      "id": {
+                                        "$from-context": {
+                                          "path": "$requests.0.changeBookingId"
+                                        }
+                                      },
+                                      "data": {
+                                        "$exclude": {
+                                          "data": {
+                                            "$from-context": {
+                                              "path": "data"
+                                            }
+                                          },
+                                          "exclude": [
+                                            "hasPermission",
+                                            "eventState",
+                                            "eventId",
+                                            "rooms",
+                                            "configuration"
+                                          ]
+                                        }
+                                      }
+                                    },
+                                    "responsePath": "object"
+                                  }
+                                },
+                                "else": {
+                                  "$waterfall": {
+                                    "arrayFunctions": [
+                                      {
+                                        "$assign-context": {
+                                          "path": "$bookingRequestData",
+                                          "data": {
+                                            "$api-data-query": {
+                                              "query": "booking_request_data/add",
+                                              "variables": {
+                                                "data": {
+                                                  "$assign-object": {
+                                                    "object": {
+                                                      "$exclude": {
+                                                        "data": {
+                                                          "$from-context": {
+                                                            "path": "data"
+                                                          }
+                                                        },
+                                                        "exclude": [
+                                                          "hasPermission",
+                                                          "eventState",
+                                                          "eventId",
+                                                          "rooms",
+                                                          "configuration"
+                                                        ]
+                                                      }
+                                                    },
+                                                    "data": {
+                                                      "requestDataType": "new"
+                                                    },
+                                                    "path": ""
+                                                  }
+                                                }
+                                              },
+                                              "responsePath": "object"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "$workflow-run": {
+                                          "workflowName": "request",
+                                          "action": "add",
+                                          "data": {
+                                            "$assign-object": {
+                                              "path": "",
+                                              "data": {
+                                                "type": "edit_booking",
+                                                "bookingId": {
+                                                  "$from-context": {
+                                                    "path": "objectId"
+                                                  }
+                                                },
+                                                "changeBookingId": {
+                                                  "$from-context": {
+                                                    "path": "$bookingRequestData.id"
+                                                  }
+                                                },
+                                                "creatorId": {
+                                                  "$active-user": {
+                                                    "field": "_id"
+                                                  }
+                                                },
+                                                "createDate": {
+                                                  "$datetime-now": {}
+                                                }
+                                              },
+                                              "object": {}
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "else": {
+                    "$if": {
+                      "condition": {
+                        "===": {
+                          "operand1": {
+                            "$from-context": {
+                              "path": "data.discountOrMarkupFlag"
+                            }
+                          },
+                          "operand2": "no"
+                        }
+                      },
+                      "then": {
+                        "$api-data-query": {
+                          "query": "booking/update",
+                          "variables": {
+                            "data": {
+                              "$exclude": {
+                                "data": {
+                                  "$from-context": {
+                                    "path": "data"
+                                  }
+                                },
+                                "exclude": [
+                                  "hasPermission",
+                                  "eventState"
+                                ]
+                              }
+                            },
+                            "id": {
+                              "$from-context": {
+                                "path": "objectId"
+                              }
+                            }
+                          },
+                          "responsePath": "object"
+                        }
+                      },
+                      "else": {
+                        "$waterfall": {
+                          "arrayFunctions": [
+                            {
+                              "$assign-context": {
+                                "path": "$requests",
+                                "data": {
+                                  "$api-data-query": {
+                                    "query": "request/get_count_for_booking",
+                                    "variables": {
+                                      "id": {
+                                        "$from-context": {
+                                          "path": "objectId"
+                                        }
+                                      },
+                                      "type": "edit_booking_cost",
+                                      "creatorId": {
+                                        "$active-user": {
+                                          "field": "_id"
+                                        }
+                                      }
+                                    },
+                                    "responsePath": "items"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "$if": {
+                                "condition": {
+                                  ">=": {
+                                    "operand1": {
+                                      "$length": {
+                                        "data": {
+                                          "$from-context": {
+                                            "path": "$requests"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "operand2": 1
+                                  }
+                                },
+                                "then": {
+                                  "$api-data-query": {
+                                    "query": "booking_request_data/update",
+                                    "variables": {
+                                      "id": {
+                                        "$from-context": {
+                                          "path": "$requests.0.changeBookingId"
+                                        }
+                                      },
+                                      "data": {
+                                        "$exclude": {
+                                          "data": {
+                                            "$from-context": {
+                                              "path": "data"
+                                            }
+                                          },
+                                          "exclude": [
+                                            "hasPermission",
+                                            "eventState",
+                                            "eventId",
+                                            "rooms",
+                                            "configuration"
+                                          ]
+                                        }
+                                      }
+                                    },
+                                    "responsePath": "object"
+                                  }
+                                },
+                                "else": {
+                                  "$waterfall": {
+                                    "arrayFunctions": [
+                                      {
+                                        "$assign-context": {
+                                          "path": "$bookingRequestData",
+                                          "data": {
+                                            "$api-data-query": {
+                                              "query": "booking_request_data/add",
+                                              "variables": {
+                                                "data": {
+                                                  "$assign-object": {
+                                                    "object": {
+                                                      "$exclude": {
+                                                        "data": {
+                                                          "$from-context": {
+                                                            "path": "data"
+                                                          }
+                                                        },
+                                                        "exclude": [
+                                                          "hasPermission",
+                                                          "eventState",
+                                                          "eventId",
+                                                          "rooms",
+                                                          "configuration"
+                                                        ]
+                                                      }
+                                                    },
+                                                    "data": {
+                                                      "requestDataType": "new"
+                                                    },
+                                                    "path": ""
+                                                  }
+                                                }
+                                              },
+                                              "responsePath": "object"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "$api-data-query": {
+                                          "query": "booking/update",
+                                          "variables": {
+                                            "data": {
+                                              "$exclude": {
+                                                "data": {
+                                                  "$from-context": {
+                                                    "path": "data"
+                                                  }
+                                                },
+                                                "exclude": [
+                                                  "hasPermission",
+                                                  "eventState",
+                                                  "discountOrMarkupFlag",
+                                                  "discountOrMarkup",
+                                                  "allPriceMeterWithDiscountOrMarkup",
+                                                  "allPriceWithDiscountOrMarkup"
+                                                ]
+                                              }
+                                            },
+                                            "id": {
+                                              "$from-context": {
+                                                "path": "objectId"
+                                              }
+                                            }
+                                          },
+                                          "responsePath": "object"
+                                        }
+                                      },
+                                      {
+                                        "$workflow-run": {
+                                          "workflowName": "request",
+                                          "action": "add",
+                                          "data": {
+                                            "$assign-object": {
+                                              "path": "",
+                                              "data": {
+                                                "type": "edit_booking_cost",
+                                                "bookingId": {
+                                                  "$from-context": {
+                                                    "path": "objectId"
+                                                  }
+                                                },
+                                                "changeBookingId": {
+                                                  "$from-context": {
+                                                    "path": "$bookingRequestData.id"
+                                                  }
+                                                },
+                                                "creatorId": {
+                                                  "$active-user": {
+                                                    "field": "_id"
+                                                  }
+                                                },
+                                                "createDate": {
+                                                  "$datetime-now": {}
+                                                }
+                                              },
+                                              "object": {}
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$workflow-run": {
+              "workflowName": "event_history",
+              "action": "create",
+              "data": {
+                "bookingId": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                },
+                "actionTitle": "Редактирование брони помещения",
+                "userId": {
+                  "$from-context": {
+                    "path": "$activeUserId"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "conditional": [
+            {
+              "conditions": {
+                "===": {
+                  "operand1": {
+                    "$from-context": {
+                      "path": "entry.state"
+                    }
+                  },
+                  "operand2": "not_filled"
+                }
+              },
+              "state": "filled"
+            }
+          ]
+        }
+      },
+      "edit_for_add_facilities": {
+        "title": "Редактировать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "permissionCode": "event.edit"
+          }
+        },
+        "functions": [
+          {
+            "$assign-object": {
+              "path": "installationDates",
+              "data": {
+                "$array-map": {
+                  "array": {
+                    "$from-context": {
+                      "path": "data.installationDates"
+                    }
+                  },
+                  "map": {
+                    "$exclude": {
+                      "data": {
+                        "$from-context": {
+                          "path": "$data"
+                        }
+                      },
+                      "exclude": [
+                        "number",
+                        "day"
+                      ]
+                    }
+                  }
+                }
+              },
+              "object": {
+                "$from-context": {
+                  "path": "data"
+                }
+              }
+            }
+          },
+          {
+            "$assign-object": {
+              "path": "eventDates",
+              "data": {
+                "$array-map": {
+                  "array": {
+                    "$from-context": {
+                      "path": "data.eventDates"
+                    }
+                  },
+                  "map": {
+                    "$exclude": {
+                      "data": {
+                        "$from-context": {
+                          "path": "$data"
+                        }
+                      },
+                      "exclude": [
+                        "number",
+                        "day"
+                      ]
+                    }
+                  }
+                }
+              },
+              "object": {
+                "$from-context": {
+                  "path": "data"
+                }
+              }
+            }
+          },
+          {
+            "$assign-object": {
+              "path": "deinstallationDates",
+              "data": {
+                "$array-map": {
+                  "array": {
+                    "$from-context": {
+                      "path": "data.deinstallationDates"
+                    }
+                  },
+                  "map": {
+                    "$exclude": {
+                      "data": {
+                        "$from-context": {
+                          "path": "$data"
+                        }
+                      },
+                      "exclude": [
+                        "number",
+                        "day"
+                      ]
+                    }
+                  }
+                }
+              },
+              "object": {
+                "$from-context": {
+                  "path": "data"
+                }
+              }
+            }
+          },
+          {
+            "$assign-object": {
+              "path": "",
+              "data": {
+                "$if": {
+                  "condition": {
+                    "$empty": {
+                      "data": {
+                        "$from-context": {
+                          "path": "data.maxDate"
+                        }
+                      }
+                    }
+                  },
+                  "then": {
+                    "$exclude": {
+                      "data": {
+                        "$from-context": {
+                          "path": "data"
+                        }
+                      },
+                      "exclude": [
+                        "maxDate"
+                      ]
+                    }
+                  },
+                  "else": {
+                    "$from-context": {
+                      "path": "data"
+                    }
+                  }
+                }
+              },
+              "object": {
+                "$from-context": {
+                  "path": "data"
+                }
+              }
+            }
+          },
+          {
+            "$assign-object": {
+              "path": "",
+              "data": {
+                "$if": {
+                  "condition": {
+                    "$empty": {
+                      "data": {
+                        "$from-context": {
+                          "path": "data.minDate"
+                        }
+                      }
+                    }
+                  },
+                  "then": {
+                    "$exclude": {
+                      "data": {
+                        "$from-context": {
+                          "path": "data"
+                        }
+                      },
+                      "exclude": [
+                        "minDate"
+                      ]
+                    }
+                  },
+                  "else": {
+                    "$from-context": {
+                      "path": "data"
+                    }
+                  }
+                }
+              },
+              "object": {
+                "$from-context": {
+                  "path": "data"
+                }
+              }
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "booking/update",
+              "variables": {
+                "data": {
+                  "$from-context": {
+                    "path": "data"
+                  }
+                },
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "object"
+            }
+          }
+        ]
+      },
+      "delete-from-group-with-transfer": {
+        "title": "Удалить из группы",
+        "description": "Удалить помещение из группы и перенести в отдельную бронь",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "permissionCode": "event.edit"
+          }
+        },
+        "views": {},
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "booking/get_for_group",
+              "variables": {
+                "id": {
+                  "$from-context": {
+                    "path": "data.bookingId"
+                  }
+                }
+              },
+              "responsePath": "bookings.0",
+              "resultPath": "$booking"
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$squareForSubtract",
+              "data": {
+                "$fetch-object": {
+                  "path": "0.room.square",
+                  "data": {
+                    "$array-filter": {
+                      "array": {
+                        "$api-data-query": {
+                          "query": "booking/get_square",
+                          "variables": {
+                            "id": {
+                              "$from-context": {
+                                "path": "data.bookingId"
+                              }
+                            }
+                          },
+                          "responsePath": "object.0.rooms"
+                        }
+                      },
+                      "filter": {
+                        "===": {
+                          "operand1": {
+                            "$from-context": {
+                              "path": "$data.roomId"
+                            }
+                          },
+                          "operand2": {
+                            "$from-context": {
+                              "path": "data.roomId"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$allPriceNew",
+              "data": {
+                "$division": {
+                  "operand1": {
+                    "$from-context": {
+                      "path": "$booking.allPrice"
+                    }
+                  },
+                  "operand2": {
+                    "$from-context": {
+                      "path": "$booking.allSquare"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$allPriceWithDiscountOrMarkupNew",
+              "data": {
+                "$division": {
+                  "operand1": {
+                    "$from-context": {
+                      "path": "$booking.allPriceWithDiscountOrMarkup"
+                    }
+                  },
+                  "operand2": {
+                    "$from-context": {
+                      "path": "$booking.allSquare"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$booking.allSquare",
+              "data": {
+                "$type-conversion": {
+                  "data": {
+                    "$subtract": {
+                      "operand1": {
+                        "$from-context": {
+                          "path": "$booking.allSquare"
+                        }
+                      },
+                      "operand2": {
+                        "$from-context": {
+                          "path": "$squareForSubtract"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$booking.allPrice",
+              "data": {
+                "$type-conversion": {
+                  "data": {
+                    "$add": {
+                      "multipliers": [
+                        {
+                          "$from-context": {
+                            "path": "$allPriceNew"
+                          }
+                        },
+                        {
+                          "$from-context": {
+                            "path": "$booking.allSquare"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$booking.allPriceWithDiscountOrMarkup",
+              "data": {
+                "$type-conversion": {
+                  "data": {
+                    "$add": {
+                      "multipliers": [
+                        {
+                          "$from-context": {
+                            "path": "$allPriceWithDiscountOrMarkupNew"
+                          }
+                        },
+                        {
+                          "$from-context": {
+                            "path": "$booking.allSquare"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$booking.rooms",
+              "data": {
+                "$array-filter": {
+                  "array": {
+                    "$from-context": {
+                      "path": "$booking.rooms"
+                    }
+                  },
+                  "filter": {
+                    "!==": {
+                      "operand1": {
+                        "$from-context": {
+                          "path": "$data.roomId"
+                        }
+                      },
+                      "operand2": {
+                        "$from-context": {
+                          "path": "data.roomId"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "booking/update",
+              "variables": {
+                "data": {
+                  "$if": {
+                    "condition": {
+                      "$empty": {
+                        "data": {
+                          "$from-context": {
+                            "path": "$booking.file"
+                          }
+                        }
+                      }
+                    },
+                    "then": {
+                      "$exclude": {
+                        "data": {
+                          "$from-context": {
+                            "path": "$booking"
+                          }
+                        },
+                        "exclude": [
+                          "file",
+                          "id"
+                        ]
+                      }
+                    },
+                    "else": {
+                      "$exclude": {
+                        "data": {
+                          "$from-context": {
+                            "path": "$booking"
+                          }
+                        },
+                        "exclude": [
+                          "id"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "id": {
+                  "$from-context": {
+                    "path": "$booking.id"
+                  }
+                }
+              },
+              "responsePath": "object"
+            }
+          },
+          {
+            "$workflow-run": {
+              "workflowName": "booking",
+              "action": "to_not_filled",
+              "objectId": {
+                "$fetch-object": {
+                  "path": "0.id",
+                  "data": {
+                    "$array-filter": {
+                      "array": {
+                        "$api-data-query": {
+                          "query": "booking/in_group",
+                          "variables": {
+                            "eventId": {
+                              "$from-context": {
+                                "path": "data.eventId"
+                              }
+                            }
+                          },
+                          "responsePath": "bookings"
+                        }
+                      },
+                      "filter": {
+                        "===": {
+                          "operand1": {
+                            "$from-context": {
+                              "path": "data.roomId"
+                            }
+                          },
+                          "operand2": {
+                            "$from-context": {
+                              "path": "$data.rooms.0.roomId"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$if": {
+              "condition": {
+                "<": {
+                  "operand1": {
+                    "$length": {
+                      "data": {
+                        "$from-context": {
+                          "path": "$booking.rooms"
+                        }
+                      }
+                    }
+                  },
+                  "operand2": 2
+                }
+              },
+              "then": {
+                "$waterfall": {
+                  "arrayFunctions": [
+                    {
+                      "$api-data-query": {
+                        "query": "additional_facilities/get_for_delete",
+                        "variables": {
+                          "bookingIds": {
+                            "$from-context": {
+                              "path": "data.bookingId"
+                            }
+                          }
+                        },
+                        "responsePath": "facilities",
+                        "resultPath": "$facilities"
+                      }
+                    },
+                    {
+                      "$workflow-run-from-collection": {
+                        "workflowName": "additional_facilities",
+                        "action": "delete",
+                        "collection": {
+                          "$from-context": {
+                            "path": "$facilities"
+                          }
+                        },
+                        "objectIdPath": "id"
+                      }
+                    },
+                    {
+                      "$workflow-run": {
+                        "workflowName": "booking",
+                        "action": "to_not_filled",
+                        "objectId": {
+                          "$fetch-object": {
+                            "path": "0.id",
+                            "data": {
+                              "$array-filter": {
+                                "array": {
+                                  "$api-data-query": {
+                                    "query": "booking/in_group",
+                                    "variables": {
+                                      "eventId": {
+                                        "$from-context": {
+                                          "path": "data.eventId"
+                                        }
+                                      }
+                                    },
+                                    "responsePath": "bookings"
+                                  }
+                                },
+                                "filter": {
+                                  "===": {
+                                    "operand1": {
+                                      "$from-context": {
+                                        "path": "$booking.rooms.0.roomId"
+                                      }
+                                    },
+                                    "operand2": {
+                                      "$from-context": {
+                                        "path": "$data.rooms.0.roomId"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "$api-data-query": {
+                        "query": "request/get_for_delete",
+                        "variables": {
+                          "id": {
+                            "$from-context": {
+                              "path": "data.bookingId"
+                            }
+                          }
+                        },
+                        "responsePath": "items",
+                        "resultPath": "$requests"
+                      }
+                    },
+                    {
+                      "$workflow-run-from-collection": {
+                        "workflowName": "request",
+                        "action": "delete",
+                        "collection": {
+                          "$from-context": {
+                            "path": "$requests"
+                          }
+                        },
+                        "objectIdPath": "id"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "$workflow-run": {
+              "workflowName": "event_history",
+              "action": "create",
+              "data": {
+                "bookingId": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                },
+                "actionTitle": "Удаление брони помещения из группы",
+                "userId": {
+                  "$from-context": {
+                    "path": "$activeUserId"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "conditional": [
+            {
+              "conditions": {
+                "<": {
+                  "operand1": {
+                    "$length": {
+                      "data": {
+                        "$from-context": {
+                          "path": "$booking.rooms"
+                        }
+                      }
+                    }
+                  },
+                  "operand2": 2
+                }
+              },
+              "state": "deleted"
+            }
+          ]
+        }
+      },
+      "delete-from-group": {
+        "title": "Удалить",
+        "description": "Удаление помещения из группы и удаление отдельной брони",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "permissionCode": "event.edit"
+          }
+        },
+        "views": {},
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "booking/get_for_group",
+              "variables": {
+                "id": {
+                  "$from-context": {
+                    "path": "data.bookingId"
+                  }
+                }
+              },
+              "responsePath": "bookings.0",
+              "resultPath": "$booking"
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$squareForSubtract",
+              "data": {
+                "$fetch-object": {
+                  "path": "0.room.square",
+                  "data": {
+                    "$array-filter": {
+                      "array": {
+                        "$api-data-query": {
+                          "query": "booking/get_square",
+                          "variables": {
+                            "id": {
+                              "$from-context": {
+                                "path": "data.bookingId"
+                              }
+                            }
+                          },
+                          "responsePath": "object.0.rooms"
+                        }
+                      },
+                      "filter": {
+                        "===": {
+                          "operand1": {
+                            "$from-context": {
+                              "path": "$data.roomId"
+                            }
+                          },
+                          "operand2": {
+                            "$from-context": {
+                              "path": "data.roomId"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$allPriceNew",
+              "data": {
+                "$division": {
+                  "operand1": {
+                    "$from-context": {
+                      "path": "$booking.allPrice"
+                    }
+                  },
+                  "operand2": {
+                    "$from-context": {
+                      "path": "$booking.allSquare"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$allPriceWithDiscountOrMarkupNew",
+              "data": {
+                "$division": {
+                  "operand1": {
+                    "$from-context": {
+                      "path": "$booking.allPriceWithDiscountOrMarkup"
+                    }
+                  },
+                  "operand2": {
+                    "$from-context": {
+                      "path": "$booking.allSquare"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$booking.allSquare",
+              "data": {
+                "$type-conversion": {
+                  "data": {
+                    "$subtract": {
+                      "operand1": {
+                        "$from-context": {
+                          "path": "$booking.allSquare"
+                        }
+                      },
+                      "operand2": {
+                        "$from-context": {
+                          "path": "$squareForSubtract"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$booking.allPrice",
+              "data": {
+                "$type-conversion": {
+                  "data": {
+                    "$add": {
+                      "multipliers": [
+                        {
+                          "$from-context": {
+                            "path": "$allPriceNew"
+                          }
+                        },
+                        {
+                          "$from-context": {
+                            "path": "$booking.allSquare"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$booking.allPriceWithDiscountOrMarkup",
+              "data": {
+                "$type-conversion": {
+                  "data": {
+                    "$add": {
+                      "multipliers": [
+                        {
+                          "$from-context": {
+                            "path": "$allPriceWithDiscountOrMarkupNew"
+                          }
+                        },
+                        {
+                          "$from-context": {
+                            "path": "$booking.allSquare"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$booking.rooms",
+              "data": {
+                "$array-filter": {
+                  "array": {
+                    "$from-context": {
+                      "path": "$booking.rooms"
+                    }
+                  },
+                  "filter": {
+                    "!==": {
+                      "operand1": {
+                        "$from-context": {
+                          "path": "$data.roomId"
+                        }
+                      },
+                      "operand2": {
+                        "$from-context": {
+                          "path": "data.roomId"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "booking/update",
+              "variables": {
+                "data": {
+                  "$if": {
+                    "condition": {
+                      "$empty": {
+                        "data": {
+                          "$from-context": {
+                            "path": "$booking.file"
+                          }
+                        }
+                      }
+                    },
+                    "then": {
+                      "$exclude": {
+                        "data": {
+                          "$from-context": {
+                            "path": "$booking"
+                          }
+                        },
+                        "exclude": [
+                          "file",
+                          "id"
+                        ]
+                      }
+                    },
+                    "else": {
+                      "$exclude": {
+                        "data": {
+                          "$from-context": {
+                            "path": "$booking"
+                          }
+                        },
+                        "exclude": [
+                          "id"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "id": {
+                  "$from-context": {
+                    "path": "$booking.id"
+                  }
+                }
+              },
+              "responsePath": "object"
+            }
+          },
+          {
+            "$workflow-run": {
+              "workflowName": "booking",
+              "action": "delete",
+              "objectId": {
+                "$fetch-object": {
+                  "path": "0.id",
+                  "data": {
+                    "$array-filter": {
+                      "array": {
+                        "$api-data-query": {
+                          "query": "booking/in_group",
+                          "variables": {
+                            "eventId": {
+                              "$from-context": {
+                                "path": "data.eventId"
+                              }
+                            }
+                          },
+                          "responsePath": "bookings"
+                        }
+                      },
+                      "filter": {
+                        "===": {
+                          "operand1": {
+                            "$from-context": {
+                              "path": "data.roomId"
+                            }
+                          },
+                          "operand2": {
+                            "$from-context": {
+                              "path": "$data.rooms.0.roomId"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$if": {
+              "condition": {
+                "<": {
+                  "operand1": {
+                    "$length": {
+                      "data": {
+                        "$from-context": {
+                          "path": "$booking.rooms"
+                        }
+                      }
+                    }
+                  },
+                  "operand2": 2
+                }
+              },
+              "then": {
+                "$waterfall": {
+                  "arrayFunctions": [
+                    {
+                      "$api-data-query": {
+                        "query": "additional_facilities/get_for_delete",
+                        "variables": {
+                          "bookingIds": {
+                            "$from-context": {
+                              "path": "objectId"
+                            }
+                          }
+                        },
+                        "responsePath": "facilities",
+                        "resultPath": "$facilities"
+                      }
+                    },
+                    {
+                      "$workflow-run-from-collection": {
+                        "workflowName": "additional_facilities",
+                        "action": "delete",
+                        "collection": {
+                          "$from-context": {
+                            "path": "$facilities"
+                          }
+                        },
+                        "objectIdPath": "id"
+                      }
+                    },
+                    {
+                      "$workflow-run": {
+                        "workflowName": "booking",
+                        "action": "to_not_filled",
+                        "objectId": {
+                          "$fetch-object": {
+                            "path": "0.id",
+                            "data": {
+                              "$array-filter": {
+                                "array": {
+                                  "$api-data-query": {
+                                    "query": "booking/in_group",
+                                    "variables": {
+                                      "eventId": {
+                                        "$from-context": {
+                                          "path": "data.eventId"
+                                        }
+                                      }
+                                    },
+                                    "responsePath": "bookings"
+                                  }
+                                },
+                                "filter": {
+                                  "===": {
+                                    "operand1": {
+                                      "$from-context": {
+                                        "path": "$booking.rooms.0.roomId"
+                                      }
+                                    },
+                                    "operand2": {
+                                      "$from-context": {
+                                        "path": "$data.rooms.0.roomId"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "$api-data-query": {
+                        "query": "request/get_for_delete",
+                        "variables": {
+                          "id": {
+                            "$from-context": {
+                              "path": "data.bookingId"
+                            }
+                          }
+                        },
+                        "responsePath": "items",
+                        "resultPath": "$requests"
+                      }
+                    },
+                    {
+                      "$workflow-run-from-collection": {
+                        "workflowName": "request",
+                        "action": "delete",
+                        "collection": {
+                          "$from-context": {
+                            "path": "$requests"
+                          }
+                        },
+                        "objectIdPath": "id"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "$workflow-run": {
+              "workflowName": "event_history",
+              "action": "create",
+              "data": {
+                "bookingId": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                },
+                "actionTitle": "Удаление помещения из группы и удаление отдельной брони",
+                "userId": {
+                  "$from-context": {
+                    "path": "$activeUserId"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "conditional": [
+            {
+              "conditions": {
+                "<": {
+                  "operand1": {
+                    "$length": {
+                      "data": {
+                        "$from-context": {
+                          "path": "$booking.rooms"
+                        }
+                      }
+                    }
+                  },
+                  "operand2": 2
+                }
+              },
+              "state": "deleted"
+            }
+          ]
+        }
+      },
+      "to_group": {
+        "title": "Перемещение в группу",
+        "description": "Данная бронь входит в состав конфигурации",
+        "grants": {
+          "rbac": {
+            "enabled": false,
+            "permissionCode": "event.edit",
+            "title": "Поместить бронь помещения в группу"
+          },
+          "system": true
+        },
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "request/get_for_delete",
+              "variables": {
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "items",
+              "resultPath": "$requests"
+            }
+          },
+          {
+            "$workflow-run-from-collection": {
+              "workflowName": "request",
+              "action": "delete",
+              "collection": {
+                "$from-context": {
+                  "path": "$requests"
+                }
+              },
+              "objectIdPath": "id"
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "in_group"
+        }
+      },
+      "to_not_filled": {
+        "title": "Перемещение из группы",
+        "grants": {
+          "rbac": {
+            "enabled": false,
+            "permissionCode": "event.edit",
+            "title": "Удалить бронь помещения из группы"
+          },
+          "system": true
+        },
+        "functions": [],
+        "results": {
+          "unconditional": "not_filled"
+        }
+      },
+      "delete-configuration": {
+        "title": "Удалить",
+        "description": "Удаление конфигурации броней помещений",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "permissionCode": "event.edit",
+            "title": "Удалить конфигурацию броней помещений"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "booking/delete",
+            "mode": "popup",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "booking/get_name"
+          ]
+        },
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "booking/get_for_group",
+              "variables": {
+                "id": {
+                  "$from-context": {
+                    "path": "data.bookingId"
+                  }
+                }
+              },
+              "responsePath": "bookings.0",
+              "resultPath": "$booking"
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$roomsIds",
+              "data": {
+                "$array-map": {
+                  "array": {
+                    "$from-context": {
+                      "path": "$booking.rooms"
+                    }
+                  },
+                  "map": {
+                    "$from-context": {
+                      "path": "$data.roomId"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$workflow-run-from-collection": {
+              "workflowName": "booking",
+              "action": "delete",
+              "collection": {
+                "$array-filter": {
+                  "array": {
+                    "$array-map": {
+                      "array": {
+                        "$api-data-query": {
+                          "query": "booking/in_group",
+                          "variables": {
+                            "eventId": {
+                              "$from-context": {
+                                "path": "data.eventId"
+                              }
+                            }
+                          },
+                          "responsePath": "bookings"
+                        }
+                      },
+                      "map": {
+                        "$if": {
+                          "condition": {
+                            "$in": {
+                              "value": {
+                                "$from-context": {
+                                  "path": "$data.rooms.0.roomId"
+                                }
+                              },
+                              "array": {
+                                "$from-context": {
+                                  "path": "$roomsIds"
+                                }
+                              }
+                            }
+                          },
+                          "then": {
+                            "$from-context": {
+                              "path": "$data.id"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "filter": {
+                    "$not-empty": {
+                      "data": {
+                        "$from-context": {
+                          "path": "$data"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "objectIdPath": ""
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "additional_facilities/get_for_delete",
+              "variables": {
+                "bookingIds": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "facilities",
+              "resultPath": "$facilities"
+            }
+          },
+          {
+            "$workflow-run-from-collection": {
+              "workflowName": "additional_facilities",
+              "action": "delete",
+              "collection": {
+                "$from-context": {
+                  "path": "$facilities"
+                }
+              },
+              "objectIdPath": "id"
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "request/get_for_delete",
+              "variables": {
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "items",
+              "resultPath": "$requests"
+            }
+          },
+          {
+            "$workflow-run-from-collection": {
+              "workflowName": "request",
+              "action": "delete",
+              "collection": {
+                "$from-context": {
+                  "path": "$requests"
+                }
+              },
+              "objectIdPath": "id"
+            }
+          },
+          {
+            "$workflow-run": {
+              "workflowName": "event_history",
+              "action": "create",
+              "data": {
+                "bookingId": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                },
+                "actionTitle": "Удаление конфигурации броней помещений",
+                "userId": {
+                  "$from-context": {
+                    "path": "$activeUserId"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "deleted"
+        }
+      },
+      "disband": {
+        "title": "Расформировать",
+        "description": "Расформирование конфигурации броней помещений",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "permissionCode": "event.edit",
+            "title": "Расформировать конфигурацию броней помещений"
+          }
+        },
+        "views": {},
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "booking/get_for_group",
+              "variables": {
+                "id": {
+                  "$from-context": {
+                    "path": "data.bookingId"
+                  }
+                }
+              },
+              "responsePath": "bookings.0",
+              "resultPath": "$booking"
+            }
+          },
+          {
+            "$assign-context": {
+              "path": "$roomsIds",
+              "data": {
+                "$array-map": {
+                  "array": {
+                    "$from-context": {
+                      "path": "$booking.rooms"
+                    }
+                  },
+                  "map": {
+                    "$from-context": {
+                      "path": "$data.roomId"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "request/get_for_delete",
+              "variables": {
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "items",
+              "resultPath": "$requests"
+            }
+          },
+          {
+            "$workflow-run-from-collection": {
+              "workflowName": "request",
+              "action": "delete",
+              "collection": {
+                "$from-context": {
+                  "path": "$requests"
+                }
+              },
+              "objectIdPath": "id"
+            }
+          },
+          {
+            "$workflow-run-from-collection": {
+              "workflowName": "booking",
+              "action": "to_not_filled",
+              "collection": {
+                "$array-filter": {
+                  "array": {
+                    "$array-map": {
+                      "array": {
+                        "$api-data-query": {
+                          "query": "booking/in_group",
+                          "variables": {
+                            "eventId": {
+                              "$from-context": {
+                                "path": "data.eventId"
+                              }
+                            }
+                          },
+                          "responsePath": "bookings"
+                        }
+                      },
+                      "map": {
+                        "$if": {
+                          "condition": {
+                            "$in": {
+                              "value": {
+                                "$from-context": {
+                                  "path": "$data.rooms.0.roomId"
+                                }
+                              },
+                              "array": {
+                                "$from-context": {
+                                  "path": "$roomsIds"
+                                }
+                              }
+                            }
+                          },
+                          "then": {
+                            "$from-context": {
+                              "path": "$data.id"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "filter": {
+                    "$not-empty": {
+                      "data": {
+                        "$from-context": {
+                          "path": "$data"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "objectIdPath": ""
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "additional_facilities/get_for_delete",
+              "variables": {
+                "bookingIds": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "facilities",
+              "resultPath": "$facilities"
+            }
+          },
+          {
+            "$workflow-run-from-collection": {
+              "workflowName": "additional_facilities",
+              "action": "delete",
+              "collection": {
+                "$from-context": {
+                  "path": "$facilities"
+                }
+              },
+              "objectIdPath": "id"
+            }
+          },
+          {
+            "$workflow-run": {
+              "workflowName": "event_history",
+              "action": "create",
+              "data": {
+                "bookingId": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                },
+                "actionTitle": "Расформирование конфигурации броней помещений",
+                "userId": {
+                  "$from-context": {
+                    "path": "$activeUserId"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "deleted"
+        }
+      },
+      "delete": {
+        "title": "Удалить",
+        "description": "Удаление брони помещения",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "permissionCode": "event.edit",
+            "title": "Удалить бронь помещения"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "booking/delete",
+            "mode": "popup",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "booking/get_name"
+          ]
+        },
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "additional_facilities/get_for_delete",
+              "variables": {
+                "bookingIds": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "facilities",
+              "resultPath": "$facilities"
+            }
+          },
+          {
+            "$workflow-run-from-collection": {
+              "workflowName": "additional_facilities",
+              "action": "delete",
+              "collection": {
+                "$from-context": {
+                  "path": "$facilities"
+                }
+              },
+              "objectIdPath": "id"
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "request/get_for_delete",
+              "variables": {
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "items",
+              "resultPath": "$requests"
+            }
+          },
+          {
+            "$workflow-run-from-collection": {
+              "workflowName": "request",
+              "action": "delete",
+              "collection": {
+                "$from-context": {
+                  "path": "$requests"
+                }
+              },
+              "objectIdPath": "id"
+            }
+          },
+          {
+            "$workflow-run": {
+              "workflowName": "event_history",
+              "action": "create",
+              "data": {
+                "bookingId": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                },
+                "actionTitle": "Удаление брони помещения",
+                "userId": {
+                  "$from-context": {
+                    "path": "$activeUserId"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "deleted"
+        }
+      }
+    }
+  },
+  "states": {
+    "not_filled": {
+      "title": "Не заполнена",
+      "description": "Бронь помещений не заполнена",
+      "statesActions": [
+        "view",
+        "edit",
+        "edit_for_add_facilities",
+        "delete-from-group-with-transfer",
+        "delete-from-group",
+        "delete-configuration",
+        "to_group",
+        "disband",
+        "delete"
+      ]
+    },
+    "filled": {
+      "title": "Заполнена",
+      "description": "Бронь помещений заполнена",
+      "statesActions": [
+        "view",
+        "edit",
+        "edit_for_add_facilities",
+        "delete-from-group-with-transfer",
+        "delete-from-group",
+        "delete-configuration",
+        "to_group",
+        "disband",
+        "delete"
+      ]
+    },
+    "in_group": {
+      "title": "В группе",
+      "description": "Бронь помещений объединена в группу",
+      "statesActions": [
+        "to_not_filled",
+        "delete"
+      ]
+    },
+    "deleted": {
+      "title": "Удалена",
+      "description": "Удаленное состояние брони помещений",
+      "displaySettingsInLists": {
+        "hidden": true
+      },
+      "finish": true
+    }
+  }
+}

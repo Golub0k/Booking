@@ -1,0 +1,7 @@
+# @title: Создать экземпляры объекта "Бронь помещения"
+
+mutation ($data: CreateOneAdditionalFacilitiesRequestDataInput!) {
+  object: additionalFacilitiesRequestDataCreateOne(record: $data) {
+    id: _id
+  }
+}

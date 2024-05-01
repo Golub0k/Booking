@@ -1,0 +1,237 @@
+{
+  "defaultWorkflowAction": "index.index",
+  "title": "Открытая часть",
+  "description": "Используется для открытой части системы",
+  "schema": {
+    "widget": {
+      "name": "layout",
+      "class": {
+        "value": "public layout-wrapper layout-wrapper_public layout-wrapper_index",
+        "layout": "layout-main layout-main_public container-public",
+        "topbar": "topbar_public",
+        "leftSidebar": "sidebar_public",
+        "footer": "footer_public container-public"
+      },
+      "topbar": {
+        "type": "object",
+        "widget": {
+          "name": "container",
+          "class": {
+            "value": "p-autolayout container-public flex-row"
+          }
+        },
+        "properties": {
+          "logo": {
+            "type": "string",
+            "widget": {
+              "name": "link",
+              "options": {
+                "displayAsHtml": true,
+                "routerLink": "/index/index",
+                "viewedValue": "<div class=\"layout-logo d-flex\"><img src=\"api/settings/file/LogoForPublicSite\"></div>"
+              }
+            }
+          },
+          "topbar-user": {
+            "type": "object",
+            "widget": {
+              "name": "container",
+              "options": {
+                "visible": {
+                  "$not-empty": {
+                    "data": {
+                      "$active-user$": {
+                        "field": "_id"
+                      }
+                    }
+                  }
+                }
+              },
+              "class": {
+                "value": "topbar_public__actions p-autolayout"
+              }
+            },
+            "properties": {
+              "personal": {
+                "type": "string",
+                "widget": {
+                  "name": "button",
+                  "options": {
+                    "label": "Личный Кабинет"
+                  },
+                  "class": {
+                    "value": "cabinet-action d-none d-xxl-block"
+                  },
+                  "events": {
+                    "click": {
+                      "$navigate": {
+                        "commands": [
+                          "/cabinet/event/list"
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              "logout": {
+                "type": "string",
+                "value": "<div class=\"cabinet-action d-none d-xxl-block mrg-l-xl\" title=\"Выйти\"><i class=\"icon-logout icon_button\"></i></div>",
+                "widget": {
+                  "name": "html",
+                  "events": {
+                    "click": {
+                      "$waterfall": {
+                        "arrayFunctions": [
+                          {
+                            "$auth-logout": {}
+                          },
+                          {
+                            "$reload": null
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              "personal-mobile": {
+                "type": "string",
+                "value": "<div class=\"cabinet-action d-block d-xxl-none\" title=\"Перейти в Личный Кабинет\"><i class=\"icon-profile\"></i></div>",
+                "widget": {
+                  "name": "html",
+                  "events": {
+                    "click": {
+                      "$navigate": {
+                        "commands": [
+                          "/cabinet/event/list"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "leftSidebar": {
+        "type": "object",
+        "widget": {
+          "name": "container",
+          "class": {
+            "group": "height-100"
+          }
+        },
+        "properties": {
+          "topbar": {
+            "type": "object",
+            "widget": {
+              "name": "container",
+              "class": {
+                "group": "sidebar-top"
+              }
+            },
+            "properties": {
+              "logo": {
+                "type": "string",
+                "widget": {
+                  "name": "link",
+                  "options": {
+                    "displayAsHtml": true,
+                    "routerLink": "/",
+                    "viewedValue": "<div class=\"layout-logo\"><img src=\"api/settings/file/LogoForPersonalAccount\"></div>"
+                  },
+                  "events": {
+                    "click": {
+                      "$element-option": {
+                        "path": "#layout",
+                        "option": "leftSidebarOptions",
+                        "value": {
+                          "$assign-object": {
+                            "object": {
+                              "$element-option": {
+                                "path": "#layout",
+                                "option": "leftSidebarOptions"
+                              }
+                            },
+                            "path": "visible",
+                            "data": false
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "footer": {
+        "type": "object",
+        "widget": {
+          "name": "container"
+        },
+        "properties": {
+          "footer-wrap": {
+            "type": "object",
+            "widget": {
+              "name": "container"
+            },
+            "properties": {
+              "contacts": {
+                "type": "object",
+                "widget": {
+                  "name": "container",
+                  "options": {
+                    "visible": false
+                  },
+                  "class": {
+                    "value": "footer__item__links__contacts p-autolayout"
+                  }
+                },
+                "properties": {
+                  "logo": {
+                    "type": "string",
+                    "widget": {
+                      "name": "link",
+                      "options": {
+                        "displayAsHtml": true,
+                        "href": "/",
+                        "viewedValue": "<div class=\"layout-logo\"><img src=\"api/settings/file/LogoForPublicSite\"></div>"
+                      },
+                      "class": {
+                        "link": "footer__item__link"
+                      }
+                    }
+                  }
+                }
+              },
+              "links-wrapper": {
+                "type": "object",
+                "widget": {
+                  "name": "container",
+                  "class": {
+                    "value": "footer__item__links__wrapper p-autolayout p-jc-end"
+                  }
+                },
+                "properties": {
+                  "developer": {
+                    "type": "string",
+                    "value": "<a href=\"https://www.effective-group.ru/\" title=\"Перейти на сайт Effective Technologies\" target=\"_blank\" class=\"footer__item__link\">\n        <span class=\"footer__item__content d-none d-xs-block\">\n          <span class=\"item-title\">Разработано в</span>\n        </span>\n        <i class=\"footer__item__right-icon icon-developer\"></i>\n      </a>",
+                    "widget": {
+                      "name": "html",
+                      "class": {
+                        "value": "footer__item footer__item_developer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

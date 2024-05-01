@@ -1,0 +1,9 @@
+{
+  items: roomTypeGet(
+    sort: { field: name, type: ASC }
+    filter: { state: "active" }
+  ) {
+    id: _id
+    name
+  }
+}

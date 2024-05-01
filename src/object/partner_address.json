@@ -1,0 +1,37 @@
+{
+  "type": "object",
+  "title": "Адрес контрагента",
+  "properties": {
+    "type": {
+      "type": "string",
+      "fieldDescription": "Тип",
+      "required": true,
+      "enum": [
+        "legal",
+        "mail"
+      ]
+    },
+    "partnerId": {
+      "type": "string",
+      "fieldDescription": "ID контрагента",
+      "required": true,
+      "ref": "Partner",
+      "refAlias": "partner",
+      "refField": "_id",
+      "inversedBy": "addressPartnerId"
+    },
+    "sameAsLegal": {
+      "type": "boolean",
+      "fieldDescription": "Почтовый адрес совпадает с юридическим или нет"
+    },
+    "address": {
+      "type": "string",
+      "fieldDescription": "Адрес",
+      "required": true,
+      "trim": true
+    }
+  },
+  "settings": {
+    "preview": "_id"
+  }
+}

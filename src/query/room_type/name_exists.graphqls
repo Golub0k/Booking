@@ -1,0 +1,13 @@
+# @title: Кол-во экземпляров объекта "Тип помещения" с заданным наименование
+
+query ($name: String!, $except: MongoID) {
+  count: roomTypeCount(
+    filter: {
+      AND: [
+        { _operators: { _id: { ne: $except } } }
+        { _operators: { state: { ne: "deleted" } } }
+        { name: $name }
+      ]
+    }
+  )
+}

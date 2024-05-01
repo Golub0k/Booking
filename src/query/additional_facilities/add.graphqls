@@ -1,0 +1,5 @@
+mutation ($data: [CreateAdditionalFacilitiesInput!]!) {
+  object: additionalFacilitiesCreate(records: $data) {
+    id: recordIds
+  }
+}

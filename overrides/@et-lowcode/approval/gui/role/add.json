@@ -1,0 +1,268 @@
+{
+  "@title": "Добавление роли",
+  "type": "object",
+  "model": "/",
+  "widget": {
+    "name": "container"
+  },
+  "properties": {
+    "breadcrumbs": {
+      "type": "object",
+      "widget": {
+        "name": "breadcrumb",
+        "mobileItems": [
+          {
+            "label": "Роли пользователей",
+            "routerLink": "/cabinet/user-role/list"
+          }
+        ],
+        "items": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          },
+          {
+            "label": "Роли пользователей",
+            "routerLink": "/cabinet/user-role/list"
+          },
+          {
+            "label": "Добавление роли"
+          }
+        ],
+        "kind": "breadcrumb-breadcrumbs-container-style"
+      }
+    },
+    "form": {
+      "type": "object",
+      "model": "#data",
+      "widget": {
+        "name": "form",
+        "options": {
+          "label": "Добавление роли"
+        },
+        "kind": "form-form-group-with-h1-style"
+      },
+      "properties": {
+        "name": {
+          "type": "string",
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$not-empty": {
+                    "data": {
+                      "$var": {
+                        "path": "."
+                      }
+                    }
+                  }
+                },
+                "message": "Обязательно для заполнения"
+              },
+              "events": [
+                "onUpdate",
+                "onBackend"
+              ]
+            },
+            {
+              "type": "schema",
+              "params": {
+                "rule": "$ref:rule-validation:snippets/validation/checks/length-255",
+                "message": "Максимум 255 символов"
+              },
+              "events": [
+                "onUpdate",
+                "onBackend"
+              ]
+            },
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "===": {
+                    "operand1": 0,
+                    "operand2": {
+                      "$fetch-object": {
+                        "path": "data.count",
+                        "data": {
+                          "$api-data": {
+                            "query": "role/role_exists",
+                            "variables": {
+                              "except": {
+                                "$query-params": {
+                                  "name": "id",
+                                  "filter": false
+                                }
+                              },
+                              "name": {
+                                "$var": {
+                                  "path": "."
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "message": "Роль с таким наименованием уже добавлена в Систему"
+              },
+              "events": [
+                "onBackend"
+              ]
+            }
+          ],
+          "widget": {
+            "name": "input",
+            "options": {
+              "label": "Наименование"
+            },
+            "kind": "input-text-input-required-style"
+          }
+        },
+        "permissions": {
+          "type": "any",
+          "value": [],
+          "widget": {
+            "name": "tree",
+            "options": {
+              "label": "Привилегии",
+              "valueKey": "label",
+              "selectionMode": "checkbox",
+              "key": "id",
+              "valueOptions": {
+                "$fetch-object": {
+                  "path": "data.tree",
+                  "data": {
+                    "$api-data": {
+                      "workflow": "user-role",
+                      "action": "add",
+                      "query": "role/permissions"
+                    }
+                  }
+                }
+              }
+            },
+            "class": {
+              "group": "form-item p-field p-grid p-fluid",
+              "label": "form-label form-label_required p-xs-12 p-md-4 p-xl-3",
+              "value": "p-xl-9 p-xs-12"
+            }
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  ">": {
+                    "operand1": {
+                      "$length": {
+                        "data": {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$var": {
+                                    "path": "#data.permissions"
+                                  }
+                                }
+                              }
+                            },
+                            "then": {
+                              "$var": {
+                                "path": "#data.permissions"
+                              }
+                            },
+                            "else": []
+                          }
+                        }
+                      }
+                    },
+                    "operand2": 0
+                  }
+                },
+                "message": "Необходимо выбрать хотя бы одну привилегию"
+              },
+              "events": [
+                "onUpdate"
+              ]
+            }
+          ]
+        },
+        "actions": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "group": "form-actions p-field p-grid mrg-t-lg",
+              "value": "p-jc-xs-end p-autolayout"
+            }
+          },
+          "properties": {
+            "button_add": {
+              "widget": {
+                "name": "submit-button",
+                "options": {
+                  "label": "Добавить",
+                  "clientValidation": true,
+                  "dataForClientValidation": "/",
+                  "showClientValidationErrorsForElement": "form",
+                  "showClientValidationErrorMessage": true,
+                  "clientValidationErrorMessageSummary": "Ошибка",
+                  "clientValidationErrorMessageDetail": "Одно или несколько полей заполнены некорректно",
+                  "workflowAction": "user-role.add",
+                  "workflowObjectId": {
+                    "$query-params": {
+                      "name": "id"
+                    }
+                  },
+                  "dataForSubmit": {
+                    "$var": {
+                      "path": "#data"
+                    }
+                  },
+                  "showSuccessMessage": true,
+                  "successMessageSummary": "Добавление роли",
+                  "successMessageDetail": "Роль успешно добавлена",
+                  "urlInCaseOfSuccess": "/cabinet/user-role/list",
+                  "showServerValidationErrorMessage": true,
+                  "serverValidationErrorMessageSummary": "Добавление роли",
+                  "serverValidationErrorMessageDetail": "Форма содержит ошибки",
+                  "showOtherErrorMessageSummary": true,
+                  "otherErrorMessageSummary": "Добавление роли",
+                  "otherErrorMessageDetail": "Непредвиденная ошибка",
+                  "reloadTable": true,
+                  "closePopup": false
+                },
+                "class": {
+                  "value": "mrg-r-sm"
+                }
+              }
+            },
+            "button_cancel": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Отмена"
+                },
+                "events": {
+                  "click": {
+                    "$go": {
+                      "workflow": "user-role",
+                      "action": "list"
+                    }
+                  }
+                },
+                "class": {
+                  "value": "button_outline mrg-r-0 mrg-b-0"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

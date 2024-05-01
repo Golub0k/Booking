@@ -1,0 +1,17 @@
+{
+  "backend-validation": {
+    "enabled": true,
+    "options": {
+      "schema": "industry/edit",
+      "data": {
+        "$post-params": {
+          "name": null
+        }
+      },
+      "path": "#data"
+    },
+    "states": [
+      "active"
+    ]
+  }
+}

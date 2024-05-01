@@ -1,0 +1,228 @@
+{
+  "@title": "Подтверждение блокировки контрагента",
+  "@preload": {
+    "partner": {
+      "$from-context": {
+        "path": "$response.body.data.user",
+        "data": {
+          "$api-data": {
+            "query": "partner/get_name",
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            },
+            "options": {
+              "observe": "response"
+            },
+            "variables": {
+              "id": {
+                "$query-params": {
+                  "name": "id"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "widget": {
+    "name": "container"
+  },
+  "model": "/",
+  "properties": {
+    "form": {
+      "type": "object",
+      "model": "#data",
+      "widget": {
+        "name": "form",
+        "options": {
+          "label": "Подтверждение блокировки"
+        },
+        "kind": "form-popup-with-h1-style"
+      },
+      "properties": {
+        "text": {
+          "type": "string",
+          "model": false,
+          "widget": {
+            "name": "html",
+            "class": {
+              "value": "mrg-b-lg"
+            }
+          },
+          "value": {
+            "$replace": {
+              "template": "<p>Вы действительно хотите заблокировать контрагента {{0}}?</p>",
+              "data": [
+                {
+                  "$from-context": {
+                    "path": "@preload.partner.name"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "reason": {
+          "type": "string",
+          "widget": {
+            "name": "textarea",
+            "options": {
+              "label": "Причина блокировки"
+            },
+            "class": {
+              "label": "form-label form-label_required",
+              "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+            }
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$not-empty": {
+                    "data": {
+                      "$var": {
+                        "path": "."
+                      }
+                    }
+                  }
+                },
+                "message": "Обязательно для заполнения"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            }
+          ]
+        },
+        "actions": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "group": "form-actions p-field p-grid mrg-t-lg",
+              "value": "p-jc-xl-end p-autolayout"
+            }
+          },
+          "properties": {
+            "block": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Заблокировать"
+                },
+                "events": {
+                  "click": {
+                    "$if": {
+                      "condition": {
+                        "$validate": {
+                          "path": "/"
+                        }
+                      },
+                      "then": {
+                        "$waterfall": {
+                          "arrayFunctions": [
+                            "$ref:operation-frontend:snippets/element/_loading/onclick-loading-enable",
+                            {
+                              "$http-code": {
+                                "200": [
+                                  {
+                                    "$event-bus-publish": {
+                                      "type": "reload-table"
+                                    }
+                                  },
+                                  {
+                                    "$navigate-by-url": {
+                                      "url": "/cabinet/partner/list"
+                                    }
+                                  },
+                                  {
+                                    "$message": {
+                                      "severity": "success",
+                                      "summary": "Блокировка контрагента",
+                                      "detail": "Контрагент успешно заблокирован"
+                                    }
+                                  }
+                                ],
+                                "422": [
+                                  "$ref:operation-frontend:snippets/element/_loading/onclick-loading-disable",
+                                  {
+                                    "$validate": {
+                                      "errors": {
+                                        "$from-context": {
+                                          "path": "$response.error.errors"
+                                        }
+                                      }
+                                    }
+                                  }
+                                ],
+                                "client": {
+                                  "$api-workflow": {
+                                    "type": "post",
+                                    "options": {
+                                      "observe": "response"
+                                    },
+                                    "workflow": "partner",
+                                    "action": "block",
+                                    "id": {
+                                      "$query-params": {
+                                        "name": "id"
+                                      }
+                                    },
+                                    "data": {
+                                      "$var": {
+                                        "path": "#data"
+                                      }
+                                    }
+                                  }
+                                },
+                                "default": [
+                                  "$ref:operation-frontend:snippets/element/_loading/onclick-loading-disable",
+                                  {
+                                    "$message": {
+                                      "severity": "error",
+                                      "summary": "Блокировка контрагента",
+                                      "detail": "Непредвиденная ошибка"
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "else": {
+                        "$form-control-mark": {
+                          "key": "form"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "cancel": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Отмена"
+                },
+                "events": {
+                  "click": {
+                    "$close-popup": null
+                  }
+                },
+                "kind": "button-btn-outline-last-style"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

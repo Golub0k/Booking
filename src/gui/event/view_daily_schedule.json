@@ -1,0 +1,646 @@
+{
+  "@title": "Просмотр расписания на день для помещения",
+  "@preload": {
+    "room": {
+      "$from-context": {
+        "path": "$response.body.data.object.0",
+        "data": {
+          "$api-data": {
+            "query": "room/get_name",
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            },
+            "options": {
+              "observe": "response"
+            },
+            "variables": {
+              "id": {
+                "$query-params": {
+                  "name": "id"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "widget": {
+    "name": "container"
+  },
+  "model": "/",
+  "properties": {
+    "booking": {
+      "type": "object",
+      "model": "#modalBooking",
+      "widget": {
+        "name": "form"
+      },
+      "properties": {
+        "day": {
+          "type": "info",
+          "widget": {
+            "name": "hidden"
+          },
+          "value": {
+            "$apply-func": {
+              "func": "$ref:js:event/change-date-format",
+              "args": {
+                "inputDate": {
+                  "$query-params": {
+                    "name": "date"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "header": {
+          "type": "string",
+          "model": false,
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": {
+                "$replace": {
+                  "template": "{{name}} - расписание {{day}}",
+                  "data": {
+                    "name": {
+                      "$from-context": {
+                        "path": "@preload.room.name"
+                      }
+                    },
+                    "day": {
+                      "$date-format": {
+                        "template": "DD.MM.YYYY",
+                        "nameZone": "ETC/GMT+0",
+                        "value": {
+                          "$subs": {
+                            "path": "#modalBooking.day"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "class": {
+              "group": "popup",
+              "label": "h1 mrg-b-lg"
+            }
+          }
+        },
+        "table": {
+          "value": {
+            "$array-filter": {
+              "array": {
+                "$apply-func": {
+                  "func": " const merged = data.flat(Infinity); let result = [...new Set(merged)]; return result",
+                  "args": {
+                    "data": {
+                      "$array-map": {
+                        "array": {
+                          "$fetch-object": {
+                            "path": "data.items",
+                            "data": {
+                              "$api-data": {
+                                "query": "booking/get_for_views_daily_schedule",
+                                "id": {
+                                  "$query-params": {
+                                    "name": "id"
+                                  }
+                                },
+                                "variables": {
+                                  "dateFrom": {
+                                    "$date-add": {
+                                      "date": {
+                                        "$subs": {
+                                          "path": "#modalBooking.day"
+                                        }
+                                      },
+                                      "number": -3,
+                                      "interval": "h"
+                                    }
+                                  },
+                                  "dateTo": {
+                                    "$date-add": {
+                                      "date": {
+                                        "$formatter": {
+                                          "format": "datetime:\"YYYY-MM-DDT23:59:59+00:00\"",
+                                          "data": {
+                                            "$subs": {
+                                              "path": "#modalBooking.day"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "number": -3,
+                                      "interval": "h"
+                                    }
+                                  },
+                                  "roomId": {
+                                    "$query-params": {
+                                      "name": "id"
+                                    }
+                                  }
+                                },
+                                "errors": {
+                                  "default": {
+                                    "$message": {
+                                      "severity": "error",
+                                      "summary": "Ошибка",
+                                      "detail": "При загрузке данных произошла ошибка, повторите попытку позднее"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "map": {
+                          "$waterfall": {
+                            "arrayFunctions": [
+                              {
+                                "$if": {
+                                  "condition": {
+                                    "$not-empty": {
+                                      "data": {
+                                        "$from-context": {
+                                          "path": "$data.installationDates"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "then": {
+                                    "$array-map": {
+                                      "array": {
+                                        "$from-context": {
+                                          "path": "$data.installationDates"
+                                        }
+                                      },
+                                      "map": {
+                                        "date": {
+                                          "$from-context": {
+                                            "path": "$data.1.startTime"
+                                          }
+                                        },
+                                        "bookingPeriod": {
+                                          "$replace": {
+                                            "template": "{{0}} - {{1}}",
+                                            "data": [
+                                              {
+                                                "$date-format": {
+                                                  "template": "DD.MM.YYYY HH:mm",
+                                                  "nameZone": "ETC/GMT+0",
+                                                  "value": {
+                                                    "$from-context": {
+                                                      "path": "$data.0.minInstallationDates"
+                                                    }
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "$date-format": {
+                                                  "template": "DD.MM.YYYY HH:mm",
+                                                  "nameZone": "ETC/GMT+0",
+                                                  "value": {
+                                                    "$from-context": {
+                                                      "path": "$data.0.maxInstallationDates"
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "eventId": {
+                                          "$from-context": {
+                                            "path": "$data.0.eventId"
+                                          }
+                                        },
+                                        "name": {
+                                          "$from-context": {
+                                            "path": "$data.0.event.name"
+                                          }
+                                        },
+                                        "state": {
+                                          "$from-context": {
+                                            "path": "$data.0.event.state"
+                                          }
+                                        },
+                                        "period": "Монтаж"
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "$array-map": {
+                                  "array": {
+                                    "$from-context": {
+                                      "path": "$data.eventDates"
+                                    }
+                                  },
+                                  "map": {
+                                    "date": {
+                                      "$from-context": {
+                                        "path": "$data.1.startTime"
+                                      }
+                                    },
+                                    "bookingPeriod": {
+                                      "$replace": {
+                                        "template": "{{0}} - {{1}}",
+                                        "data": [
+                                          {
+                                            "$date-format": {
+                                              "template": "DD.MM.YYYY HH:mm",
+                                              "nameZone": "ETC/GMT+0",
+                                              "value": {
+                                                "$from-context": {
+                                                  "path": "$data.0.minEventDates"
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "$date-format": {
+                                              "template": "DD.MM.YYYY HH:mm",
+                                              "nameZone": "ETC/GMT+0",
+                                              "value": {
+                                                "$from-context": {
+                                                  "path": "$data.0.maxEventDates"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "eventId": {
+                                      "$from-context": {
+                                        "path": "$data.0.eventId"
+                                      }
+                                    },
+                                    "name": {
+                                      "$from-context": {
+                                        "path": "$data.0.event.name"
+                                      }
+                                    },
+                                    "state": {
+                                      "$from-context": {
+                                        "path": "$data.0.event.state"
+                                      }
+                                    },
+                                    "period": "Проведение мероприятия"
+                                  }
+                                }
+                              },
+                              {
+                                "$if": {
+                                  "condition": {
+                                    "$not-empty": {
+                                      "data": {
+                                        "$from-context": {
+                                          "path": "$data.deinstallationDates"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "then": {
+                                    "$array-map": {
+                                      "array": {
+                                        "$from-context": {
+                                          "path": "$data.deinstallationDates"
+                                        }
+                                      },
+                                      "map": {
+                                        "date": {
+                                          "$from-context": {
+                                            "path": "$data.1.startTime"
+                                          }
+                                        },
+                                        "bookingPeriod": {
+                                          "$replace": {
+                                            "template": "{{0}} - {{1}}",
+                                            "data": [
+                                              {
+                                                "$date-format": {
+                                                  "template": "DD.MM.YYYY HH:mm",
+                                                  "nameZone": "ETC/GMT+0",
+                                                  "value": {
+                                                    "$from-context": {
+                                                      "path": "$data.0.minDeinstallationDates"
+                                                    }
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "$date-format": {
+                                                  "template": "DD.MM.YYYY HH:mm",
+                                                  "nameZone": "ETC/GMT+0",
+                                                  "value": {
+                                                    "$from-context": {
+                                                      "path": "$data.0.maxDeinstallationDates"
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "eventId": {
+                                          "$from-context": {
+                                            "path": "$data.0.eventId"
+                                          }
+                                        },
+                                        "name": {
+                                          "$from-context": {
+                                            "path": "$data.0.event.name"
+                                          }
+                                        },
+                                        "state": {
+                                          "$from-context": {
+                                            "path": "$data.0.event.state"
+                                          }
+                                        },
+                                        "period": "Демонтаж"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "filter": {
+                "$and": {
+                  "operands": [
+                    {
+                      "$not-empty": {
+                        "data": {
+                          "$from-context": {
+                            "path": "$data"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "===": {
+                        "operand1": {
+                          "$date-format": {
+                            "template": "DD.MM.YYYY",
+                            "nameZone": "ETC/GMT+0",
+                            "value": {
+                              "$from-context": {
+                                "path": "$data.date"
+                              }
+                            }
+                          }
+                        },
+                        "operand2": {
+                          "$date-format": {
+                            "template": "DD.MM.YYYY",
+                            "nameZone": "ETC/GMT+0",
+                            "value": {
+                              "$subs": {
+                                "path": "#modalBooking.day"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "type": "array",
+          "widget": {
+            "name": "table",
+            "options": {
+              "first": 0,
+              "paginator": false,
+              "rows": 20,
+              "routerOptions": [
+                "first",
+                "rows"
+              ]
+            },
+            "class": {
+              "value": "data-table d-block mrg-b-s"
+            }
+          },
+          "items": {
+            "type": "object",
+            "properties": {
+              "number": {
+                "type": "number",
+                "widget": {
+                  "name": "table-column",
+                  "options": {
+                    "label": "№",
+                    "viewedValue": {
+                      "$collection": {
+                        "action": "row-number"
+                      }
+                    }
+                  },
+                  "class": {
+                    "header": "column_actions",
+                    "cell": "column_actions"
+                  }
+                }
+              },
+              "name": {
+                "type": "string",
+                "widget": {
+                  "name": "table-column",
+                  "options": {
+                    "visible": false
+                  }
+                }
+              },
+              "eventNameView": {
+                "type": "object",
+                "widget": {
+                  "name": "table-column",
+                  "options": {
+                    "label": "Мероприятие",
+                    "visible": true
+                  }
+                },
+                "properties": {
+                  "nameText": {
+                    "type": "string",
+                    "widget": {
+                      "name": "info",
+                      "options": {
+                        "visible": {
+                          "$not": {
+                            "data": {
+                              "$active-user-has-permission": {
+                                "permission": {
+                                  "$replace": {
+                                    "template": "event.view.{{state}}",
+                                    "data": {
+                                      "state": {
+                                        "$from-context": {
+                                          "path": "$rowData.state"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "viewedValue": {
+                          "$from-context": {
+                            "path": "$rowData.name"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "nameLink": {
+                    "type": "string",
+                    "widget": {
+                      "name": "link",
+                      "options": {
+                        "target": "_blank",
+                        "routerLink": "/cabinet/event/view",
+                        "queryParams": {
+                          "id": {
+                            "$from-context": {
+                              "path": "$rowData.eventId"
+                            }
+                          }
+                        },
+                        "visible": {
+                          "$active-user-has-permission": {
+                            "permission": {
+                              "$replace": {
+                                "template": "event.view.{{state}}",
+                                "data": {
+                                  "state": {
+                                    "$from-context": {
+                                      "path": "$rowData.state"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "viewedValue": {
+                          "$from-context": {
+                            "path": "$rowData.name"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "bookingPeriod": {
+                "type": "string",
+                "widget": {
+                  "name": "table-column",
+                  "options": {
+                    "label": "Даты брони помещения"
+                  }
+                }
+              },
+              "period": {
+                "type": "string",
+                "widget": {
+                  "name": "table-column",
+                  "options": {
+                    "label": "Этап"
+                  }
+                }
+              },
+              "state": {
+                "type": "string",
+                "widget": {
+                  "name": "table-column",
+                  "options": {
+                    "visible": false
+                  }
+                }
+              },
+              "stateView": {
+                "type": "object",
+                "widget": {
+                  "name": "table-column",
+                  "options": {
+                    "label": "Статус мероприятия"
+                  }
+                },
+                "properties": {
+                  "stateView": {
+                    "type": "string",
+                    "value": {
+                      "$from-context": {
+                        "path": "$rowData.state"
+                      }
+                    },
+                    "widget": {
+                      "name": "badge",
+                      "options": {
+                        "defaultLabel": "",
+                        "displayMapping": [
+                          {
+                            "color": "badge_default",
+                            "label": "Предварительная бронь",
+                            "value": "pre_booking"
+                          },
+                          {
+                            "color": "badge_warning",
+                            "label": "Получен запрос",
+                            "value": "requested"
+                          },
+                          {
+                            "color": "badge_custom_orange",
+                            "label": "Получено ТЗ",
+                            "value": "task_received"
+                          },
+                          {
+                            "color": "badge_active",
+                            "label": "Согласована смета",
+                            "value": "agreed"
+                          },
+                          {
+                            "color": "badge_accent",
+                            "label": "Пройден check-in",
+                            "value": "check_in"
+                          },
+                          {
+                            "color": "badge_canceled",
+                            "label": "Пройден check-out",
+                            "value": "check_out"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "access-control": [
+    {
+      "description": "Отображение действия по типу заявки",
+      "rules": {
+        "$in": {
+          "value": {
+            "$from-context": {
+              "path": "$actionContext.type"
+            }
+          },
+          "array": [
+            "edit_booking",
+            "edit_booking_cost"
+          ]
+        }
+      },
+      "error": {
+        "status": 403,
+        "message": "Запрещено"
+      },
+      "states": [
+        "new",
+        "on_approve"
+      ]
+    }
+  ]
+}

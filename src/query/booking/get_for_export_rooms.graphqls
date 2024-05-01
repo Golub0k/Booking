@@ -1,0 +1,75 @@
+# @title: Получить список броней помещений для отчета
+
+query ($dateFrom: DateTime, $dateTo: DateTime, $rooms: [String]) {
+  items: bookingGet(
+    filter: {
+      AND: [
+        { _operators: { rooms: { roomId: { in: $rooms } } } }
+        {
+          OR: [
+            {
+              AND: [
+                { _operators: { maxDate: { gte: $dateFrom } } }
+                { _operators: { maxDate: { lte: $dateTo } } }
+              ]
+            }
+            {
+              AND: [
+                { _operators: { minDate: { gte: $dateFrom } } }
+                { _operators: { minDate: { lte: $dateTo } } }
+              ]
+            }
+            {
+              AND: [
+                { _operators: { minDate: { gte: $dateFrom } } }
+                { _operators: { maxDate: { lte: $dateTo } } }
+              ]
+            }
+            {
+              AND: [
+                { _operators: { minDate: { lte: $dateTo } } }
+                { _operators: { maxDate: { gte: $dateFrom } } }
+              ]
+            }
+          ]
+        }
+        { state: "filled" }
+        {
+          _filterRef: {
+            eventId: {
+              _operators: {
+                state: { nin: ["new", "draft", "canceled", "deleted"] }
+                actual: { ne: false }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ) {
+    id: _id
+    rooms {
+      room {
+        name
+      }
+    }
+    event {
+      name
+      state
+    }
+    installationDates {
+      startTime
+      endTime
+    }
+    eventDates {
+      startTime
+      endTime
+    }
+    deinstallationDates {
+      startTime
+      endTime
+    }
+    minDate
+    maxDate
+  }
+}

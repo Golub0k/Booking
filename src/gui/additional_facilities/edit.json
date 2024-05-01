@@ -1,0 +1,1896 @@
+{
+  "@title": "Редактирование дополнительной услуги для мероприятия",
+  "@preload": {
+    "service": {
+      "$from-context": {
+        "path": "$response.body.data.items.0",
+        "data": {
+          "$api-data": {
+            "options": {
+              "observe": "response"
+            },
+            "workflow": "additional_facilities",
+            "action": "edit",
+            "id": "$ref:operation-frontend:snippets/element/_api/api-data-optional-id",
+            "query": "additional_facilities/get",
+            "variables": {
+              "id": {
+                "$query-params": {
+                  "name": "id"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "model": "#data",
+  "widget": {
+    "name": "container"
+  },
+  "properties": {
+    "breadcrumbs": {
+      "type": "object",
+      "model": false,
+      "widget": {
+        "name": "breadcrumb",
+        "mobileItems": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          }
+        ],
+        "items": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          },
+          {
+            "label": {
+              "$from-context": {
+                "path": "@preload.service.event.name"
+              }
+            },
+            "routerLink": "/cabinet/event/view",
+            "queryParams": {
+              "id": {
+                "$query-params": {
+                  "name": "eventId"
+                }
+              }
+            }
+          },
+          {
+            "label": "Редактирование мероприятия",
+            "routerLink": "/cabinet/event/edit",
+            "queryParams": {
+              "id": {
+                "$query-params": {
+                  "name": "eventId"
+                }
+              },
+              "widgets_options": "{\"form.tabs\":{\"selectedKey\":\"rent\"}}"
+            }
+          },
+          {
+            "label": "Редактирование брони дополнительной услуги к мероприятию"
+          }
+        ],
+        "class": {
+          "group": "p-xs-auto mrg-b-md"
+        }
+      }
+    },
+    "form": {
+      "type": "object",
+      "model": "#data",
+      "value": {
+        "$json-model": {
+          "data": {
+            "$from-context": {
+              "path": "@preload.service"
+            }
+          },
+          "alias": "#data"
+        }
+      },
+      "widget": {
+        "name": "form",
+        "options": {
+          "label": "Редактирование брони дополнительной услуги к мероприятию"
+        },
+        "class": {
+          "label": "h1 mrg-b-xl"
+        }
+      },
+      "properties": {
+        "mainInfo": {
+          "type": "object",
+          "model": false,
+          "widget": {
+            "name": "container",
+            "options": {
+              "label": "Основные сведения о дополнительной услуге"
+            },
+            "class": {
+              "label": "h2 mrg-b-md",
+              "value": "mrg-b-xl"
+            }
+          },
+          "properties": {
+            "additionalService": {
+              "type": "object",
+              "widget": {
+                "name": "container"
+              },
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "widget": {
+                    "name": "input",
+                    "options": {
+                      "disabled": true,
+                      "label": "Наименование услуги"
+                    },
+                    "class": {
+                      "group": "form-item p-field p-grid p-fluid",
+                      "label": "form-label form-label p-xs-12 p-md-4 p-xl-3",
+                      "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+                    }
+                  }
+                },
+                "unit": {
+                  "type": "string",
+                  "widget": {
+                    "name": "hidden"
+                  }
+                },
+                "serviceTypeId": {
+                  "type": "string",
+                  "widget": {
+                    "name": "dropdown",
+                    "options": {
+                      "label": "Тип услуги",
+                      "disabled": true,
+                      "dataKey": "id",
+                      "valueKey": "id",
+                      "optionLabel": "name",
+                      "placeholder": "Выбрать",
+                      "filter": true,
+                      "valueOptions": {
+                        "$fetch-object": {
+                          "path": "data.items",
+                          "data": {
+                            "$api-data": {
+                              "query": "services_type/get_for_select",
+                              "id": {
+                                "$query-params": {
+                                  "name": "id"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "class": {
+                      "group": "form-item p-field p-grid p-fluid",
+                      "label": "form-label form-label p-xs-12 p-md-4 p-xl-3",
+                      "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+                    }
+                  }
+                },
+                "comment": {
+                  "type": "string",
+                  "widget": {
+                    "name": "textarea",
+                    "options": {
+                      "disabled": true,
+                      "label": "Описание",
+                      "rows": 6,
+                      "maxlength": 4000
+                    },
+                    "class": {
+                      "group": "form-item p-field p-grid p-fluid",
+                      "label": "form-label form-label p-xs-12 p-md-4 p-xl-3",
+                      "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+                    }
+                  }
+                }
+              }
+            },
+            "bookingComment": {
+              "type": "string",
+              "model": "#data.bookingComment",
+              "widget": {
+                "name": "textarea",
+                "options": {
+                  "label": "Комментарий",
+                  "rows": 6,
+                  "maxlength": 4000
+                },
+                "class": {
+                  "group": "form-item p-field p-grid p-fluid",
+                  "label": "form-label form-label p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+                }
+              }
+            }
+          }
+        },
+        "costCalculation": {
+          "type": "object",
+          "model": false,
+          "widget": {
+            "name": "container",
+            "options": {
+              "label": "Расчет стоимости дополнительной услуги"
+            },
+            "class": {
+              "label": "h2 mrg-b-md",
+              "value": "mrg-b-xl"
+            }
+          },
+          "properties": {
+            "quantity": {
+              "type": "number",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "inputmask": {
+                    "alias": "integer",
+                    "groupSeparator": " ",
+                    "rightAlign": false,
+                    "autoGroup": true,
+                    "allowMinus": false,
+                    "integerDigits": 10
+                  },
+                  "label": "Необходимое количество"
+                },
+                "append": {
+                  "type": "string",
+                  "value": {
+                    "$if": {
+                      "condition": {
+                        "$empty": {
+                          "data": {
+                            "$var": {
+                              "path": "#data.additionalService.unit"
+                            }
+                          }
+                        }
+                      },
+                      "then": "шт.",
+                      "else": {
+                        "$var": {
+                          "path": "#data.additionalService.unit"
+                        }
+                      }
+                    }
+                  },
+                  "widget": {
+                    "name": "info",
+                    "class": {
+                      "group": "text-addon text-addon_right"
+                    }
+                  }
+                },
+                "class": {
+                  "group": "form-item p-field p-grid p-fluid",
+                  "label": "form-label form-label_required p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+                },
+                "events": {
+                  "change": {
+                    "$event-bus-publish": {
+                      "type": "quantity-change",
+                      "publisher": "quantity",
+                      "next": {
+                        "$var": {
+                          "path": "#data.quantity"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$not-empty": {
+                        "data": {
+                          "$var": {
+                            "path": "."
+                          }
+                        }
+                      }
+                    },
+                    "message": "Поле обязательно для заполнения"
+                  },
+                  "events": [
+                    "onUpdate"
+                  ]
+                }
+              ]
+            },
+            "discountOrMarkupFlag": {
+              "type": "string",
+              "widget": {
+                "name": "radio-button",
+                "options": {
+                  "label": "Применить скидку/наценку",
+                  "valueKey": "code",
+                  "optionLabel": "name",
+                  "valueOptions": [
+                    {
+                      "code": "no",
+                      "name": "Не применять"
+                    },
+                    {
+                      "code": "discount",
+                      "name": "Применить скидку"
+                    },
+                    {
+                      "code": "markup",
+                      "name": "Применить наценку"
+                    }
+                  ]
+                },
+                "class": {
+                  "group": "form-item form-item_radio p-field p-grid p-fluid",
+                  "label": "form-label form-label mrg-t-0 p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element p-xs-12 p-md-6 p-xl-4 p-flex-column",
+                  "item": "form-item_radio__item width-100"
+                },
+                "events": {
+                  "change": {
+                    "$waterfall": {
+                      "arrayFunctions": [
+                        {
+                          "$event-bus-publish": {
+                            "type": "flag-change",
+                            "publisher": "discountOrMarkupFlag",
+                            "next": {
+                              "$var": {
+                                "path": "#data.discountOrMarkupFlag"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "$populate": {
+                            "path": "#data.discountOrMarkup",
+                            "data": ""
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "discountOrMarkup": {
+              "type": "number",
+              "widget": {
+                "name": "input",
+                "options": {
+                  "inputmask": {
+                    "alias": "integer",
+                    "groupSeparator": " ",
+                    "rightAlign": false,
+                    "autoGroup": true,
+                    "allowMinus": false,
+                    "integerDigits": 3,
+                    "digits": 2,
+                    "radixPoint": ","
+                  },
+                  "label": {
+                    "$switch": {
+                      "condition": {
+                        "$subs": {
+                          "path": "#data.discountOrMarkupFlag"
+                        }
+                      },
+                      "default": "",
+                      "cases": [
+                        {
+                          "value": "discount",
+                          "action": "Скидка"
+                        },
+                        {
+                          "value": "markup",
+                          "action": "Наценка"
+                        }
+                      ]
+                    }
+                  },
+                  "visible": {
+                    "!==": {
+                      "operand1": {
+                        "$subs": {
+                          "path": "#data.discountOrMarkupFlag"
+                        }
+                      },
+                      "operand2": "no"
+                    }
+                  }
+                },
+                "append": {
+                  "type": "string",
+                  "value": "%",
+                  "widget": {
+                    "name": "info",
+                    "class": {
+                      "group": "text-addon text-addon_right"
+                    }
+                  }
+                },
+                "class": {
+                  "group": "form-item p-field p-grid p-fluid",
+                  "label": "form-label form-label_required p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+                },
+                "events": {
+                  "change": [
+                    {
+                      "$populate": {
+                        "path": "#data.unitPriceWithDiscountOrMarkup",
+                        "emitEvent": false,
+                        "data": {
+                          "$math-round": {
+                            "value": {
+                              "$add": {
+                                "multipliers": [
+                                  {
+                                    "$var": {
+                                      "path": "#data.unitPrice"
+                                    }
+                                  },
+                                  {
+                                    "$switch": {
+                                      "condition": {
+                                        "$var": {
+                                          "path": "#data.discountOrMarkupFlag"
+                                        }
+                                      },
+                                      "cases": [
+                                        {
+                                          "value": "discount",
+                                          "action": {
+                                            "$subtract": {
+                                              "operand1": 1,
+                                              "operand2": {
+                                                "$division": {
+                                                  "operand1": {
+                                                    "$var": {
+                                                      "path": "#data.discountOrMarkup"
+                                                    }
+                                                  },
+                                                  "operand2": 100
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "value": "markup",
+                                          "action": {
+                                            "$sum": {
+                                              "terms": [
+                                                1,
+                                                {
+                                                  "$division": {
+                                                    "operand1": {
+                                                      "$var": {
+                                                        "path": "#data.discountOrMarkup"
+                                                      }
+                                                    },
+                                                    "operand2": 100
+                                                  }
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "value": "no",
+                                          "action": 1
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "exp": -2
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "$populate": {
+                        "path": "#data.totalPriceWithDiscountOrMarkup",
+                        "emitEvent": false,
+                        "data": {
+                          "$math-round": {
+                            "value": {
+                              "$add": {
+                                "multipliers": [
+                                  {
+                                    "$var": {
+                                      "path": "#data.totalPrice"
+                                    }
+                                  },
+                                  {
+                                    "$switch": {
+                                      "condition": {
+                                        "$var": {
+                                          "path": "#data.discountOrMarkupFlag"
+                                        }
+                                      },
+                                      "cases": [
+                                        {
+                                          "value": "discount",
+                                          "action": {
+                                            "$subtract": {
+                                              "operand1": 1,
+                                              "operand2": {
+                                                "$division": {
+                                                  "operand1": {
+                                                    "$var": {
+                                                      "path": "#data.discountOrMarkup"
+                                                    }
+                                                  },
+                                                  "operand2": 100
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "value": "markup",
+                                          "action": {
+                                            "$sum": {
+                                              "terms": [
+                                                1,
+                                                {
+                                                  "$division": {
+                                                    "operand1": {
+                                                      "$var": {
+                                                        "path": "#data.discountOrMarkup"
+                                                      }
+                                                    },
+                                                    "operand2": 100
+                                                  }
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "value": "no",
+                                          "action": 1
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "exp": -2
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "subscriptions": {
+                  "total-price-w-change": {
+                    "subscriber": "discountOrMarkup",
+                    "action": {
+                      "$populate": {
+                        "path": "#data.discountOrMarkup",
+                        "emitEvent": false,
+                        "data": {
+                          "$math-round": {
+                            "value": {
+                              "$add": {
+                                "multipliers": [
+                                  100,
+                                  {
+                                    "$switch": {
+                                      "condition": {
+                                        "$var": {
+                                          "path": "#data.discountOrMarkupFlag"
+                                        }
+                                      },
+                                      "cases": [
+                                        {
+                                          "value": "discount",
+                                          "action": {
+                                            "$subtract": {
+                                              "operand1": 1,
+                                              "operand2": {
+                                                "$division": {
+                                                  "operand1": {
+                                                    "$var": {
+                                                      "path": "#data.totalPriceWithDiscountOrMarkup"
+                                                    }
+                                                  },
+                                                  "operand2": {
+                                                    "$var": {
+                                                      "path": "#data.totalPrice"
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "value": "markup",
+                                          "action": {
+                                            "$subtract": {
+                                              "operand1": {
+                                                "$division": {
+                                                  "operand1": {
+                                                    "$var": {
+                                                      "path": "#data.totalPriceWithDiscountOrMarkup"
+                                                    }
+                                                  },
+                                                  "operand2": {
+                                                    "$var": {
+                                                      "path": "#data.totalPrice"
+                                                    }
+                                                  }
+                                                }
+                                              },
+                                              "operand2": 1
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "value": "no",
+                                          "action": 0
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "exp": -2
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "unit-price-w-change": {
+                    "subscriber": "discountOrMarkup",
+                    "action": {
+                      "$populate": {
+                        "path": "#data.discountOrMarkup",
+                        "emitEvent": false,
+                        "data": {
+                          "$math-round": {
+                            "value": {
+                              "$add": {
+                                "multipliers": [
+                                  100,
+                                  {
+                                    "$switch": {
+                                      "condition": {
+                                        "$var": {
+                                          "path": "#data.discountOrMarkupFlag"
+                                        }
+                                      },
+                                      "cases": [
+                                        {
+                                          "value": "discount",
+                                          "action": {
+                                            "$subtract": {
+                                              "operand1": 1,
+                                              "operand2": {
+                                                "$division": {
+                                                  "operand1": {
+                                                    "$var": {
+                                                      "path": "#data.unitPriceWithDiscountOrMarkup"
+                                                    }
+                                                  },
+                                                  "operand2": {
+                                                    "$var": {
+                                                      "path": "#data.unitPrice"
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "value": "markup",
+                                          "action": {
+                                            "$subtract": {
+                                              "operand1": {
+                                                "$division": {
+                                                  "operand1": {
+                                                    "$var": {
+                                                      "path": "#data.unitPriceWithDiscountOrMarkup"
+                                                    }
+                                                  },
+                                                  "operand2": {
+                                                    "$var": {
+                                                      "path": "#data.unitPrice"
+                                                    }
+                                                  }
+                                                }
+                                              },
+                                              "operand2": 1
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "value": "no",
+                                          "action": 0
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "exp": -2
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$if": {
+                        "condition": {
+                          "!==": {
+                            "operand1": "no",
+                            "operand2": {
+                              "$var": {
+                                "path": "#data.discountOrMarkupFlag"
+                              }
+                            }
+                          }
+                        },
+                        "then": {
+                          "$not-empty": {
+                            "data": {
+                              "$var": {
+                                "path": "."
+                              }
+                            }
+                          }
+                        },
+                        "else": true
+                      }
+                    },
+                    "message": "Поле обязательно для заполнения"
+                  },
+                  "events": [
+                    "onUpdate"
+                  ]
+                },
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$if": {
+                        "condition": {
+                          "$and": {
+                            "operands": [
+                              {
+                                "!==": {
+                                  "operand1": "no",
+                                  "operand2": {
+                                    "$var": {
+                                      "path": "#data.discountOrMarkupFlag"
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "$not-empty": {
+                                  "data": {
+                                    "$var": {
+                                      "path": "."
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "then": {
+                          ">": {
+                            "operand1": {
+                              "$var": {
+                                "path": "."
+                              }
+                            },
+                            "operand2": 0
+                          }
+                        },
+                        "else": true
+                      }
+                    },
+                    "message": "Значение должно быть больше 0"
+                  },
+                  "events": [
+                    "onUpdate"
+                  ]
+                },
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$if": {
+                        "condition": {
+                          "===": {
+                            "operand1": "discount",
+                            "operand2": {
+                              "$var": {
+                                "path": "#data.discountOrMarkupFlag"
+                              }
+                            }
+                          }
+                        },
+                        "then": {
+                          "<": {
+                            "operand1": {
+                              "$var": {
+                                "path": "."
+                              }
+                            },
+                            "operand2": 100
+                          }
+                        },
+                        "else": true
+                      }
+                    },
+                    "message": "Значение должно быть меньше 100"
+                  },
+                  "events": [
+                    "onUpdate"
+                  ]
+                }
+              ]
+            },
+            "item-price-container": {
+              "type": "object",
+              "model": false,
+              "widget": {
+                "name": "container",
+                "options": {
+                  "label": "Цена за единицу"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_nds-label form-label_required p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view input-height-fit-content p-xs-12 p-md-6 p-xl-4 d-flex p-flex-wrap p-flex-md-nowrap pdd-l-0 pdd-r-0"
+                }
+              },
+              "properties": {
+                "unitPrice": {
+                  "type": "number",
+                  "model": "#data.unitPrice",
+                  "value": {
+                    "$if": {
+                      "condition": {
+                        "$empty": {
+                          "data": {
+                            "$from-context": {
+                              "path": "@preload.service.unitPrice"
+                            }
+                          }
+                        }
+                      },
+                      "then": {
+                        "$from-context": {
+                          "path": "@preload.service.additionalService.unitPrice"
+                        }
+                      },
+                      "else": {
+                        "$from-context": {
+                          "path": "@preload.service.unitPrice"
+                        }
+                      }
+                    }
+                  },
+                  "widget": {
+                    "name": "input",
+                    "options": {
+                      "label": {
+                        "$switch": {
+                          "condition": {
+                            "$subs": {
+                              "path": "#data.discountOrMarkupFlag"
+                            }
+                          },
+                          "default": " ",
+                          "cases": [
+                            {
+                              "value": "discount",
+                              "action": "без скидки"
+                            },
+                            {
+                              "value": "markup",
+                              "action": "без наценки"
+                            }
+                          ]
+                        }
+                      },
+                      "disabled": true,
+                      "inputmask": {
+                        "alias": "integer",
+                        "groupSeparator": " ",
+                        "autoGroup": true,
+                        "radixPoint": ",",
+                        "integerDigits": 12,
+                        "allowMinus": false,
+                        "digits": 2
+                      }
+                    },
+                    "append": {
+                      "type": "string",
+                      "value": "руб.",
+                      "widget": {
+                        "name": "info",
+                        "class": {
+                          "group": "text-addon text-addon_right"
+                        }
+                      }
+                    },
+                    "class": {
+                      "group": "p-xs-12 p-md-6 p-xl-6 mrg-b-xs",
+                      "label": "text-secondary fw-500 mrg-b-0"
+                    }
+                  }
+                },
+                "unitPriceWithDiscountOrMarkup": {
+                  "type": "number",
+                  "model": "#data.unitPriceWithDiscountOrMarkup",
+                  "widget": {
+                    "name": "input",
+                    "options": {
+                      "label": {
+                        "$switch": {
+                          "condition": {
+                            "$subs": {
+                              "path": "#data.discountOrMarkupFlag"
+                            }
+                          },
+                          "default": "",
+                          "cases": [
+                            {
+                              "value": "discount",
+                              "action": "со скидкой"
+                            },
+                            {
+                              "value": "markup",
+                              "action": "с наценкой"
+                            }
+                          ]
+                        }
+                      },
+                      "inputmask": {
+                        "alias": "integer",
+                        "groupSeparator": " ",
+                        "autoGroup": true,
+                        "radixPoint": ",",
+                        "integerDigits": 12,
+                        "allowMinus": false,
+                        "digits": 2
+                      },
+                      "visible": {
+                        "!==": {
+                          "operand1": "no",
+                          "operand2": {
+                            "$subs": {
+                              "path": "#data.discountOrMarkupFlag"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "append": {
+                      "type": "string",
+                      "value": "руб.",
+                      "widget": {
+                        "name": "info",
+                        "class": {
+                          "group": "text-addon text-addon_right"
+                        }
+                      }
+                    },
+                    "class": {
+                      "group": "p-xs-12 p-md-6 p-xl-6 mrg-b-xs",
+                      "label": "text-secondary fw-500 mrg-b-0"
+                    },
+                    "events": {
+                      "change": [
+                        {
+                          "$event-bus-publish": {
+                            "type": "unit-price-w-change",
+                            "publisher": "unitPriceWithDiscountOrMarkup",
+                            "next": {
+                              "$var": {
+                                "path": "#data.unitPriceWithDiscountOrMarkup"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "subscriptions": {
+                      "total-price-w-change": {
+                        "subscriber": "unitPriceWithDiscountOrMarkup",
+                        "action": {
+                          "$populate": {
+                            "path": "#data.unitPriceWithDiscountOrMarkup",
+                            "emitEvent": false,
+                            "data": {
+                              "$math-round": {
+                                "value": {
+                                  "$division": {
+                                    "operand1": {
+                                      "$var": {
+                                        "path": "#data.totalPriceWithDiscountOrMarkup"
+                                      }
+                                    },
+                                    "operand2": {
+                                      "$var": {
+                                        "path": "#data.quantity"
+                                      }
+                                    }
+                                  }
+                                },
+                                "exp": -2
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "flag-change": {
+                        "subscriber": "unitPriceWithDiscountOrMarkup",
+                        "action": {
+                          "$populate": {
+                            "path": "#data.unitPriceWithDiscountOrMarkup",
+                            "emitEvent": false,
+                            "data": {
+                              "$var": {
+                                "path": "#data.unitPrice"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "validation": [
+                    {
+                      "type": "schema",
+                      "params": {
+                        "rule": {
+                          "$if": {
+                            "condition": {
+                              "===": {
+                                "operand1": {
+                                  "$var": {
+                                    "path": "#data.discountOrMarkupFlag"
+                                  }
+                                },
+                                "operand2": "discount"
+                              }
+                            },
+                            "then": {
+                              "<": {
+                                "operand1": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                },
+                                "operand2": {
+                                  "$var": {
+                                    "path": "#data.unitPrice"
+                                  }
+                                }
+                              }
+                            },
+                            "else": true
+                          }
+                        },
+                        "message": "Цена за единицу со скидкой не может превышать стоимость без скидки"
+                      },
+                      "events": [
+                        "onUpdate"
+                      ]
+                    },
+                    {
+                      "type": "schema",
+                      "params": {
+                        "rule": {
+                          "$if": {
+                            "condition": {
+                              "===": {
+                                "operand1": {
+                                  "$var": {
+                                    "path": "#data.discountOrMarkupFlag"
+                                  }
+                                },
+                                "operand2": "markup"
+                              }
+                            },
+                            "then": {
+                              ">": {
+                                "operand1": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                },
+                                "operand2": {
+                                  "$var": {
+                                    "path": "#data.unitPrice"
+                                  }
+                                }
+                              }
+                            },
+                            "else": true
+                          }
+                        },
+                        "message": "Цена за единицу с наценкой должна превышать стоимость без наценки"
+                      },
+                      "events": [
+                        "onUpdate"
+                      ]
+                    }
+                  ]
+                }
+              }
+            },
+            "total-price-container": {
+              "type": "object",
+              "model": false,
+              "widget": {
+                "name": "container",
+                "options": {
+                  "label": "Общая стоимость дополнительной услуги"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_nds-label form-label_required p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view input-height-fit-content p-xs-12 p-md-6 p-xl-4 d-flex p-flex-wrap p-flex-md-nowrap pdd-l-0 pdd-r-0"
+                }
+              },
+              "properties": {
+                "totalPrice": {
+                  "type": "number",
+                  "model": "#data.totalPrice",
+                  "widget": {
+                    "name": "input",
+                    "options": {
+                      "label": {
+                        "$switch": {
+                          "condition": {
+                            "$subs": {
+                              "path": "#data.discountOrMarkupFlag"
+                            }
+                          },
+                          "default": " ",
+                          "cases": [
+                            {
+                              "value": "discount",
+                              "action": "без скидки"
+                            },
+                            {
+                              "value": "markup",
+                              "action": "без наценки"
+                            }
+                          ]
+                        }
+                      },
+                      "disabled": true,
+                      "inputmask": {
+                        "alias": "integer",
+                        "groupSeparator": " ",
+                        "autoGroup": true,
+                        "radixPoint": ",",
+                        "integerDigits": 12,
+                        "allowMinus": false,
+                        "digits": 2
+                      }
+                    },
+                    "append": {
+                      "type": "string",
+                      "value": "руб.",
+                      "widget": {
+                        "name": "info",
+                        "class": {
+                          "group": "text-addon text-addon_right"
+                        }
+                      }
+                    },
+                    "class": {
+                      "group": "p-xs-12 p-md-6 p-xl-6 mrg-b-xs",
+                      "label": "text-secondary fw-500 mrg-b-0"
+                    },
+                    "subscriptions": {
+                      "quantity-change": {
+                        "subscriber": "totalPrice",
+                        "action": {
+                          "$populate": {
+                            "path": "#data.totalPrice",
+                            "emitEvent": false,
+                            "data": {
+                              "$add": {
+                                "multipliers": [
+                                  {
+                                    "$var": {
+                                      "path": "#data.quantity"
+                                    }
+                                  },
+                                  {
+                                    "$var": {
+                                      "path": "#data.unitPrice"
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "totalPriceWithDiscountOrMarkup": {
+                  "type": "number",
+                  "model": "#data.totalPriceWithDiscountOrMarkup",
+                  "widget": {
+                    "name": "input",
+                    "options": {
+                      "label": {
+                        "$switch": {
+                          "condition": {
+                            "$subs": {
+                              "path": "#data.discountOrMarkupFlag"
+                            }
+                          },
+                          "default": "",
+                          "cases": [
+                            {
+                              "value": "discount",
+                              "action": "со скидкой"
+                            },
+                            {
+                              "value": "markup",
+                              "action": "с наценкой"
+                            }
+                          ]
+                        }
+                      },
+                      "inputmask": {
+                        "alias": "integer",
+                        "groupSeparator": " ",
+                        "autoGroup": true,
+                        "radixPoint": ",",
+                        "integerDigits": 12,
+                        "allowMinus": false,
+                        "digits": 2
+                      },
+                      "visible": {
+                        "!==": {
+                          "operand1": "no",
+                          "operand2": {
+                            "$subs": {
+                              "path": "#data.discountOrMarkupFlag"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "append": {
+                      "type": "string",
+                      "value": "руб.",
+                      "widget": {
+                        "name": "info",
+                        "class": {
+                          "group": "text-addon text-addon_right"
+                        }
+                      }
+                    },
+                    "class": {
+                      "group": "p-xs-12 p-md-6 p-xl-6 mrg-b-xs",
+                      "label": "text-secondary fw-500 mrg-b-0"
+                    },
+                    "events": {
+                      "change": {
+                        "$event-bus-publish": {
+                          "type": "total-price-w-change",
+                          "publisher": "totalPriceWithDiscountOrMarkup",
+                          "next": {
+                            "$var": {
+                              "path": "#data.totalPriceWithDiscountOrMarkup"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "subscriptions": {
+                      "flag-change": {
+                        "subscriber": "totalPriceWithDiscountOrMarkup",
+                        "action": {
+                          "$populate": {
+                            "path": "#data.totalPriceWithDiscountOrMarkup",
+                            "emitEvent": false,
+                            "data": {
+                              "$var": {
+                                "path": "#data.totalPrice"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "unit-price-w-change": {
+                        "subscriber": "totalPriceWithDiscountOrMarkup",
+                        "action": {
+                          "$populate": {
+                            "path": "#data.totalPriceWithDiscountOrMarkup",
+                            "emitEvent": false,
+                            "data": {
+                              "$math-round": {
+                                "value": {
+                                  "$add": {
+                                    "multipliers": [
+                                      {
+                                        "$var": {
+                                          "path": "#data.quantity"
+                                        }
+                                      },
+                                      {
+                                        "$var": {
+                                          "path": "#data.unitPriceWithDiscountOrMarkup"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                "exp": -2
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "quantity-change": {
+                        "subscriber": "totalPriceWithDiscountOrMarkup",
+                        "action": {
+                          "$populate": {
+                            "path": "#data.totalPriceWithDiscountOrMarkup",
+                            "emitEvent": false,
+                            "data": {
+                              "$add": {
+                                "multipliers": [
+                                  {
+                                    "$var": {
+                                      "path": "#data.quantity"
+                                    }
+                                  },
+                                  {
+                                    "$var": {
+                                      "path": "#data.unitPriceWithDiscountOrMarkup"
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "validation": [
+                    {
+                      "type": "schema",
+                      "params": {
+                        "rule": {
+                          "$if": {
+                            "condition": {
+                              "===": {
+                                "operand1": {
+                                  "$var": {
+                                    "path": "#data.discountOrMarkupFlag"
+                                  }
+                                },
+                                "operand2": "discount"
+                              }
+                            },
+                            "then": {
+                              "<": {
+                                "operand1": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                },
+                                "operand2": {
+                                  "$var": {
+                                    "path": "#data.totalPrice"
+                                  }
+                                }
+                              }
+                            },
+                            "else": true
+                          }
+                        },
+                        "message": "Общая стоимость со скидкой не может превышать стоимость без скидки"
+                      },
+                      "events": [
+                        "onUpdate"
+                      ]
+                    },
+                    {
+                      "type": "schema",
+                      "params": {
+                        "rule": {
+                          "$if": {
+                            "condition": {
+                              "===": {
+                                "operand1": {
+                                  "$var": {
+                                    "path": "#data.discountOrMarkupFlag"
+                                  }
+                                },
+                                "operand2": "markup"
+                              }
+                            },
+                            "then": {
+                              ">": {
+                                "operand1": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                },
+                                "operand2": {
+                                  "$var": {
+                                    "path": "#data.totalPrice"
+                                  }
+                                }
+                              }
+                            },
+                            "else": true
+                          }
+                        },
+                        "message": "Общая стоимость с наценкой должна превышать стоимость без наценки"
+                      },
+                      "events": [
+                        "onUpdate"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "model": false,
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "form-actions p-field p-grid mrg-t-lg",
+          "value": "p-jc-xl-end p-autolayout"
+        }
+      },
+      "properties": {
+        "save": {
+          "type": "string",
+          "model": false,
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Сохранить"
+            },
+            "events": {
+              "click": {
+                "$if": {
+                  "condition": {
+                    "$validate": {
+                      "path": "/"
+                    }
+                  },
+                  "then": {
+                    "$if": {
+                      "condition": {
+                        "$or": {
+                          "operands": [
+                            {
+                              "$and": {
+                                "operands": [
+                                  {
+                                    "===": {
+                                      "operand1": {
+                                        "$var": {
+                                          "path": "#data.discountOrMarkupFlag"
+                                        }
+                                      },
+                                      "operand2": "no"
+                                    }
+                                  },
+                                  {
+                                    "$in": {
+                                      "value": {
+                                        "$from-context": {
+                                          "path": "@preload.service.event.state"
+                                        }
+                                      },
+                                      "array": [
+                                        "new",
+                                        "draft",
+                                        "pre_booking"
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              "$active-user-has-permission": {
+                                "permission": "request.accept.new"
+                              }
+                            },
+                            {
+                              "$and": {
+                                "operands": [
+                                  {
+                                    "$active-user-has-permission": {
+                                      "permission": "additional_facilities.edit_part"
+                                    }
+                                  },
+                                  {
+                                    "===": {
+                                      "operand1": {
+                                        "$var": {
+                                          "path": "#data.discountOrMarkupFlag"
+                                        }
+                                      },
+                                      "operand2": "no"
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              "$and": {
+                                "operands": [
+                                  {
+                                    "===": {
+                                      "operand1": {
+                                        "$from-context": {
+                                          "path": "@preload.service.state"
+                                        }
+                                      },
+                                      "operand2": "not_filled"
+                                    }
+                                  },
+                                  {
+                                    "===": {
+                                      "operand1": {
+                                        "$var": {
+                                          "path": "#data.discountOrMarkupFlag"
+                                        }
+                                      },
+                                      "operand2": "no"
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "then": {
+                        "$waterfall": {
+                          "arrayFunctions": [
+                            "$ref:operation-frontend:snippets/element/_loading/onclick-loading-enable",
+                            {
+                              "$http-code": {
+                                "200": [
+                                  {
+                                    "$message": {
+                                      "severity": "success",
+                                      "summary": "Редактирование дополнительной услуги",
+                                      "detail": "Услуга к мероприятию успешно изменена"
+                                    }
+                                  },
+                                  {
+                                    "$navigate": {
+                                      "commands": [
+                                        "/cabinet/event/edit"
+                                      ],
+                                      "extras": {
+                                        "queryParams": {
+                                          "id": {
+                                            "$query-params": {
+                                              "name": "eventId"
+                                            }
+                                          },
+                                          "widgets_options": "{\"form.tabs\":{\"selectedKey\":\"rent\"}}"
+                                        }
+                                      }
+                                    }
+                                  }
+                                ],
+                                "422": [
+                                  "$ref:operation-frontend:snippets/element/_http_message/http-errors-from-response"
+                                ],
+                                "client": {
+                                  "$api-workflow": {
+                                    "options": {
+                                      "observe": "response"
+                                    },
+                                    "workflow": "additional_facilities",
+                                    "action": "edit",
+                                    "type": "post",
+                                    "id": {
+                                      "$query-params": {
+                                        "name": "id"
+                                      }
+                                    },
+                                    "data": {
+                                      "$assign-object": {
+                                        "path": "eventState",
+                                        "data": {
+                                          "$from-context": {
+                                            "path": "@preload.service.event.state"
+                                          }
+                                        },
+                                        "object": {
+                                          "$assign-object": {
+                                            "path": "hasPermission",
+                                            "data": {
+                                              "$if": {
+                                                "condition": {
+                                                  "$active-user-has-permission": {
+                                                    "permission": "request.accept.new"
+                                                  }
+                                                },
+                                                "then": "accept_request",
+                                                "else": {
+                                                  "$if": {
+                                                    "condition": {
+                                                      "$active-user-has-permission": {
+                                                        "permission": "additional_facilities.edit_part"
+                                                      }
+                                                    },
+                                                    "then": "edit_part",
+                                                    "else": "no"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "object": {
+                                              "$exclude": {
+                                                "data": {
+                                                  "$var": {
+                                                    "path": "#data"
+                                                  }
+                                                },
+                                                "exclude": [
+                                                  "additionalService"
+                                                ]
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "finalize": "$ref:operation-frontend:snippets/element/_loading/onclick-loading-disable",
+                                "default": [
+                                  {
+                                    "$message": {
+                                      "severity": "error",
+                                      "summary": "Редактирование дополнительной услуги",
+                                      "detail": "Непредвиденная ошибка"
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "else": {
+                        "$confirmation": {
+                          "header": "Подтверждение изменений",
+                          "message": {
+                            "$replace": {
+                              "template": "Заявка с изменениями будет направлена на согласование. Все изменения применятся к брони после подтверждения данной заявки. Желаете продолжить?"
+                            }
+                          },
+                          "accept": {
+                            "$waterfall": {
+                              "arrayFunctions": [
+                                "$ref:operation-frontend:snippets/element/_loading/onclick-loading-enable",
+                                {
+                                  "$http-code": {
+                                    "200": [
+                                      {
+                                        "$message": {
+                                          "severity": "success",
+                                          "summary": "Редактирование дополнительной услуги",
+                                          "detail": "Заявка на изменение дополнительной услуги успешно отправлена"
+                                        }
+                                      },
+                                      {
+                                        "$navigate": {
+                                          "commands": [
+                                            "/cabinet/event/edit"
+                                          ],
+                                          "extras": {
+                                            "queryParams": {
+                                              "id": {
+                                                "$query-params": {
+                                                  "name": "eventId"
+                                                }
+                                              },
+                                              "widgets_options": "{\"form.tabs\":{\"selectedKey\":\"rent\"}}"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "422": [
+                                      "$ref:operation-frontend:snippets/element/_http_message/http-errors-from-response"
+                                    ],
+                                    "client": {
+                                      "$api-workflow": {
+                                        "options": {
+                                          "observe": "response"
+                                        },
+                                        "workflow": "additional_facilities",
+                                        "action": "edit",
+                                        "type": "post",
+                                        "id": {
+                                          "$query-params": {
+                                            "name": "id"
+                                          }
+                                        },
+                                        "data": {
+                                          "$assign-object": {
+                                            "path": "eventState",
+                                            "data": {
+                                              "$from-context": {
+                                                "path": "@preload.service.event.state"
+                                              }
+                                            },
+                                            "object": {
+                                              "$assign-object": {
+                                                "path": "hasPermission",
+                                                "data": {
+                                                  "$if": {
+                                                    "condition": {
+                                                      "$active-user-has-permission": {
+                                                        "permission": "request.accept.new"
+                                                      }
+                                                    },
+                                                    "then": "accept_request",
+                                                    "else": {
+                                                      "$if": {
+                                                        "condition": {
+                                                          "$active-user-has-permission": {
+                                                            "permission": "additional_facilities.edit_part"
+                                                          }
+                                                        },
+                                                        "then": "edit_part",
+                                                        "else": "no"
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "object": {
+                                                  "$exclude": {
+                                                    "data": {
+                                                      "$var": {
+                                                        "path": "#data"
+                                                      }
+                                                    },
+                                                    "exclude": [
+                                                      "additionalService"
+                                                    ]
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "finalize": "$ref:operation-frontend:snippets/element/_loading/onclick-loading-disable",
+                                    "default": [
+                                      {
+                                        "$message": {
+                                          "severity": "error",
+                                          "summary": "Редактирование дополнительной услуги",
+                                          "detail": "Непредвиденная ошибка"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          "acceptLabel": "Подтвердить",
+                          "rejectLabel": "Отмена",
+                          "rejectButtonStyleClass": "button_outline",
+                          "reject": false
+                        }
+                      }
+                    }
+                  },
+                  "else": {
+                    "$form-control-mark": {
+                      "key": "form"
+                    }
+                  }
+                }
+              }
+            },
+            "class": {
+              "value": "mrg-r-sm"
+            }
+          }
+        },
+        "cancel": {
+          "model": false,
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Отмена"
+            },
+            "events": {
+              "click": {
+                "$navigate": {
+                  "commands": [
+                    "/cabinet/event/edit"
+                  ],
+                  "extras": {
+                    "queryParams": {
+                      "id": {
+                        "$query-params": {
+                          "name": "eventId"
+                        }
+                      },
+                      "widgets_options": "{\"form.tabs\":{\"selectedKey\":\"rent\"}}"
+                    }
+                  }
+                }
+              }
+            },
+            "class": {
+              "value": "button_outline mrg-r-0 mrg-b-0"
+            }
+          }
+        }
+      }
+    }
+  }
+}

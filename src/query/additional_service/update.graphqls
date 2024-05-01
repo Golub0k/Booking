@@ -1,0 +1,7 @@
+# @title: Обновить данные экземпляров объекта "Дополнительная услуга"
+
+mutation($id: [MongoID!], $data: UpdateAdditionalServiceInput!) {
+  object: additionalServiceUpdate(_id: $id, record: $data) {
+    numAffected
+  }
+}

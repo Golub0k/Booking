@@ -1,0 +1,54 @@
+# @title: Получить список экземпляров объекта "Оборудование"
+
+query (
+  $first: Int
+  $rows: Int
+  $search: String
+  $owner: [String]
+  $state: [String]
+  $availableQuantityFrom: Float
+  $availableQuantityTo: Float
+  $priceFrom: Float
+  $priceTo: Float
+  $sort: [FieldSortEquipmentInput]
+) {
+  pagination: equipmentPagination(
+    limit: $rows
+    offset: $first
+    sort: $sort
+    filter: {
+      AND: [
+        { _operators: { state: { ne: "deleted" } } }
+        { _operators: { owner: { in: $owner } } }
+        { _operators: { state: { in: $state } } }
+        { _operators: { unitPrice: { gte: $priceFrom } } }
+        { _operators: { unitPrice: { lte: $priceTo } } }
+        { _operators: { availableQuantity: { gte: $availableQuantityFrom } } }
+        { _operators: { availableQuantity: { lte: $availableQuantityTo } } }
+        {
+          OR: [
+            { _regexp: { field: name, filter: $search } }
+            { _regexp: { field: nomenclatureNumber, filter: $search } }
+          ]
+        }
+      ]
+    }
+  ) {
+    count
+    items {
+      id: _id
+      owner
+      ownerCode {
+        _id
+        code
+        name
+      }
+      name
+      nomenclatureNumber
+      unitPrice
+      availableQuantity
+      comment
+      state
+    }
+  }
+}

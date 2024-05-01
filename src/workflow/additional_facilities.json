@@ -1,0 +1,1487 @@
+{
+  "version": 2,
+  "objectType": "additional_facilities",
+  "context": "additional_facilities/context",
+  "description": "Жизненный цикл брони оснащения",
+  "rbac": {
+    "visible": true,
+    "title": "Брони оснащения"
+  },
+  "actions": {
+    "initialActions": {
+      "add": {
+        "title": "Добавить",
+        "grants": {
+          "rbac": {
+            "enabled": false,
+            "visible": false,
+            "title": "Добавить бронь оснащения"
+          }
+        },
+        "functions": [
+          {
+            "$workflow-object-create": {
+              "query": "additional_facilities/add",
+              "variables": {
+                "data": {
+                  "$from-context": {
+                    "path": "data"
+                  }
+                }
+              },
+              "responsePath": "object"
+            }
+          },
+          {
+            "$workflow-run": {
+              "workflowName": "event_history",
+              "action": "create",
+              "data": {
+                "additionalFacilitiesId": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                },
+                "actionTitle": "Добавление брони оснащения",
+                "userId": {
+                  "$from-context": {
+                    "path": "$activeUserId"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "not_filled"
+        }
+      },
+      "copy": {
+        "title": "Добавить",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "permissionCode": "event.edit",
+            "title": "Добавить бронь оснащения"
+          }
+        },
+        "functions": [
+          {
+            "$workflow-object-create": {
+              "query": "additional_facilities/add",
+              "variables": {
+                "data": {
+                  "$from-context": {
+                    "path": "data"
+                  }
+                }
+              },
+              "responsePath": "object"
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "filled"
+        }
+      }
+    },
+    "globalActions": {
+      "mass_add": {
+        "title": "Массовое добавление броней услуг к мероприятию",
+        "grants": {
+          "rbac": {
+            "enabled": false
+          }
+        },
+        "views": {},
+        "functions": [
+          {
+            "$assign-context": {
+              "path": "$preparedData",
+              "data": {
+                "$apply-func": {
+                  "func": "let res=[]; for(let i =0; i<services.length; i++){res.push({eventId: eventId,type: type,serviceId: services[i],discountOrMarkupFlag: 'no'})}; return res;",
+                  "args": {
+                    "services": {
+                      "$from-context": {
+                        "path": "data.services"
+                      }
+                    },
+                    "type": {
+                      "$from-context": {
+                        "path": "data.type"
+                      }
+                    },
+                    "eventId": {
+                      "$from-context": {
+                        "path": "data.eventId"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$workflow-run-from-collection": {
+              "workflowName": "additional_facilities",
+              "action": "add",
+              "collection": {
+                "$from-context": {
+                  "path": "$preparedData"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "mass_add_for_booking": {
+        "title": "Массовое добавление броней оснащения для помещения",
+        "grants": {
+          "rbac": {
+            "enabled": false
+          }
+        },
+        "views": {},
+        "functions": [
+          {
+            "$assign-context": {
+              "path": "$preparedData",
+              "data": {
+                "$apply-func": {
+                  "func": "let res=[]; switch (type) {case 'additional_service':for(let i =0; i<facilities.length; i++) {res.push({eventId: eventId,bookingId: bookingId,type: type,serviceId: facilities[i], discountOrMarkupFlag: 'no'})}; break; case 'equipment': for(let i =0; i<facilities.length; i++){res.push({eventId: eventId,bookingId: bookingId,type: type,equipmentId: facilities[i],discountOrMarkupFlag: 'no'})}; break; case 'furniture': for(let i =0; i<facilities.length; i++){res.push({eventId: eventId, bookingId: bookingId,type: type,furnitureId: facilities[i],discountOrMarkupFlag: 'no'})}; break } return res;",
+                  "args": {
+                    "facilities": {
+                      "$from-context": {
+                        "path": "data.facilities"
+                      }
+                    },
+                    "type": {
+                      "$from-context": {
+                        "path": "data.type"
+                      }
+                    },
+                    "bookingId": {
+                      "$from-context": {
+                        "path": "data.bookingId"
+                      }
+                    },
+                    "eventId": {
+                      "$from-context": {
+                        "path": "data.eventId"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$workflow-run-from-collection": {
+              "workflowName": "additional_facilities",
+              "action": "add",
+              "collection": {
+                "$from-context": {
+                  "path": "$preparedData"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "edit_part": {
+        "title": "При редактировании необходимо согласование только в случае применения скидок/наценок",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "При редактировании необходимо согласование только в случае применения скидок/наценок"
+          }
+        },
+        "views": {},
+        "functions": []
+      }
+    },
+    "statesActions": {
+      "edit": {
+        "title": "Редактировать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "permissionCode": "event.edit",
+            "title": "Редактировать бронь оснащения"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "additional_facilities/edit",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "services_type/get_for_select"
+          ]
+        },
+        "functions": [
+          {
+            "$if": {
+              "condition": {
+                "$or": {
+                  "operands": [
+                    {
+                      "===": {
+                        "operand1": "accept_request",
+                        "operand2": {
+                          "$from-context": {
+                            "path": "data.hasPermission"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "$and": {
+                        "operands": [
+                          {
+                            "===": {
+                              "operand1": {
+                                "$from-context": {
+                                  "path": "data.discountOrMarkupFlag"
+                                }
+                              },
+                              "operand2": "no"
+                            }
+                          },
+                          {
+                            "$in": {
+                              "value": {
+                                "$from-context": {
+                                  "path": "data.eventState"
+                                }
+                              },
+                              "array": [
+                                "draft",
+                                "pre_booking"
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              "then": {
+                "$api-data-query": {
+                  "query": "additional_facilities/update",
+                  "variables": {
+                    "data": {
+                      "$exclude": {
+                        "data": {
+                          "$from-context": {
+                            "path": "data"
+                          }
+                        },
+                        "exclude": [
+                          "hasPermission",
+                          "eventState"
+                        ]
+                      }
+                    },
+                    "id": {
+                      "$from-context": {
+                        "path": "objectId"
+                      }
+                    }
+                  },
+                  "responsePath": "object"
+                }
+              },
+              "else": {
+                "$if": {
+                  "condition": {
+                    "$or": {
+                      "operands": [
+                        {
+                          "===": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "entry.state"
+                              }
+                            },
+                            "operand2": "not_filled"
+                          }
+                        },
+                        {
+                          "===": {
+                            "operand1": "edit_part",
+                            "operand2": {
+                              "$from-context": {
+                                "path": "data.hasPermission"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "then": {
+                    "$if": {
+                      "condition": {
+                        "===": {
+                          "operand1": {
+                            "$from-context": {
+                              "path": "data.discountOrMarkupFlag"
+                            }
+                          },
+                          "operand2": "no"
+                        }
+                      },
+                      "then": {
+                        "$api-data-query": {
+                          "query": "additional_facilities/update",
+                          "variables": {
+                            "data": {
+                              "$exclude": {
+                                "data": {
+                                  "$from-context": {
+                                    "path": "data"
+                                  }
+                                },
+                                "exclude": [
+                                  "hasPermission",
+                                  "eventState"
+                                ]
+                              }
+                            },
+                            "id": {
+                              "$from-context": {
+                                "path": "objectId"
+                              }
+                            }
+                          },
+                          "responsePath": "object"
+                        }
+                      },
+                      "else": {
+                        "$waterfall": {
+                          "arrayFunctions": [
+                            {
+                              "$assign-context": {
+                                "path": "$requests",
+                                "data": {
+                                  "$api-data-query": {
+                                    "query": "request/get_count_for_additional_facilities",
+                                    "variables": {
+                                      "id": {
+                                        "$from-context": {
+                                          "path": "objectId"
+                                        }
+                                      },
+                                      "type": "edit_facilities_cost",
+                                      "creatorId": {
+                                        "$active-user": {
+                                          "field": "_id"
+                                        }
+                                      }
+                                    },
+                                    "responsePath": "items"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "$if": {
+                                "condition": {
+                                  ">=": {
+                                    "operand1": {
+                                      "$length": {
+                                        "data": {
+                                          "$from-context": {
+                                            "path": "$requests"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "operand2": 1
+                                  }
+                                },
+                                "then": [
+                                  {
+                                    "$api-data-query": {
+                                      "query": "additional_facilities_request_data/update",
+                                      "variables": {
+                                        "id": {
+                                          "$from-context": {
+                                            "path": "$requests.0.changeFacilitiesId"
+                                          }
+                                        },
+                                        "data": {
+                                          "$exclude": {
+                                            "data": {
+                                              "$from-context": {
+                                                "path": "data"
+                                              }
+                                            },
+                                            "exclude": [
+                                              "hasPermission",
+                                              "eventState"
+                                            ]
+                                          }
+                                        },
+                                        "responsePath": "object"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "$api-data-query": {
+                                      "query": "additional_facilities/update",
+                                      "variables": {
+                                        "data": {
+                                          "$exclude": {
+                                            "data": {
+                                              "$from-context": {
+                                                "path": "data"
+                                              }
+                                            },
+                                            "exclude": [
+                                              "hasPermission",
+                                              "eventState",
+                                              "discountOrMarkupFlag",
+                                              "discountOrMarkup",
+                                              "unitPriceWithDiscountOrMarkup",
+                                              "totalPriceWithDiscountOrMarkup"
+                                            ]
+                                          }
+                                        },
+                                        "id": {
+                                          "$from-context": {
+                                            "path": "objectId"
+                                          }
+                                        }
+                                      },
+                                      "responsePath": "object"
+                                    }
+                                  }
+                                ],
+                                "else": {
+                                  "$waterfall": {
+                                    "arrayFunctions": [
+                                      {
+                                        "$assign-context": {
+                                          "path": "$additionalFacilitiesRequestData",
+                                          "data": {
+                                            "$api-data-query": {
+                                              "query": "additional_facilities_request_data/add",
+                                              "variables": {
+                                                "data": {
+                                                  "$assign-object": {
+                                                    "object": {
+                                                      "$exclude": {
+                                                        "data": {
+                                                          "$from-context": {
+                                                            "path": "data"
+                                                          }
+                                                        },
+                                                        "exclude": [
+                                                          "hasPermission",
+                                                          "eventState"
+                                                        ]
+                                                      }
+                                                    },
+                                                    "data": {
+                                                      "requestDataType": "new"
+                                                    },
+                                                    "path": ""
+                                                  }
+                                                }
+                                              },
+                                              "responsePath": "object"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "$api-data-query": {
+                                          "query": "additional_facilities/update",
+                                          "variables": {
+                                            "data": {
+                                              "$exclude": {
+                                                "data": {
+                                                  "$from-context": {
+                                                    "path": "data"
+                                                  }
+                                                },
+                                                "exclude": [
+                                                  "hasPermission",
+                                                  "eventState",
+                                                  "discountOrMarkupFlag",
+                                                  "discountOrMarkup",
+                                                  "unitPriceWithDiscountOrMarkup",
+                                                  "totalPriceWithDiscountOrMarkup"
+                                                ]
+                                              }
+                                            },
+                                            "id": {
+                                              "$from-context": {
+                                                "path": "objectId"
+                                              }
+                                            }
+                                          },
+                                          "responsePath": "object"
+                                        }
+                                      },
+                                      {
+                                        "$workflow-run": {
+                                          "workflowName": "request",
+                                          "action": "add",
+                                          "data": {
+                                            "$assign-object": {
+                                              "path": "",
+                                              "data": {
+                                                "type": "edit_facilities_cost",
+                                                "facilitiesId": {
+                                                  "$from-context": {
+                                                    "path": "objectId"
+                                                  }
+                                                },
+                                                "changeFacilitiesId": {
+                                                  "$from-context": {
+                                                    "path": "$additionalFacilitiesRequestData.id"
+                                                  }
+                                                },
+                                                "creatorId": {
+                                                  "$active-user": {
+                                                    "field": "_id"
+                                                  }
+                                                },
+                                                "createDate": {
+                                                  "$datetime-now": {}
+                                                }
+                                              },
+                                              "object": {}
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "else": {
+                    "$waterfall": {
+                      "arrayFunctions": [
+                        {
+                          "$assign-context": {
+                            "path": "$requests",
+                            "data": {
+                              "$api-data-query": {
+                                "query": "request/get_count_for_additional_facilities",
+                                "variables": {
+                                  "id": {
+                                    "$from-context": {
+                                      "path": "objectId"
+                                    }
+                                  },
+                                  "type": "edit_facilities",
+                                  "creatorId": {
+                                    "$active-user": {
+                                      "field": "_id"
+                                    }
+                                  }
+                                },
+                                "responsePath": "items"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "$if": {
+                            "condition": {
+                              ">=": {
+                                "operand1": {
+                                  "$length": {
+                                    "data": {
+                                      "$from-context": {
+                                        "path": "$requests"
+                                      }
+                                    }
+                                  }
+                                },
+                                "operand2": 1
+                              }
+                            },
+                            "then": [
+                              {
+                                "$api-data-query": {
+                                  "query": "additional_facilities_request_data/update",
+                                  "variables": {
+                                    "id": {
+                                      "$from-context": {
+                                        "path": "$requests.0.changeFacilitiesId"
+                                      }
+                                    },
+                                    "data": {
+                                      "$exclude": {
+                                        "data": {
+                                          "$from-context": {
+                                            "path": "data"
+                                          }
+                                        },
+                                        "exclude": [
+                                          "hasPermission",
+                                          "eventState"
+                                        ]
+                                      }
+                                    },
+                                    "responsePath": "object"
+                                  }
+                                }
+                              }
+                            ],
+                            "else": {
+                              "$waterfall": {
+                                "arrayFunctions": [
+                                  {
+                                    "$assign-context": {
+                                      "path": "$additionalFacilitiesRequestData",
+                                      "data": {
+                                        "$api-data-query": {
+                                          "query": "additional_facilities_request_data/add",
+                                          "variables": {
+                                            "data": {
+                                              "$assign-object": {
+                                                "object": {
+                                                  "$exclude": {
+                                                    "data": {
+                                                      "$from-context": {
+                                                        "path": "data"
+                                                      }
+                                                    },
+                                                    "exclude": [
+                                                      "hasPermission",
+                                                      "eventState"
+                                                    ]
+                                                  }
+                                                },
+                                                "data": {
+                                                  "requestDataType": "new"
+                                                },
+                                                "path": ""
+                                              }
+                                            }
+                                          },
+                                          "responsePath": "object"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "$workflow-run": {
+                                      "workflowName": "request",
+                                      "action": "add",
+                                      "data": {
+                                        "$assign-object": {
+                                          "path": "",
+                                          "data": {
+                                            "type": "edit_facilities",
+                                            "facilitiesId": {
+                                              "$from-context": {
+                                                "path": "objectId"
+                                              }
+                                            },
+                                            "changeFacilitiesId": {
+                                              "$from-context": {
+                                                "path": "$additionalFacilitiesRequestData.id"
+                                              }
+                                            },
+                                            "creatorId": {
+                                              "$active-user": {
+                                                "field": "_id"
+                                              }
+                                            },
+                                            "createDate": {
+                                              "$datetime-now": {}
+                                            }
+                                          },
+                                          "object": {}
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$workflow-run": {
+              "workflowName": "event_history",
+              "action": "create",
+              "data": {
+                "additionalFacilitiesId": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                },
+                "actionTitle": "Редактирование брони оснащения",
+                "userId": {
+                  "$from-context": {
+                    "path": "$activeUserId"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "conditional": [
+            {
+              "conditions": {
+                "===": {
+                  "operand1": {
+                    "$from-context": {
+                      "path": "entry.state"
+                    }
+                  },
+                  "operand2": "not_filled"
+                }
+              },
+              "state": "filled"
+            }
+          ]
+        }
+      },
+      "edit_for_booking": {
+        "title": "Редактировать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "permissionCode": "event.edit",
+            "title": "Редактировать дополнительное оснащение к помещению"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "additional_facilities/edit_for_booking",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "services_type/get_for_select",
+            "additional_facilities/get_for_info"
+          ]
+        },
+        "functions": [
+          {
+            "$if": {
+              "condition": {
+                "$or": {
+                  "operands": [
+                    {
+                      "===": {
+                        "operand1": "accept_request",
+                        "operand2": {
+                          "$from-context": {
+                            "path": "data.hasPermission"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "$and": {
+                        "operands": [
+                          {
+                            "===": {
+                              "operand1": {
+                                "$from-context": {
+                                  "path": "data.discountOrMarkupFlag"
+                                }
+                              },
+                              "operand2": "no"
+                            }
+                          },
+                          {
+                            "$in": {
+                              "value": {
+                                "$from-context": {
+                                  "path": "data.eventState"
+                                }
+                              },
+                              "array": [
+                                "draft",
+                                "pre_booking"
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              "then": {
+                "$api-data-query": {
+                  "query": "additional_facilities/update",
+                  "variables": {
+                    "data": {
+                      "$exclude": {
+                        "data": {
+                          "$from-context": {
+                            "path": "data"
+                          }
+                        },
+                        "exclude": [
+                          "hasPermission",
+                          "eventState",
+                          "bookingState"
+                        ]
+                      }
+                    },
+                    "id": {
+                      "$from-context": {
+                        "path": "objectId"
+                      }
+                    }
+                  },
+                  "responsePath": "object"
+                }
+              },
+              "else": {
+                "$if": {
+                  "condition": {
+                    "$or": {
+                      "operands": [
+                        {
+                          "===": {
+                            "operand1": "edit_part",
+                            "operand2": {
+                              "$from-context": {
+                                "path": "data.hasPermission"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "===": {
+                            "operand1": "not_filled",
+                            "operand2": {
+                              "$from-context": {
+                                "path": "data.bookingState"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "===": {
+                            "operand1": {
+                              "$from-context": {
+                                "path": "entry.state"
+                              }
+                            },
+                            "operand2": "not_filled"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "then": {
+                    "$if": {
+                      "condition": {
+                        "===": {
+                          "operand1": {
+                            "$from-context": {
+                              "path": "data.discountOrMarkupFlag"
+                            }
+                          },
+                          "operand2": "no"
+                        }
+                      },
+                      "then": {
+                        "$api-data-query": {
+                          "query": "additional_facilities/update",
+                          "variables": {
+                            "data": {
+                              "$exclude": {
+                                "data": {
+                                  "$from-context": {
+                                    "path": "data"
+                                  }
+                                },
+                                "exclude": [
+                                  "hasPermission",
+                                  "eventState",
+                                  "bookingState"
+                                ]
+                              }
+                            },
+                            "id": {
+                              "$from-context": {
+                                "path": "objectId"
+                              }
+                            }
+                          },
+                          "responsePath": "object"
+                        }
+                      },
+                      "else": {
+                        "$waterfall": {
+                          "arrayFunctions": [
+                            {
+                              "$assign-context": {
+                                "path": "$requests",
+                                "data": {
+                                  "$api-data-query": {
+                                    "query": "request/get_count_for_additional_facilities",
+                                    "variables": {
+                                      "id": {
+                                        "$from-context": {
+                                          "path": "objectId"
+                                        }
+                                      },
+                                      "type": "edit_facilities_cost",
+                                      "creatorId": {
+                                        "$active-user": {
+                                          "field": "_id"
+                                        }
+                                      }
+                                    },
+                                    "responsePath": "items"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "$if": {
+                                "condition": {
+                                  ">=": {
+                                    "operand1": {
+                                      "$length": {
+                                        "data": {
+                                          "$from-context": {
+                                            "path": "$requests"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "operand2": 1
+                                  }
+                                },
+                                "then": [
+                                  {
+                                    "$api-data-query": {
+                                      "query": "additional_facilities_request_data/update",
+                                      "variables": {
+                                        "id": {
+                                          "$from-context": {
+                                            "path": "$requests.0.changeFacilitiesId"
+                                          }
+                                        },
+                                        "data": {
+                                          "$exclude": {
+                                            "data": {
+                                              "$from-context": {
+                                                "path": "data"
+                                              }
+                                            },
+                                            "exclude": [
+                                              "hasPermission",
+                                              "eventState",
+                                              "bookingState"
+                                            ]
+                                          }
+                                        },
+                                        "responsePath": "object"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "$api-data-query": {
+                                      "query": "additional_facilities/update",
+                                      "variables": {
+                                        "data": {
+                                          "$exclude": {
+                                            "data": {
+                                              "$from-context": {
+                                                "path": "data"
+                                              }
+                                            },
+                                            "exclude": [
+                                              "hasPermission",
+                                              "eventState",
+                                              "bookingState",
+                                              "discountOrMarkupFlag",
+                                              "discountOrMarkup",
+                                              "unitPriceWithDiscountOrMarkup",
+                                              "totalPriceWithDiscountOrMarkup"
+                                            ]
+                                          }
+                                        },
+                                        "id": {
+                                          "$from-context": {
+                                            "path": "objectId"
+                                          }
+                                        }
+                                      },
+                                      "responsePath": "object"
+                                    }
+                                  }
+                                ],
+                                "else": {
+                                  "$waterfall": {
+                                    "arrayFunctions": [
+                                      {
+                                        "$assign-context": {
+                                          "path": "$additionalFacilitiesRequestData",
+                                          "data": {
+                                            "$api-data-query": {
+                                              "query": "additional_facilities_request_data/add",
+                                              "variables": {
+                                                "data": {
+                                                  "$assign-object": {
+                                                    "object": {
+                                                      "$exclude": {
+                                                        "data": {
+                                                          "$from-context": {
+                                                            "path": "data"
+                                                          }
+                                                        },
+                                                        "exclude": [
+                                                          "hasPermission",
+                                                          "eventState",
+                                                          "bookingState"
+                                                        ]
+                                                      }
+                                                    },
+                                                    "data": {
+                                                      "requestDataType": "new"
+                                                    },
+                                                    "path": ""
+                                                  }
+                                                }
+                                              },
+                                              "responsePath": "object"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "$api-data-query": {
+                                          "query": "additional_facilities/update",
+                                          "variables": {
+                                            "data": {
+                                              "$exclude": {
+                                                "data": {
+                                                  "$from-context": {
+                                                    "path": "data"
+                                                  }
+                                                },
+                                                "exclude": [
+                                                  "hasPermission",
+                                                  "eventState",
+                                                  "bookingState",
+                                                  "discountOrMarkupFlag",
+                                                  "discountOrMarkup",
+                                                  "unitPriceWithDiscountOrMarkup",
+                                                  "totalPriceWithDiscountOrMarkup"
+                                                ]
+                                              }
+                                            },
+                                            "id": {
+                                              "$from-context": {
+                                                "path": "objectId"
+                                              }
+                                            }
+                                          },
+                                          "responsePath": "object"
+                                        }
+                                      },
+                                      {
+                                        "$workflow-run": {
+                                          "workflowName": "request",
+                                          "action": "add",
+                                          "data": {
+                                            "$assign-object": {
+                                              "path": "",
+                                              "data": {
+                                                "type": "edit_facilities_cost",
+                                                "facilitiesId": {
+                                                  "$from-context": {
+                                                    "path": "objectId"
+                                                  }
+                                                },
+                                                "changeFacilitiesId": {
+                                                  "$from-context": {
+                                                    "path": "$additionalFacilitiesRequestData.id"
+                                                  }
+                                                },
+                                                "creatorId": {
+                                                  "$active-user": {
+                                                    "field": "_id"
+                                                  }
+                                                },
+                                                "createDate": {
+                                                  "$datetime-now": {}
+                                                }
+                                              },
+                                              "object": {}
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "else": {
+                    "$waterfall": {
+                      "arrayFunctions": [
+                        {
+                          "$assign-context": {
+                            "path": "$requests",
+                            "data": {
+                              "$api-data-query": {
+                                "query": "request/get_count_for_additional_facilities",
+                                "variables": {
+                                  "id": {
+                                    "$from-context": {
+                                      "path": "objectId"
+                                    }
+                                  },
+                                  "type": "edit_facilities",
+                                  "creatorId": {
+                                    "$active-user": {
+                                      "field": "_id"
+                                    }
+                                  }
+                                },
+                                "responsePath": "items"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "$if": {
+                            "condition": {
+                              ">=": {
+                                "operand1": {
+                                  "$length": {
+                                    "data": {
+                                      "$from-context": {
+                                        "path": "$requests"
+                                      }
+                                    }
+                                  }
+                                },
+                                "operand2": 1
+                              }
+                            },
+                            "then": [
+                              {
+                                "$api-data-query": {
+                                  "query": "additional_facilities_request_data/update",
+                                  "variables": {
+                                    "id": {
+                                      "$from-context": {
+                                        "path": "$requests.0.changeFacilitiesId"
+                                      }
+                                    },
+                                    "data": {
+                                      "$exclude": {
+                                        "data": {
+                                          "$from-context": {
+                                            "path": "data"
+                                          }
+                                        },
+                                        "exclude": [
+                                          "hasPermission",
+                                          "eventState",
+                                          "bookingState"
+                                        ]
+                                      }
+                                    },
+                                    "responsePath": "object"
+                                  }
+                                }
+                              }
+                            ],
+                            "else": {
+                              "$waterfall": {
+                                "arrayFunctions": [
+                                  {
+                                    "$assign-context": {
+                                      "path": "$additionalFacilitiesRequestData",
+                                      "data": {
+                                        "$api-data-query": {
+                                          "query": "additional_facilities_request_data/add",
+                                          "variables": {
+                                            "data": {
+                                              "$assign-object": {
+                                                "object": {
+                                                  "$exclude": {
+                                                    "data": {
+                                                      "$from-context": {
+                                                        "path": "data"
+                                                      }
+                                                    },
+                                                    "exclude": [
+                                                      "hasPermission",
+                                                      "eventState",
+                                                      "bookingState"
+                                                    ]
+                                                  }
+                                                },
+                                                "data": {
+                                                  "requestDataType": "new"
+                                                },
+                                                "path": ""
+                                              }
+                                            }
+                                          },
+                                          "responsePath": "object"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "$workflow-run": {
+                                      "workflowName": "request",
+                                      "action": "add",
+                                      "data": {
+                                        "$assign-object": {
+                                          "path": "",
+                                          "data": {
+                                            "type": "edit_facilities",
+                                            "facilitiesId": {
+                                              "$from-context": {
+                                                "path": "objectId"
+                                              }
+                                            },
+                                            "changeFacilitiesId": {
+                                              "$from-context": {
+                                                "path": "$additionalFacilitiesRequestData.id"
+                                              }
+                                            },
+                                            "creatorId": {
+                                              "$active-user": {
+                                                "field": "_id"
+                                              }
+                                            },
+                                            "createDate": {
+                                              "$datetime-now": {}
+                                            }
+                                          },
+                                          "object": {}
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$workflow-run": {
+              "workflowName": "event_history",
+              "action": "create",
+              "data": {
+                "additionalFacilitiesId": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                },
+                "actionTitle": "Редактирование дополнительного оснащения к помещению",
+                "userId": {
+                  "$from-context": {
+                    "path": "$activeUserId"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "conditional": [
+            {
+              "conditions": {
+                "===": {
+                  "operand1": {
+                    "$from-context": {
+                      "path": "entry.state"
+                    }
+                  },
+                  "operand2": "not_filled"
+                }
+              },
+              "state": "filled"
+            }
+          ]
+        }
+      },
+      "delete": {
+        "title": "Удалить",
+        "description": "Удаление брони оснащения",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "permissionCode": "event.edit",
+            "title": "Удалить бронь оснащения"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "additional_facilities/delete",
+            "mode": "popup",
+            "layout": "cabinet"
+          }
+        },
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "request/get_for_delete",
+              "variables": {
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "items",
+              "resultPath": "$requests"
+            }
+          },
+          {
+            "$workflow-run-from-collection": {
+              "workflowName": "request",
+              "action": "delete",
+              "collection": {
+                "$from-context": {
+                  "path": "$requests"
+                }
+              },
+              "objectIdPath": "id"
+            }
+          },
+          {
+            "$workflow-run": {
+              "workflowName": "event_history",
+              "action": "create",
+              "data": {
+                "additionalFacilitiesId": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                },
+                "actionTitle": "Удаление брони оснащения",
+                "userId": {
+                  "$from-context": {
+                    "path": "$activeUserId"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "deleted"
+        }
+      },
+      "delete_for_booking": {
+        "title": "Удалить",
+        "description": "Удаление брони услуги к мероприятию",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "permissionCode": "event.edit",
+            "title": "Удалить бронь услуги к мероприятию"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "additional_facilities/delete_for_booking",
+            "mode": "popup",
+            "layout": "cabinet"
+          }
+        },
+        "functions": [
+          {
+            "$workflow-run": {
+              "workflowName": "event_history",
+              "action": "create",
+              "data": {
+                "additionalFacilitiesId": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                },
+                "actionTitle": "Удаление брони услуги к мероприятию",
+                "userId": {
+                  "$from-context": {
+                    "path": "$activeUserId"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "deleted"
+        }
+      }
+    }
+  },
+  "states": {
+    "not_filled": {
+      "title": "Не заполнена",
+      "description": "Бронь оснащения не заполнена",
+      "statesActions": [
+        "edit",
+        "edit_for_booking",
+        "delete",
+        "delete_for_booking"
+      ]
+    },
+    "filled": {
+      "title": "Заполнена",
+      "description": "Бронь оснащения заполнена",
+      "statesActions": [
+        "edit",
+        "edit_for_booking",
+        "delete",
+        "delete_for_booking"
+      ]
+    },
+    "deleted": {
+      "title": "Удалена",
+      "description": "Удаленное состояние брони оснащения",
+      "displaySettingsInLists": {
+        "hidden": true
+      },
+      "finish": true
+    }
+  }
+}

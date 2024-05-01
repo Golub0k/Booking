@@ -1,0 +1,148 @@
+query ($id: [MongoID!]) {
+  items: requestGet(_id: $id) {
+    id: _id
+    number
+    type
+    eventId
+    changeEventId
+    eventNew {
+      name
+      type
+      country
+      industry
+      description
+      numberOfPeople
+      numberOfExhibitors
+      numberOfCountries
+      standardBuilding
+      buildingAreaNet
+      sitePlacement
+      protocolEvent
+      comment
+      organizers {
+        organizerId
+      }
+      curators {
+        userId
+      }
+      preliminary
+      contractSigned
+      actSigned
+      installationStart
+      installationEnd
+      eventStart
+      eventEnd
+      deinstallationStart
+      deinstallationEnd
+      arrival
+      secondImport
+      openingOfExhibition
+      closingOfExhibition
+      departure
+      departureOnLastDay
+      totalEventCost
+      discountOrMarkupFlag
+      discountOrMarkup
+      totalEventCost
+      totalEventCostWithDiscountOrMarkup
+      documents {
+        fileLogo {
+          _id
+          name
+          size
+          create_date
+        }
+
+        fileCostings {
+          _id
+          name
+          size
+          create_date
+        }
+
+        fileListOfExhibitors {
+          _id
+          name
+          size
+          create_date
+        }
+
+        filesExpoplan {
+          _id
+          name
+          size
+          create_date
+        }
+
+        filesProtocol {
+          _id
+          name
+          size
+          create_date
+        }
+
+        filePresidentProgram {
+          _id
+          name
+          size
+          create_date
+        }
+
+        filesOther {
+          _id
+          name
+          size
+          create_date
+        }
+      }
+    }
+    bookingId
+    changeBookingId
+    facilitiesId
+    changeFacilitiesId
+    bookingNew {
+      name
+      seatingTypeId
+      numberOfPeople
+      comment
+      installationDates {
+        startTime
+        endTime
+      }
+      eventDates {
+        startTime
+        endTime
+      }
+      deinstallationDates {
+        startTime
+        endTime
+      }
+      partial
+      allSquare
+      file {
+        _id
+        name
+        size
+        create_date
+      }
+      discountOrMarkupFlag
+      discountOrMarkup
+      allPriceMeter
+      allPriceMeterWithDiscountOrMarkup
+      allPrice
+      allPriceWithDiscountOrMarkup
+    }
+    additionalFacilitiesNew {
+      bookingPeriod
+      bookingComment
+      quantity
+      discountOrMarkupFlag
+      discountOrMarkup
+      unitPrice
+      totalPrice
+      unitPriceWithDiscountOrMarkup
+      totalPriceWithDiscountOrMarkup
+    }
+    cancelReason
+  }
+}

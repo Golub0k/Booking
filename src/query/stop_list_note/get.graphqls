@@ -1,0 +1,14 @@
+query ($id: [MongoID!]) {
+  items: stopListNoteGet(_id: $id) {
+    id: _id
+    roomId
+    room {
+      name
+    }
+    number
+    dateTimeFrom
+    dateTimeTo
+    reason
+    state
+  }
+}

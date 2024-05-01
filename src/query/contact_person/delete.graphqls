@@ -1,0 +1,5 @@
+mutation ($id: MongoID!) {
+  user: contactPersonUpdateById(_id: $id, record: { state: "deleted" }) {
+    _id
+  }
+}

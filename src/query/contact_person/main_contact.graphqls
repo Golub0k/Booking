@@ -1,0 +1,15 @@
+# @title: Получить количество контактных лиц у который есть атрибут главного пользователя
+
+query ($partnerId: String!) {
+  pagination: contactPersonPagination(
+    filter: {
+      AND: [
+        { _regexp: { field: partnerId, filter: $partnerId } }
+        { _operators: { state: { ne: "deleted" } } }
+        { main: true }
+      ]
+    }
+  ) {
+    count
+  }
+}

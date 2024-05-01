@@ -1,0 +1,10 @@
+global:
+  hpa:
+    enabled: false
+
+  configEnvs:
+    ENV_NAME: "${DEPLOY_NAMESPACE}"
+
+connector:
+  enabled: true
+

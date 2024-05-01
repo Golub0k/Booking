@@ -1,0 +1,31 @@
+# @title: Получить список всех записей для модального окна выбора мероприятий на форме создания/редактирования группы мероприятий
+
+query ($first: Int, $rows: Int, $search: String, $eventId: [MongoID]) {
+  pagination: eventPagination(
+    limit: $rows
+    offset: $first
+    sort: [{ field: createdAt, type: DESC }]
+    filter: {
+      AND: [
+        { _operators: { actual: { ne: false } } }
+        { _operators: { _id: { in: $eventId } } }
+        { _operators: { state: { nin: ["draft", "deleted", "new"] } } }
+        { OR: [{ _regexp: { field: name, filter: $search } }, { _regexp: { field: number, filter: $search } }] }
+      ]
+    }
+  ) {
+    count
+    items {
+      eventId: _id
+      name
+      number
+      organizers {
+        partner {
+          partnerId: _id
+          name
+        }
+      }
+      state
+    }
+  }
+}

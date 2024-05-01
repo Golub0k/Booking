@@ -1,0 +1,83 @@
+# @title: Получить список всех записей стоп-листа
+
+query (
+  $first: Int!
+  $rows: Int!
+  $search: String
+  $type: [String!]
+  $dateTimeFrom: DateTime
+  $dateTimeTo: DateTime
+  $state: [String]
+  $stateTabs: [String]
+  $curators: [String]
+  $organizers: [String]
+  $currentUser: String
+) {
+  pagination: EventListPagination(
+    collection: "Event"
+    aggregation: {
+      query: "event/list"
+      params: {
+        searchParam: $search
+        typeParam: $type
+        dateTimeFromParam: $dateTimeFrom
+        dateTimeToParam: $dateTimeTo
+        stateParam: $state
+        stateTabsParam: $stateTabs
+        curatorsParam: $curators
+        organizersParam: $organizers
+        currentUserParam: $currentUser
+      }
+    }
+    limit: $rows
+    offset: $first
+  ) {
+    count
+    items {
+      id: _id
+      name
+      number
+      installationStart
+      installationEnd
+      eventStart
+      eventEnd
+      deinstallationStart
+      deinstallationEnd
+      totalEventCost
+      eventGroup {
+        _id
+        name
+      }
+      totalEventCostWithDiscountOrMarkup
+      eventType {
+        name
+      }
+      cancelReason
+      organizers {
+        organizerId
+        partner {
+          name
+          _id
+          mainContactPerson {
+            fullName
+            phone
+          }
+          state
+        }
+      }
+      curators {
+        userId
+        user {
+          _id
+          fullName
+
+          phoneView
+        }
+      }
+      state
+      requests {
+        _id
+      }
+    }
+  }
+}

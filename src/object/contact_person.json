@@ -1,0 +1,72 @@
+{
+  "type": "object",
+  "title": "Контактное лицо",
+  "properties": {
+    "lastName": {
+      "type": "string",
+      "fieldDescription": "Фамилия",
+      "required": true,
+      "trim": true
+    },
+    "firstName": {
+      "type": "string",
+      "fieldDescription": "Имя",
+      "required": true,
+      "trim": true
+    },
+    "middleName": {
+      "type": "string",
+      "fieldDescription": "Отчество",
+      "trim": true
+    },
+    "phone": {
+      "fieldDescription": "Телефон",
+      "prefix": {
+        "type": "string",
+        "fieldDescription": "Код страны",
+        "required": false
+      },
+      "num": {
+        "type": "string",
+        "trim": true,
+        "fieldDescription": "Номер",
+        "required": false
+      }
+    },
+    "email": {
+      "type": "string",
+      "fieldDescription": "Почта",
+      "trim": true
+    },
+    "partnerId": {
+      "type": "string",
+      "fieldDescription": "ID контрагента",
+      "required": true,
+      "ref": "Partner",
+      "refAlias": "partner",
+      "refField": "_id",
+      "inversedBy": "contactPersonPartner"
+    },
+    "main": {
+      "type": "boolean",
+      "fieldDescription": "Основное",
+      "required": true,
+      "default": false
+    }
+  },
+  "additionalFields": {
+    "fullName": {
+      "type": "string",
+      "fieldDescription": "ФИО",
+      "resolve": "${object.lastName} ${object.firstName} ${object.middleName ? object.middleName : ''}"
+    },
+    "phoneView": {
+      "type": "string",
+      "fieldDescription": "Телефон полностью",
+      "resolve": "${object.phone.prefix} ${object.phone.num}"
+    }
+  },
+  "settings": {
+    "preview": "fullName"
+  }
+}

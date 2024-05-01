@@ -1,0 +1,7 @@
+# @title: Обновить данные экземпляров объекта "Тип помещения"
+
+mutation($id: [MongoID!], $filter: FilterUpdateRoomTypeInput, $data: UpdateRoomTypeInput!) {
+  result: roomTypeUpdate(_id: $id, filter: $filter, record: $data) {
+    numAffected
+  }
+}

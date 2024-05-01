@@ -1,0 +1,891 @@
+{
+  "@title": "Редактирование пользователем своего профиля",
+  "@preload": {
+    "user": {
+      "$from-context": {
+        "path": "$response.body.data.user",
+        "data": {
+          "$api-data": {
+            "query": "user/my-profile",
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            },
+            "options": {
+              "observe": "response"
+            },
+            "variables": {
+              "id": {
+                "$query-params": {
+                  "name": "id"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "widget": {
+    "name": "container"
+  },
+  "properties": {
+    "breadcrumbs": {
+      "type": "object",
+      "widget": {
+        "name": "breadcrumb",
+        "mobileItems": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          }
+        ],
+        "items": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          },
+          {
+            "label": "Мой профиль",
+            "routerLink": "/cabinet/user/my-profile"
+          },
+          {
+            "label": "Редактирование"
+          }
+        ],
+        "kind": "breadcrumb-breadcrumbs-container-style"
+      }
+    },
+    "form": {
+      "type": "object",
+      "model": "#data",
+      "value": {
+        "$assign-object": {
+          "data": {
+            "prefix": {
+              "$if": {
+                "condition": {
+                  "$not-empty": {
+                    "data": {
+                      "$from-context": {
+                        "path": "@preload.user.phone.prefix"
+                      }
+                    }
+                  }
+                },
+                "then": {
+                  "$from-context": {
+                    "path": "@preload.user.phone.prefix"
+                  }
+                },
+                "else": "+7"
+              }
+            },
+            "num": {
+              "$if": {
+                "condition": {
+                  "$not-empty": {
+                    "data": {
+                      "$from-context": {
+                        "path": "@preload.user.phone.num"
+                      }
+                    }
+                  }
+                },
+                "then": {
+                  "$from-context": {
+                    "path": "@preload.user.phone.num"
+                  }
+                },
+                "else": ""
+              }
+            }
+          },
+          "object": "$ref:operation-frontend:snippets/element/preload_delayed_value@@@preload.user",
+          "path": "phone-container.phone"
+        }
+      },
+      "widget": {
+        "name": "form",
+        "options": {
+          "label": "Редактирование моего профиля"
+        },
+        "kind": "form-form-group-with-h1-style"
+      },
+      "properties": {
+        "lastName": {
+          "type": "string",
+          "widget": {
+            "name": "input",
+            "options": {
+              "label": "Фамилия"
+            },
+            "kind": "input-text-input-required-style"
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$not-empty": {
+                    "data": {
+                      "$var": {
+                        "path": "."
+                      }
+                    }
+                  }
+                },
+                "message": "Поле обязательно для заполнения"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            },
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "<=": {
+                    "operand1": {
+                      "$length": {
+                        "data": {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                }
+                              }
+                            },
+                            "then": {
+                              "$var": {
+                                "path": "."
+                              }
+                            },
+                            "else": ""
+                          }
+                        }
+                      }
+                    },
+                    "operand2": 255
+                  }
+                },
+                "message": "Максимум 255 символов"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            }
+          ]
+        },
+        "firstName": {
+          "type": "string",
+          "widget": {
+            "name": "input",
+            "options": {
+              "label": "Имя"
+            },
+            "kind": "input-text-input-required-style"
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$not-empty": {
+                    "data": {
+                      "$var": {
+                        "path": "."
+                      }
+                    }
+                  }
+                },
+                "message": "Поле обязательно для заполнения"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            },
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "<=": {
+                    "operand1": {
+                      "$length": {
+                        "data": {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                }
+                              }
+                            },
+                            "then": {
+                              "$var": {
+                                "path": "."
+                              }
+                            },
+                            "else": ""
+                          }
+                        }
+                      }
+                    },
+                    "operand2": 255
+                  }
+                },
+                "message": "Максимум 255 символов"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            }
+          ]
+        },
+        "middleName": {
+          "type": "string",
+          "widget": {
+            "name": "input",
+            "options": {
+              "label": "Отчество"
+            },
+            "kind": "input-text-input-style"
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "<=": {
+                    "operand1": {
+                      "$length": {
+                        "data": {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                }
+                              }
+                            },
+                            "then": {
+                              "$var": {
+                                "path": "."
+                              }
+                            },
+                            "else": ""
+                          }
+                        }
+                      }
+                    },
+                    "operand2": 255
+                  }
+                }
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            }
+          ]
+        },
+        "position": {
+          "type": "string",
+          "widget": {
+            "name": "input",
+            "options": {
+              "label": "Должность"
+            },
+            "kind": "input-text-input-style"
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "<=": {
+                    "operand1": {
+                      "$length": {
+                        "data": {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                }
+                              }
+                            },
+                            "then": {
+                              "$var": {
+                                "path": "."
+                              }
+                            },
+                            "else": ""
+                          }
+                        }
+                      }
+                    },
+                    "operand2": 255
+                  }
+                }
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            }
+          ]
+        },
+        "email": {
+          "type": "string",
+          "widget": {
+            "name": "input",
+            "options": {
+              "label": "Адрес электронной почты"
+            },
+            "kind": "input-text-input-required-style"
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$not-empty": {
+                    "data": {
+                      "$var": {
+                        "path": "."
+                      }
+                    }
+                  }
+                },
+                "message": "Поле обязательно для заполнения"
+              },
+              "events": [
+                "onUpdate",
+                "onBackend"
+              ]
+            },
+            {
+              "type": "schema",
+              "params": {
+                "rule": "$ref:rule-validation:snippets/validation/checks/length-255",
+                "message": "Максимум 255 символов"
+              },
+              "events": [
+                "onUpdate",
+                "onBackend"
+              ]
+            },
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$or": {
+                    "operands": [
+                      {
+                        "$empty": {
+                          "data": {
+                            "$var": {
+                              "path": "."
+                            }
+                          }
+                        }
+                      },
+                      "$ref:operation-frontend:snippets/validation/checks/email"
+                    ]
+                  }
+                },
+                "message": "Некорректное значение адреса электронной почты"
+              },
+              "events": [
+                "onUpdate",
+                "onBackend"
+              ]
+            },
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "===": {
+                    "operand1": 0,
+                    "operand2": {
+                      "$fetch-object": {
+                        "path": "data.count",
+                        "data": {
+                          "$api-data": {
+                            "query": "user/email_exists",
+                            "variables": {
+                              "email": {
+                                "$var": {
+                                  "path": "."
+                                }
+                              },
+                              "except": {
+                                "$active-user": {
+                                  "field": "_id"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "message": "Пользователь с таким адресом электронной почты уже зарегистрирован в Системе"
+              },
+              "events": [
+                "onBackend"
+              ]
+            }
+          ]
+        },
+        "phone-container": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "options": {
+              "label": "Телефон"
+            },
+            "kind": "container-text-input-style"
+          },
+          "properties": {
+            "phone": {
+              "model": "#data.phone",
+              "type": "object",
+              "value": {
+                "prefix": "+7",
+                "num": ""
+              },
+              "widget": {
+                "name": "phone-mask",
+                "options": {
+                  "noCountry": true,
+                  "maxLengthWithoutMask": {
+                    "$subtract": {
+                      "operand1": 20,
+                      "operand2": {
+                        "$length": {
+                          "data": {
+                            "$subs": {
+                              "path": "#data.phone.prefix"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "properties": {
+                "prefix": {
+                  "type": "string",
+                  "widget": {
+                    "name": "input"
+                  }
+                },
+                "num": {
+                  "type": "string",
+                  "widget": {
+                    "name": "input"
+                  }
+                }
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": "$ref:rule-validation:snippets/validation/checks/length-phone",
+                    "message": "Максимум 20 символов"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                },
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": "$ref:rule-validation:snippets/validation/checks/required-phone-mask",
+                    "message": "Некорректное значение телефона"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "timezone": {
+          "type": "object",
+          "value": {
+            "$from-context": {
+              "path": "@preload.user.timezone"
+            }
+          },
+          "properties": {
+            "offset": {
+              "type": "string",
+              "widget": {
+                "name": "input"
+              }
+            },
+            "name": {
+              "type": "string",
+              "widget": {
+                "name": "input"
+              }
+            }
+          },
+          "widget": {
+            "name": "dropdown",
+            "options": {
+              "filter": true,
+              "label": "Временная зона",
+              "optionLabel": "name",
+              "dataKey": "name",
+              "visible": false,
+              "valueOptions": {
+                "$fetch-object": {
+                  "path": "data.items",
+                  "data": {
+                    "$api-data": {
+                      "query": "timezone/search"
+                    }
+                  }
+                }
+              }
+            },
+            "kind": "dropdown-dropdown-input-required-style"
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$not-empty": {
+                    "data": {
+                      "$var": {
+                        "path": "."
+                      }
+                    }
+                  }
+                },
+                "message": "Поле обязательно для заполнения"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            }
+          ]
+        },
+        "login": {
+          "type": "string",
+          "widget": {
+            "name": "input",
+            "options": {
+              "label": "Логин",
+              "maxlength": 64,
+              "visible": {
+                "!==": {
+                  "operand1": {
+                    "$from-context": {
+                      "path": "@preload.user.userAD"
+                    }
+                  },
+                  "operand2": true
+                }
+              }
+            },
+            "kind": "input-text-input-required-style"
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$not-empty": {
+                    "data": {
+                      "$var": {
+                        "path": "."
+                      }
+                    }
+                  }
+                },
+                "message": "Обязательно для заполнения"
+              },
+              "events": [
+                "onUpdate",
+                "onBackend"
+              ]
+            },
+            {
+              "type": "schema",
+              "params": {
+                "rule": "$ref:rule-validation:snippets/validation/checks/login-match",
+                "message": "Значение логина может содержать символы латинского алфавита, цифры, а также знаки . _ - @"
+              },
+              "events": [
+                "onUpdate",
+                "onBackend"
+              ]
+            },
+            {
+              "type": "schema",
+              "params": {
+                "rule": "$ref:rule-validation:snippets/validation/checks/login-length",
+                "message": "Логин должен содержать минимум 6 знаков, максимум – 64"
+              },
+              "events": [
+                "onUpdate",
+                "onBackend"
+              ]
+            },
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "===": {
+                    "operand1": 0,
+                    "operand2": {
+                      "$fetch-object": {
+                        "path": "data.count",
+                        "data": {
+                          "$api-data": {
+                            "query": "user/login_exists",
+                            "variables": {
+                              "login": {
+                                "$var": {
+                                  "path": "."
+                                }
+                              },
+                              "except": {
+                                "$active-user": {
+                                  "field": "_id"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "message": "Пользователь с таким логином уже зарегистрирован в Системе"
+              },
+              "events": [
+                "onBackend"
+              ]
+            }
+          ]
+        },
+        "emailNotification": {
+          "type": "boolean",
+          "value": {
+            "$from-context": {
+              "path": "@preload.user.userSettings.emailNotification"
+            }
+          },
+          "widget": {
+            "name": "checkbox",
+            "options": {
+              "optionLabel": "Дублировать уведомления на e-mail",
+              "visible": false
+            },
+            "kind": "checkbox-checkbox-group-without-label-style"
+          }
+        },
+        "pushNotification": {
+          "type": "boolean",
+          "value": {
+            "$from-context": {
+              "path": "@preload.user.userSettings.pushNotification"
+            }
+          },
+          "widget": {
+            "name": "checkbox",
+            "options": {
+              "optionLabel": "Показывать push-уведомления",
+              "visible": false
+            },
+            "kind": "checkbox-checkbox-group-without-label-style"
+          }
+        },
+        "userSettings": {
+          "type": "object",
+          "widget": {
+            "name": "hidden"
+          },
+          "properties": {
+            "id": {
+              "type": "string",
+              "widget": {
+                "name": "hidden"
+              }
+            },
+            "emailNotification": {
+              "type": "boolean",
+              "value": {
+                "$subs": {
+                  "path": "#data.emailNotification"
+                }
+              },
+              "widget": {
+                "name": "hidden"
+              }
+            },
+            "pushNotification": {
+              "type": "boolean",
+              "value": {
+                "$subs": {
+                  "path": "#data.pushNotification"
+                }
+              },
+              "widget": {
+                "name": "hidden"
+              }
+            }
+          }
+        },
+        "actions": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "group": "form-actions p-field p-grid mrg-t-lg",
+              "value": "p-jc-xs-end p-autolayout"
+            }
+          },
+          "properties": {
+            "save": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Сохранить"
+                },
+                "events": {
+                  "click": {
+                    "$if": {
+                      "condition": {
+                        "$validate": {
+                          "path": "/"
+                        }
+                      },
+                      "then": {
+                        "$waterfall": {
+                          "arrayFunctions": [
+                            "$ref:operation-frontend:snippets/element/_loading/onclick-loading-enable",
+                            {
+                              "$http-code": {
+                                "200": [
+                                  {
+                                    "$go": {
+                                      "workflow": "user",
+                                      "action": "my-profile"
+                                    }
+                                  },
+                                  {
+                                    "$message": {
+                                      "severity": "success",
+                                      "summary": "Редактирование профиля",
+                                      "detail": {
+                                        "$if": {
+                                          "condition": {
+                                            "===": {
+                                              "operand1": {
+                                                "$from-context": {
+                                                  "path": "$response.body.data.emailChanged"
+                                                }
+                                              },
+                                              "operand2": true
+                                            }
+                                          },
+                                          "then": "Данные профиля успешно изменены. Для подтверждения нового адреса электронной почты необходимо перейти по ссылке, отправленной на указанный адрес электронный почты.",
+                                          "else": "Данные вашего профиля успешно изменены"
+                                        }
+                                      }
+                                    }
+                                  }
+                                ],
+                                "422": [
+                                  "$ref:operation-frontend:snippets/element/_loading/onclick-loading-disable",
+                                  "$ref:operation-frontend:snippets/element/_http_message/http-errors-from-response"
+                                ],
+                                "client": {
+                                  "$api-workflow": {
+                                    "options": {
+                                      "observe": "response"
+                                    },
+                                    "type": "post",
+                                    "id": {
+                                      "$active-user": {
+                                        "field": "_id"
+                                      }
+                                    },
+                                    "data": {
+                                      "$var": {
+                                        "path": "#data"
+                                      }
+                                    }
+                                  }
+                                },
+                                "default": [
+                                  "$ref:operation-frontend:snippets/element/_loading/onclick-loading-disable",
+                                  "$ref:operation-frontend:snippets/element/_http_message/http-default-error-message-action"
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "else": {
+                        "$form-control-mark": {
+                          "key": "form"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "cancel": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Отмена"
+                },
+                "events": {
+                  "click": {
+                    "$go": {
+                      "workflow": "user",
+                      "action": "my-profile"
+                    }
+                  }
+                },
+                "kind": "button-btn-outline-last-style"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

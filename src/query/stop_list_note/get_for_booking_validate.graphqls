@@ -1,0 +1,32 @@
+query ($rooms: [String!], $dateTimeFrom: DateTime, $dateTimeTo: DateTime) {
+  count: stopListNoteCount(
+    filter: {
+      AND: [
+        { _operators: { state: { ne: "deleted" } } }
+        { _operators: { roomId: { in: $rooms } } }
+        {
+          OR: [
+            {
+              AND: [
+                { _operators: { dateTimeFrom: { gte: $dateTimeFrom } } }
+                { _operators: { dateTimeFrom: { lte: $dateTimeTo } } }
+              ]
+            }
+            {
+              AND: [
+                { _operators: { dateTimeTo: { gte: $dateTimeFrom } } }
+                { _operators: { dateTimeTo: { lte: $dateTimeTo } } }
+              ]
+            }
+            {
+              AND: [
+                { _operators: { dateTimeTo: { gte: $dateTimeTo } } }
+                { _operators: { dateTimeFrom: { lte: $dateTimeFrom } } }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  )
+}

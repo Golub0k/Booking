@@ -1,0 +1,75 @@
+{
+  "type": "add",
+  "object": "settings",
+  "data": [
+    {
+      "_id": {
+        "$oid": "65642fd4ce51f6ccd72dee13"
+      },
+      "defaultValue": {
+        "string": "ldap://proxy.spimex.local:389"
+      },
+      "description": "URL для сервера LDAP",
+      "services": {
+        "appView": true
+      },
+      "package": "custom",
+      "name": "Active Directory URL",
+      "code": "UrlAD",
+      "type": "string",
+      "state": "active"
+    },
+    {
+      "_id": {
+        "$oid": "65643094ce51f6ccd72dee1f"
+      },
+      "defaultValue": {
+        "string": "OU=UsersExpo, OU=K-Expo, DC=expo,DC=kzn"
+      },
+      "description": "База для поиска в Active Directory",
+      "services": {
+        "appView": true
+      },
+      "package": "custom",
+      "name": "Active Directory BaseDN",
+      "code": "BaseDN",
+      "type": "string",
+      "state": "active"
+    },
+    {
+      "_id": {
+        "$oid": "65643985ce51f6ccd72dee2b"
+      },
+      "defaultValue": {
+        "string": "test13"
+      },
+      "description": "Bind DN для учетной записи пользователя LDAP",
+      "services": {
+        "appView": true
+      },
+      "package": "custom",
+      "name": "Active Directory Bind DN",
+      "code": "BindDN",
+      "type": "string",
+      "state": "active"
+    },
+    {
+      "_id": {
+        "$oid": "65643a8ece51f6ccd72dee3f"
+      },
+      "defaultValue": {
+        "string": "Qwert!2345"
+      },
+      "description": "Bind Password для учетной записи пользователя LDAP",
+      "services": {
+        "appView": true
+      },
+      "package": "custom",
+      "name": "Active Directory bind Password",
+      "code": "BindPassword",
+      "type": "string",
+      "state": "active"
+    }
+  ],
+  "enabled": true
+}

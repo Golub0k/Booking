@@ -1,0 +1,8 @@
+# @title: Получить данные экземпляров объекта "Пользователь" (полный набор)
+
+query ($id: MongoID!) {
+  user: userOne(filter: { _id: $id }) {
+    _id
+    userAD
+  }
+}

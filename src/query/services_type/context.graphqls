@@ -1,0 +1,9 @@
+# @title: Получить контекст для объекта "Тип услуг"
+
+query($id: [MongoID!]) {
+  items: servicesTypeGet(_id: $id)
+  {
+    id: _id
+    state
+  }
+}

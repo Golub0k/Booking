@@ -1,0 +1,7 @@
+# @title: Обновить экземпляр объекта "Заявка"
+
+mutation ($id: [MongoID!]!, $data: UpdateRequestInput!) {
+  object: requestUpdate(_id: $id, record: $data) {
+    numAffected
+  }
+}

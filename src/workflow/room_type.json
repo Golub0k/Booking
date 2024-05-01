@@ -1,0 +1,157 @@
+{
+  "version": 2,
+  "objectType": "room_type",
+  "context": "room_type/context",
+  "description": "Жизненный цикл типа помещений",
+  "rbac": {
+    "visible": true,
+    "title": "Типы помещений"
+  },
+  "actions": {
+    "initialActions": {
+      "add": {
+        "title": "Создать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Добавить тип помещений"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "room_type/add",
+            "mode": "popup",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "room_type/name_exists"
+          ]
+        },
+        "functions": [
+          {
+            "$workflow-object-create": {
+              "objectType": "room_type",
+              "query": "room_type/create",
+              "variables": {
+                "data": {
+                  "$from-context": {
+                    "path": "data"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "active"
+        }
+      }
+    },
+    "globalActions": {
+      "list": {
+        "title": "Реестр типов помещений",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Просмотреть справочник типов помещений"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "room_type/list",
+            "mode": "form",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "room_type/list"
+          ]
+        }
+      }
+    },
+    "statesActions": {
+      "delete": {
+        "title": "Удалить",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Удалить тип помещений"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "room_type/delete",
+            "mode": "popup",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "room_type/get"
+          ]
+        },
+        "results": {
+          "unconditional": "deleted"
+        }
+      },
+      "edit": {
+        "title": "Редактировать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Редактировать тип помещений"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "room_type/edit",
+            "mode": "popup",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "room_type/get"
+          ]
+        },
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "room_type/update",
+              "variables": {
+                "data": {
+                  "$from-context": {
+                    "path": "data"
+                  }
+                },
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "object"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "states": {
+    "active": {
+      "title": "Активен",
+      "description": "Активное состояние типа помещения",
+      "statesActions": [
+        "edit",
+        "delete"
+      ]
+    },
+    "deleted": {
+      "title": "Удален",
+      "description": "Удаленное состояние типа помещения",
+      "displaySettingsInLists": {
+        "hidden": true
+      },
+      "finish": true
+    }
+  }
+}

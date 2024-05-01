@@ -1,0 +1,7 @@
+# @title: Создать экземпляр объекта "Заявка"
+
+mutation ($data: [CreateRequestInput!]!) {
+  request: requestCreate(records: $data) {
+    id: recordIds
+  }
+}

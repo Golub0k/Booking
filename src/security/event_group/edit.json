@@ -1,0 +1,17 @@
+{
+  "backend-validation": {
+    "enabled": true,
+    "options": {
+      "schema": "event_group/edit",
+      "data": {
+        "$post-params": {
+          "name": null
+        }
+      },
+      "path": "#data"
+    },
+    "states": [
+      "active"
+    ]
+  }
+}

@@ -1,0 +1,9 @@
+# @title: Получить контекст для объекта "Дополнительная услуга"
+
+query ($id: [MongoID!]) {
+  items: additionalServiceGet(_id: $id) {
+    id: _id
+    state
+    serviceTypeId
+  }
+}

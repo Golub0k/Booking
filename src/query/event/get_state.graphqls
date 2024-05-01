@@ -1,0 +1,6 @@
+query ($id: MongoID!) {
+  object: eventOne(filter: { _id: $id }) {
+    id: _id
+    state
+  }
+}

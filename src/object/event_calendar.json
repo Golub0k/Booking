@@ -1,0 +1,37 @@
+{
+  "type": "aggregation",
+  "options": {
+    "mode": "many",
+    "extends": "event"
+  },
+  "properties": {
+    "_id": {
+      "type": "string",
+      "fieldDescription": "Идентификатор мероприятия или группы"
+    },
+    "elementType": {
+      "type": "string",
+      "fieldDescription": "Тип записи (мероприятие или группа)"
+    },
+    "elementColor": {
+      "type": "string",
+      "fieldDescription": "Цвет блока в календаре"
+    },
+    "elementTitle": {
+      "type": "string",
+      "fieldDescription": "Наименование блока"
+    },
+    "elementStart": {
+      "type": "datetime",
+      "fieldDescription": "Начало блока"
+    },
+    "elementEnd": {
+      "type": "datetime",
+      "fieldDescription": "Окончание блока"
+    },
+    "elementDescription": {
+      "type": "string",
+      "fieldDescription": "Описание блока"
+    }
+  }
+}

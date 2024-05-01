@@ -1,0 +1,13 @@
+# @title: Получить данные экземпляров объекта "Мебели"
+
+query ($id: [MongoID!], $filter: FilterGetFurnitureInput) {
+  items: furnitureGet(_id: $id, filter: $filter) {
+    id: _id
+    owner
+    name
+    nomenclatureNumber
+    unitPrice
+    availableQuantity
+    comment
+  }
+}

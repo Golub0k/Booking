@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "title": "Выражение api-data-optional-id"
+  },
+  "schema": {
+    "$if": {
+      "condition": {
+        "$not-empty": {
+          "data": {
+            "$query-params": {
+              "name": "id",
+              "filter": false
+            }
+          }
+        }
+      },
+      "then": {
+        "$query-params": {
+          "name": "id",
+          "filter": false
+        }
+      },
+      "else": ""
+    }
+  }
+}

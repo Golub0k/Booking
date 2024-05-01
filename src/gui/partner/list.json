@@ -1,0 +1,1191 @@
+{
+  "@title": "Реестр контрагентов",
+  "type": "object",
+  "model": "/",
+  "widget": {
+    "name": "container",
+    "events": {
+      "init": [
+        {
+          "$session-storage-set": {
+            "key": "previousPage",
+            "value": "list"
+          }
+        }
+      ]
+    }
+  },
+  "properties": {
+    "breadcrumbs": {
+      "type": "object",
+      "widget": {
+        "name": "breadcrumb",
+        "mobileItems": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          }
+        ],
+        "items": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          },
+          {
+            "label": "Контрагенты"
+          }
+        ],
+        "class": {
+          "group": "p-xs-auto mrg-lg-b-xl mrg-b-md"
+        }
+      }
+    },
+    "header-with-button": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "options": {
+          "label": "Контрагенты"
+        },
+        "kind": "container-header-with-button-container-style"
+      },
+      "properties": {
+        "button": {
+          "type": "string",
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Добавить контрагента",
+              "visible": {
+                "$active-user-has-permission": {
+                  "permission": "partner.add"
+                }
+              }
+            },
+            "events": {
+              "click": {
+                "$go": {
+                  "workflow": "partner",
+                  "action": "add"
+                }
+              }
+            },
+            "class": {
+              "value": "button_primary button_narrow button_h1"
+            }
+          }
+        }
+      }
+    },
+    "search": {
+      "model": "#simple-search",
+      "type": "object",
+      "bindRouter": true,
+      "widget": {
+        "name": "container",
+        "class": {
+          "value": "search-form search-form_collapsed search-form_margin form-group_inline p-grid p-fluid pdd-b-10"
+        }
+      },
+      "properties": {
+        "search": {
+          "type": "string",
+          "widget": {
+            "name": "input",
+            "options": {
+              "placeholder": "Наименование контрагента, ИНН/аналог, КПП, ОГРН/ОГРНИП, ФИО/телефон контактного лица",
+              "actionButtonIconMobile": "icon-search",
+              "actionButtonIconDesktop": "icon-search",
+              "enableClearButton": false
+            },
+            "events": {
+              "actionButtonClick": {
+                "$if": {
+                  "condition": {
+                    "$validate": {
+                      "path": "/"
+                    }
+                  },
+                  "then": {
+                    "$grid": {
+                      "action": "lazyLoad",
+                      "path": "#data",
+                      "filters": {
+                        "$var": {
+                          "path": "#search"
+                        }
+                      }
+                    }
+                  },
+                  "else": {}
+                }
+              }
+            },
+            "class": {
+              "actionButtonGroup": "search-form-trigger search-form-trigger_expanded",
+              "group": "form-item pdd-b-0 p-xs-12 p-md-6 p-xl-8 p-xxl-10",
+              "value": "form-item-element search-form-input"
+            }
+          }
+        },
+        "clear-button": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Сбросить"
+            },
+            "events": {
+              "click": [
+                {
+                  "$populate": {
+                    "path": "#simple-search",
+                    "data": {}
+                  }
+                },
+                {
+                  "grid-reset": {
+                    "$grid": {
+                      "action": "lazyLoad",
+                      "path": "#data",
+                      "filters": {
+                        "$merge": {
+                          "data": [
+                            {
+                              "$var": {
+                                "path": "#simple-search"
+                              }
+                            },
+                            {
+                              "client": {
+                                "$switch": {
+                                  "condition": {
+                                    "$element-option": {
+                                      "path": "#tabs",
+                                      "option": "selectedKey"
+                                    }
+                                  },
+                                  "default": "",
+                                  "cases": [
+                                    {
+                                      "value": "supplier",
+                                      "action": false
+                                    },
+                                    {
+                                      "value": "client",
+                                      "action": true
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "supplier": {
+                                "$switch": {
+                                  "condition": {
+                                    "$element-option": {
+                                      "path": "#tabs",
+                                      "option": "selectedKey"
+                                    }
+                                  },
+                                  "default": "",
+                                  "cases": [
+                                    {
+                                      "value": "supplier",
+                                      "action": true
+                                    },
+                                    {
+                                      "value": "client",
+                                      "action": false
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "class": {
+              "group": "form-item pdd-b-0 p-xs-6 p-md-3 p-xl-2 p-xxl-1",
+              "value": "button_narrow button_secondary button_clear"
+            }
+          }
+        },
+        "search-button": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Найти"
+            },
+            "events": {
+              "click": {
+                "$grid": {
+                  "action": "lazyLoad",
+                  "path": "#data",
+                  "filters": {
+                    "$merge": {
+                      "data": [
+                        {
+                          "$var": {
+                            "path": "#simple-search"
+                          }
+                        },
+                        {
+                          "dateFrom": {
+                            "$formatter": {
+                              "data": {
+                                "$formatter": {
+                                  "format": "datetime:\"YYYY-MM-DDT00:00:00+00:00\"",
+                                  "data": {
+                                    "$var": {
+                                      "path": "#simple-search.dateFrom"
+                                    }
+                                  }
+                                }
+                              },
+                              "format": {
+                                "$replace": {
+                                  "template": "datetime:\"YYYY-MM-DD HH:mm:ss\":\"{{0}}\":\"true\"",
+                                  "data": [
+                                    {
+                                      "$active-user": {
+                                        "field": "timezone.offset"
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "dateTo": {
+                            "$formatter": {
+                              "data": {
+                                "$formatter": {
+                                  "format": "datetime:\"YYYY-MM-DDT23:59:59+00:00\"",
+                                  "data": {
+                                    "$var": {
+                                      "path": "#simple-search.dateTo"
+                                    }
+                                  }
+                                }
+                              },
+                              "format": {
+                                "$replace": {
+                                  "template": "datetime:\"YYYY-MM-DD HH:mm:ss\":\"{{0}}\":\"true\"",
+                                  "data": [
+                                    {
+                                      "$active-user": {
+                                        "field": "timezone.offset"
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "client": {
+                            "$switch": {
+                              "condition": {
+                                "$element-option": {
+                                  "path": "#tabs",
+                                  "option": "selectedKey"
+                                }
+                              },
+                              "default": "",
+                              "cases": [
+                                {
+                                  "value": "supplier",
+                                  "action": false
+                                },
+                                {
+                                  "value": "client",
+                                  "action": true
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "supplier": {
+                            "$switch": {
+                              "condition": {
+                                "$element-option": {
+                                  "path": "#tabs",
+                                  "option": "selectedKey"
+                                }
+                              },
+                              "default": "",
+                              "cases": [
+                                {
+                                  "value": "supplier",
+                                  "action": true
+                                },
+                                {
+                                  "value": "client",
+                                  "action": false
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "class": {
+              "group": "form-item pdd-b-0 p-xs-6 p-md-3 p-xl-2 p-xxl-1",
+              "value": "button_narrow button_outline button_clear"
+            }
+          }
+        },
+        "state": {
+          "bindRouter": true,
+          "type": "any",
+          "widget": {
+            "name": "multiselect",
+            "options": {
+              "label": "Статус",
+              "placeholder": "Выбрать",
+              "optionLabel": "name",
+              "valueKey": "code",
+              "filter": false,
+              "valueOptions": [
+                {
+                  "code": "active",
+                  "name": "Активен"
+                },
+                {
+                  "code": "blocked",
+                  "name": "Заблокирован"
+                }
+              ]
+            },
+            "class": {
+              "group": "form-item pdd-tb-0 p-xs-12 p-md-6 p-xl-4 mrg-b-xs",
+              "label": "form-label form-label_top",
+              "value": "form-item-element"
+            }
+          }
+        },
+        "dateFrom": {
+          "type": "date",
+          "widget": {
+            "name": "calendar",
+            "options": {
+              "label": "Дата добавления с",
+              "dataType": "string",
+              "timeZone": {
+                "$if": {
+                  "condition": {
+                    "$not-empty": {
+                      "data": {
+                        "$active-user": {
+                          "field": "timezone.offset"
+                        }
+                      }
+                    }
+                  },
+                  "then": {
+                    "$fetch-object": {
+                      "path": "1",
+                      "data": {
+                        "$string-split": {
+                          "string": {
+                            "$active-user": {
+                              "field": "timezone.offset"
+                            }
+                          },
+                          "separator": "UTC"
+                        }
+                      }
+                    }
+                  },
+                  "else": ""
+                }
+              }
+            },
+            "class": {
+              "group": "form-item pdd-tb-0 p-xs-12 p-md-3 p-xl-3 mrg-b-xs",
+              "label": "form-label form-label_top",
+              "value": "form-item-element"
+            }
+          }
+        },
+        "dateTo": {
+          "type": "date",
+          "widget": {
+            "name": "calendar",
+            "options": {
+              "label": "по",
+              "dataType": "string",
+              "timeZone": {
+                "$if": {
+                  "condition": {
+                    "$not-empty": {
+                      "data": {
+                        "$active-user": {
+                          "field": "timezone.offset"
+                        }
+                      }
+                    }
+                  },
+                  "then": {
+                    "$fetch-object": {
+                      "path": "1",
+                      "data": {
+                        "$string-split": {
+                          "string": {
+                            "$active-user": {
+                              "field": "timezone.offset"
+                            }
+                          },
+                          "separator": "UTC"
+                        }
+                      }
+                    }
+                  },
+                  "else": ""
+                }
+              }
+            },
+            "class": {
+              "group": "form-item pdd-tb-0 p-xs-12 p-md-3 p-xl-3 mrg-b-xs",
+              "label": "form-label form-label_top",
+              "value": "form-item-element"
+            }
+          }
+        }
+      }
+    },
+    "tabs": {
+      "type": "object",
+      "model": "#tabs",
+      "widget": {
+        "name": "tab-view",
+        "class": {
+          "value": "show-badge"
+        },
+        "events": {
+          "changeTab": {
+            "$grid": {
+              "action": "lazyLoad",
+              "path": "#data",
+              "filters": {
+                "$merge": {
+                  "data": [
+                    {
+                      "$var": {
+                        "path": "#simple-search"
+                      }
+                    },
+                    {
+                      "dateFrom": {
+                        "$formatter": {
+                          "data": {
+                            "$formatter": {
+                              "format": "datetime:\"YYYY-MM-DDT00:00:00+00:00\"",
+                              "data": {
+                                "$var": {
+                                  "path": "#simple-search.dateFrom"
+                                }
+                              }
+                            }
+                          },
+                          "format": {
+                            "$replace": {
+                              "template": "datetime:\"YYYY-MM-DD HH:mm:ss\":\"{{0}}\":\"true\"",
+                              "data": [
+                                {
+                                  "$active-user": {
+                                    "field": "timezone.offset"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "dateTo": {
+                        "$formatter": {
+                          "data": {
+                            "$formatter": {
+                              "format": "datetime:\"YYYY-MM-DDT23:59:59+00:00\"",
+                              "data": {
+                                "$var": {
+                                  "path": "#simple-search.dateTo"
+                                }
+                              }
+                            }
+                          },
+                          "format": {
+                            "$replace": {
+                              "template": "datetime:\"YYYY-MM-DD HH:mm:ss\":\"{{0}}\":\"true\"",
+                              "data": [
+                                {
+                                  "$active-user": {
+                                    "field": "timezone.offset"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "client": {
+                        "$switch": {
+                          "condition": {
+                            "$element-option": {
+                              "path": "#tabs",
+                              "option": "selectedKey"
+                            }
+                          },
+                          "default": "",
+                          "cases": [
+                            {
+                              "value": "supplier",
+                              "action": false
+                            },
+                            {
+                              "value": "client",
+                              "action": true
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "supplier": {
+                        "$switch": {
+                          "condition": {
+                            "$element-option": {
+                              "path": "#tabs",
+                              "option": "selectedKey"
+                            }
+                          },
+                          "default": "",
+                          "cases": [
+                            {
+                              "value": "supplier",
+                              "action": true
+                            },
+                            {
+                              "value": "client",
+                              "action": false
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "properties": {
+        "all": {
+          "type": "object",
+          "widget": {
+            "key": "all",
+            "name": "tab-panel",
+            "options": {
+              "label": "Все"
+            }
+          }
+        },
+        "client": {
+          "type": "object",
+          "widget": {
+            "key": "client",
+            "name": "tab-panel",
+            "options": {
+              "label": "Клиенты"
+            }
+          }
+        },
+        "supplier": {
+          "type": "object",
+          "widget": {
+            "key": "supplier",
+            "name": "tab-panel",
+            "options": {
+              "label": "Поставщики"
+            }
+          }
+        }
+      }
+    },
+    "table": {
+      "model": "#data",
+      "type": "array",
+      "value": {
+        "$api-table-workflow-data": {
+          "model": "#data",
+          "query": "partner/list",
+          "variables": {
+            "$graphql-event-variables": {
+              "data": {
+                "$element-event": {
+                  "event": "lazyLoad"
+                }
+              }
+            }
+          },
+          "errors": {
+            "default": {
+              "$message": {
+                "severity": "error",
+                "summary": "Ошибка",
+                "detail": "При загрузке данных произошла ошибка, повторите попытку позднее"
+              }
+            }
+          }
+        }
+      },
+      "widget": {
+        "name": "table-lazy",
+        "options": {
+          "emptyMessage": "Данные не найдены",
+          "responsive": false,
+          "first": 0,
+          "lazy": true,
+          "paginator": true,
+          "rows": 10,
+          "rowsPerPageOptions": [
+            10,
+            20,
+            50
+          ],
+          "routerOptions": [
+            "first",
+            "rows"
+          ]
+        },
+        "events": {
+          "lazyLoad": {
+            "$element-option": {
+              "path": "#data",
+              "option": "loading",
+              "value": true
+            }
+          }
+        },
+        "subscriptions": {
+          "reload-table": {
+            "$element-event": {
+              "event": "reload",
+              "value": true
+            }
+          }
+        }
+      },
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "widget": {
+              "name": "hidden",
+              "options": {
+                "visible": false
+              }
+            }
+          },
+          "isClient": {
+            "type": "boolean",
+            "widget": {
+              "name": "hidden",
+              "options": {
+                "visible": false
+              }
+            }
+          },
+          "isSupplier": {
+            "type": "boolean",
+            "widget": {
+              "name": "hidden",
+              "options": {
+                "visible": false
+              }
+            }
+          },
+          "name": {
+            "type": "string",
+            "widget": {
+              "name": "hidden",
+              "options": {
+                "visible": false
+              }
+            }
+          },
+          "partnerNameView": {
+            "type": "object",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "label": "Наименование контрагента"
+              }
+            },
+            "properties": {
+              "nameText": {
+                "type": "string",
+                "widget": {
+                  "name": "info",
+                  "options": {
+                    "visible": {
+                      "$not": {
+                        "data": {
+                          "$active-user-has-permission": {
+                            "permission": "partner"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "value": {
+                  "$from-context": {
+                    "path": "$rowData.name"
+                  }
+                }
+              },
+              "nameLink": {
+                "type": "string",
+                "widget": {
+                  "name": "link",
+                  "options": {
+                    "routerLink": "/cabinet/partner/view",
+                    "queryParams": {
+                      "id": {
+                        "$from-context": {
+                          "path": "$rowData.id"
+                        }
+                      }
+                    },
+                    "visible": {
+                      "$active-user-has-permission": {
+                        "permission": "partner"
+                      }
+                    }
+                  }
+                },
+                "value": {
+                  "$from-context": {
+                    "path": "$rowData.name"
+                  }
+                }
+              }
+            }
+          },
+          "typePartnerView": {
+            "type": "object",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "label": "Вид"
+              }
+            },
+            "properties": {
+              "typePartner": {
+                "type": "string",
+                "widget": {
+                  "name": "html"
+                },
+                "value": {
+                  "$replace": {
+                    "template": "<div>{{isClient}}{{br}}{{isSupplier}}</div>",
+                    "data": {
+                      "isClient": {
+                        "$if": {
+                          "condition": {
+                            "===": {
+                              "operand1": {
+                                "$from-context": {
+                                  "path": "$rowData.isClient"
+                                }
+                              },
+                              "operand2": true
+                            }
+                          },
+                          "then": "Клиент",
+                          "else": ""
+                        }
+                      },
+                      "br": {
+                        "$if": {
+                          "condition": {
+                            "$and": {
+                              "operands": [
+                                {
+                                  "===": {
+                                    "operand1": {
+                                      "$from-context": {
+                                        "path": "$rowData.isSupplier"
+                                      }
+                                    },
+                                    "operand2": true
+                                  }
+                                },
+                                {
+                                  "===": {
+                                    "operand1": {
+                                      "$from-context": {
+                                        "path": "$rowData.isClient"
+                                      }
+                                    },
+                                    "operand2": true
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          "then": "<br/>",
+                          "else": ""
+                        }
+                      },
+                      "isSupplier": {
+                        "$if": {
+                          "condition": {
+                            "===": {
+                              "operand1": {
+                                "$from-context": {
+                                  "path": "$rowData.isSupplier"
+                                }
+                              },
+                              "operand2": true
+                            }
+                          },
+                          "then": "Поставщик",
+                          "else": ""
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "inn": {
+            "type": "string",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "label": "ИНН / Аналог"
+              }
+            }
+          },
+          "kpp": {
+            "type": "string",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "label": "КПП"
+              }
+            }
+          },
+          "ogrn": {
+            "type": "string",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "label": "ОГРН / ОГРНИП"
+              }
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            }
+          },
+          "createdAtView": {
+            "type": "object",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "label": "Дата добавления"
+              }
+            },
+            "properties": {
+              "date": {
+                "type": "string",
+                "widget": {
+                  "name": "html"
+                },
+                "value": {
+                  "$replace": {
+                    "template": "{{0}}",
+                    "data": [
+                      {
+                        "$date-format": {
+                          "template": "DD.MM.YYYY",
+                          "nameZone": "ETC/GMT+0",
+                          "value": {
+                            "$from-context": {
+                              "path": "$rowData.createdAt"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "mainContactPerson": {
+            "type": "object",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            },
+            "properties": {
+              "fullName": {
+                "type": "string",
+                "widget": {
+                  "name": "hidden"
+                }
+              },
+              "phone": {
+                "type": "string",
+                "widget": {
+                  "name": "hidden"
+                }
+              }
+            }
+          },
+          "mainContactPersonView": {
+            "type": "object",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "label": "Контактное лицо"
+              }
+            },
+            "properties": {
+              "infoContact": {
+                "type": "string",
+                "widget": {
+                  "name": "html"
+                },
+                "value": {
+                  "$replace": {
+                    "template": "<div>{{0}}<br/>{{1}}</div>",
+                    "data": [
+                      {
+                        "$from-context": {
+                          "path": "$rowData.mainContactPerson.fullName"
+                        }
+                      },
+                      {
+                        "$from-context": {
+                          "path": "$rowData.mainContactPerson.phone"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "state": {
+            "type": "string",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            }
+          },
+          "blockReason": {
+            "type": "string",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "visible": false
+              }
+            }
+          },
+          "statusName": {
+            "type": "object",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "label": "Статус"
+              }
+            },
+            "properties": {
+              "state": {
+                "type": "string",
+                "value": {
+                  "$replace": {
+                    "template": "<span class=\"badge badge_{{colorCode}}\">{{name}}</span>{{additionalInfo}}",
+                    "data": {
+                      "colorCode": {
+                        "$switch": {
+                          "condition": {
+                            "$subs": {
+                              "path": "#data[].state"
+                            }
+                          },
+                          "default": "",
+                          "cases": [
+                            {
+                              "value": "blocked",
+                              "action": "blocked"
+                            },
+                            {
+                              "value": "active",
+                              "action": "active"
+                            }
+                          ]
+                        }
+                      },
+                      "name": {
+                        "$switch": {
+                          "condition": {
+                            "$subs": {
+                              "path": "#data[].state"
+                            }
+                          },
+                          "default": "",
+                          "cases": [
+                            {
+                              "value": "blocked",
+                              "action": "Заблокирован"
+                            },
+                            {
+                              "value": "active",
+                              "action": "Активен"
+                            }
+                          ]
+                        }
+                      },
+                      "additionalInfo": {
+                        "$if": {
+                          "condition": {
+                            "===": {
+                              "operand1": {
+                                "$from-context": {
+                                  "path": "$rowData.state"
+                                }
+                              },
+                              "operand2": "blocked"
+                            }
+                          },
+                          "then": {
+                            "$replace": {
+                              "template": "<div class=\"text-secondary mrg-t-xs\"><b>Причина:</b><br/>{{statusReason}}</div>",
+                              "data": {
+                                "statusReason": {
+                                  "$encode-tag": {
+                                    "string": {
+                                      "$from-context": {
+                                        "path": "$rowData.blockReason"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "else": ""
+                        }
+                      }
+                    }
+                  }
+                },
+                "widget": {
+                  "name": "html",
+                  "class": {
+                    "value": "p-flex-column p-ai-start"
+                  }
+                }
+              }
+            }
+          },
+          "actions_column": {
+            "type": "object",
+            "widget": {
+              "name": "table-column",
+              "options": {
+                "label": "Действия"
+              },
+              "class": {
+                "header": "column_actions",
+                "cell": "column_actions"
+              }
+            },
+            "properties": {
+              "actions": {
+                "type": "array",
+                "model": "actions",
+                "widget": {
+                  "name": "actions-button",
+                  "items": {
+                    "$subs": {
+                      "path": "#data[].actions"
+                    }
+                  }
+                },
+                "items": {
+                  "type": "action",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "widget": "hidden"
+                    },
+                    "title": {
+                      "type": "string",
+                      "widget": "hidden"
+                    },
+                    "icon": {
+                      "type": "string",
+                      "widget": "hidden"
+                    },
+                    "url": {
+                      "type": "string",
+                      "widget": "hidden"
+                    },
+                    "routerLink": {
+                      "type": "string",
+                      "widget": "hidden"
+                    },
+                    "popup": {
+                      "type": "string",
+                      "widget": "hidden"
+                    },
+                    "hidden": {
+                      "type": "string",
+                      "widget": "hidden"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

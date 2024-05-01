@@ -1,0 +1,120 @@
+query ($id: [MongoID!]) {
+  items: eventGet(_id: $id) {
+    id: _id
+    state
+    cancelReason
+    name
+    number
+    eventType {
+      name
+    }
+    eventGroupEvent(filter: { _operators: { state: { ne: "deleted" } } }) {
+      _id
+      name
+    }
+    country
+    eventIndustry {
+      name
+    }
+    description
+    numberOfPeople
+    numberOfExhibitors
+    numberOfCountries
+    standardBuilding
+    buildingAreaNet
+    sitePlacement
+    protocolEvent
+    comment
+    preliminary
+    contractSigned
+    actSigned
+    installationStart
+    installationEnd
+    eventStart
+    eventEnd
+    deinstallationStart
+    deinstallationEnd
+    arrival
+    secondImport
+    openingOfExhibition
+    closingOfExhibition
+    departure
+    departureOnLastDay
+    totalEventCost
+    discountOrMarkupFlag
+    discountOrMarkup
+    totalEventCost
+    totalEventCostWithDiscountOrMarkup
+    organizers {
+      partner {
+        organizerId: _id
+        name
+        state
+        mainContactPerson {
+          fullName
+          phone
+        }
+      }
+    }
+    curators {
+      user {
+        userId: _id
+        fullName
+        phoneView
+      }
+    }
+    documents {
+      fileLogo {
+        _id
+        name
+        size
+        create_date
+      }
+
+      fileCostings {
+        _id
+        name
+        size
+        create_date
+      }
+
+      fileListOfExhibitors {
+        _id
+        name
+        size
+        create_date
+      }
+
+      filesExpoplan {
+        _id
+        name
+        size
+        create_date
+      }
+
+      filesProtocol {
+        _id
+        name
+        size
+        create_date
+      }
+
+      filePresidentProgram {
+        _id
+        name
+        size
+        create_date
+      }
+
+      filesOther {
+        _id
+        name
+        size
+        create_date
+      }
+    }
+    requests(filter: { state: "new" }) {
+      id: _id
+    }
+  }
+}

@@ -1,0 +1,422 @@
+{
+  "@title": "Просмотр пользователем своего профиля",
+  "@preload": {
+    "user": {
+      "$from-context": {
+        "path": "$response.body.data.user",
+        "data": {
+          "$api-data": {
+            "query": "user/my-profile",
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            },
+            "options": {
+              "observe": "response"
+            },
+            "variables": {
+              "id": {
+                "$query-params": {
+                  "name": "id"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "widget": {
+    "name": "container"
+  },
+  "properties": {
+    "breadcrumbs": {
+      "type": "object",
+      "widget": {
+        "name": "breadcrumb",
+        "mobileItems": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          }
+        ],
+        "items": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          },
+          {
+            "label": "Мой профиль"
+          }
+        ],
+        "kind": "breadcrumb-breadcrumbs-container-style"
+      }
+    },
+    "data": {
+      "type": "object",
+      "value": "$ref:operation-frontend:snippets/element/preload_delayed_value@@@preload.user",
+      "model": "#data",
+      "widget": {
+        "name": "container",
+        "options": {
+          "label": "Мой профиль"
+        },
+        "kind": "container-h1-style"
+      },
+      "properties": {
+        "lastName": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Фамилия"
+            },
+            "kind": "info-form-item-text-view-style"
+          }
+        },
+        "firstName": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Имя"
+            },
+            "kind": "info-form-item-text-view-style"
+          }
+        },
+        "middleName": {
+          "type": "string",
+          "value": {
+            "$if": {
+              "condition": {
+                "$not-empty": {
+                  "data": {
+                    "$var": {
+                      "path": "."
+                    }
+                  }
+                }
+              },
+              "then": {
+                "$var": {
+                  "path": "."
+                }
+              },
+              "else": "-"
+            }
+          },
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Отчество"
+            },
+            "kind": "info-form-item-text-view-style-empty_text_option"
+          }
+        },
+        "organization": {
+          "type": "string",
+          "value": {
+            "$from-context": {
+              "path": "@preload.user.organization.anyName"
+            }
+          },
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Организация",
+              "visible": false
+            },
+            "kind": "info-form-item-text-view-style-empty_text_option"
+          }
+        },
+        "position": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Должность"
+            },
+            "kind": "info-form-item-text-view-style-empty_text_option"
+          }
+        },
+        "email": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Адрес электронной почты"
+            },
+            "kind": "info-form-item-text-view-style"
+          }
+        },
+        "phone": {
+          "type": "object",
+          "widget": "hidden",
+          "properties": {
+            "ext": {
+              "type": "string",
+              "widget": "hidden"
+            },
+            "prefix": {
+              "type": "string",
+              "widget": "hidden"
+            },
+            "num": {
+              "type": "string",
+              "widget": "hidden"
+            }
+          }
+        },
+        "contacts": {
+          "type": "string",
+          "value": "$ref:operation-frontend:snippets/element/view/phone_view@@#data.phone",
+          "widget": {
+            "name": "html",
+            "options": {
+              "label": "Телефон"
+            },
+            "kind": "html-form-item-text-view-style"
+          }
+        },
+        "userSettings": {
+          "type": "object",
+          "widget": {
+            "name": "container"
+          },
+          "properties": {
+            "timezone": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "widget": "info"
+                }
+              },
+              "widget": {
+                "name": "container",
+                "options": {
+                  "label": "Временная зона",
+                  "visible": false
+                },
+                "kind": "container-form-item-text-view-style"
+              }
+            },
+            "emailNotification": {
+              "type": "boolean",
+              "widget": {
+                "name": "hidden"
+              }
+            },
+            "pushNotification": {
+              "type": "boolean",
+              "widget": {
+                "name": "hidden"
+              }
+            }
+          }
+        },
+        "login": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Логин"
+            },
+            "kind": "info-form-item-text-view-style"
+          }
+        },
+        "roles": {
+          "type": "array",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Роли",
+              "separator": "<br>",
+              "asList": true,
+              "viewedValue": {
+                "$array-map": {
+                  "array": {
+                    "$subs": {
+                      "path": "#data.roles"
+                    }
+                  },
+                  "map": {
+                    "$from-context": {
+                      "path": "$data.role.name"
+                    }
+                  }
+                }
+              }
+            },
+            "kind": "info-form-item-text-view-style"
+          },
+          "items": {
+            "type": "object",
+            "properties": {
+              "role": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "widget": "info"
+                  }
+                },
+                "widget": {
+                  "name": "fieldset"
+                }
+              }
+            },
+            "widget": {
+              "name": "fieldset"
+            }
+          }
+        },
+        "userAD_ru": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Способ добавления"
+            },
+            "kind": "info-form-item-text-view-style"
+          },
+          "value": {
+            "$switch": {
+              "condition": {
+                "$from-context": {
+                  "path": "@preload.user.userAD"
+                }
+              },
+              "default": "Вручную",
+              "cases": [
+                {
+                  "value": true,
+                  "action": "Active Directory"
+                },
+                {
+                  "value": false,
+                  "action": "Вручную"
+                }
+              ]
+            }
+          }
+        },
+        "emailNotificationInfo": {
+          "type": "string",
+          "value": {
+            "$if": {
+              "condition": {
+                "==": {
+                  "operand1": {
+                    "$subs": {
+                      "path": "#data.userSettings.emailNotification"
+                    }
+                  },
+                  "operand2": true
+                }
+              },
+              "then": "Да",
+              "else": "Нет"
+            }
+          },
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Дублировать уведомления на e-mail",
+              "visible": false
+            },
+            "kind": "info-form-item-text-view-style"
+          }
+        },
+        "pushNotificationInfo": {
+          "type": "string",
+          "value": {
+            "$if": {
+              "condition": {
+                "==": {
+                  "operand1": {
+                    "$subs": {
+                      "path": "#data.userSettings.pushNotification"
+                    }
+                  },
+                  "operand2": true
+                }
+              },
+              "then": "Да",
+              "else": "Нет"
+            }
+          },
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Показывать push-уведомления",
+              "visible": false
+            },
+            "kind": "info-form-item-text-view-style"
+          }
+        },
+        "actions": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "group": "form-actions p-field p-grid mrg-t-lg",
+              "value": "p-jc-xs-end p-autolayout"
+            }
+          },
+          "properties": {
+            "edit": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Редактировать",
+                  "visible": {
+                    "$active-user-has-permission": {
+                      "permission": "user.edit-my-profile"
+                    }
+                  }
+                },
+                "events": {
+                  "click": {
+                    "$go": {
+                      "workflow": "user",
+                      "action": "edit-my-profile"
+                    }
+                  }
+                }
+              }
+            },
+            "change-password": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Изменить пароль",
+                  "visible": {
+                    "$not": {
+                      "data": {
+                        "$from-context": {
+                          "path": "@preload.user.userAD"
+                        }
+                      }
+                    }
+                  }
+                },
+                "events": {
+                  "click": {
+                    "$go": {
+                      "workflow": "user",
+                      "action": "profile-password"
+                    }
+                  }
+                },
+                "kind": "button-btn-outline-last-style"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,666 @@
+[
+    {
+        "$match": {
+            "$and": [
+                {
+                    "actual": {
+                        "$ne": false
+                    }
+                },
+                {
+                    "state": {
+                        "$nin": [
+                            "deleted",
+                            "draft",
+                            "new",
+                            "canceled"
+                        ]
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "$addFields": {
+            "eventId": {
+                "$toString": "$_id"
+            }
+        }
+    },
+    {
+        "$lookup": {
+            "from": "booking",
+            "let": {
+                "eventId": "$eventId"
+            },
+            "pipeline": [
+                {
+                    "$match": {
+                        "$and": [
+                            {
+                                "$expr": {
+                                    "$eq": [
+                                        "$$eventId",
+                                        "$eventId"
+                                    ]
+                                }
+                            },
+                            {
+                                "$expr": {
+                                    "$eq": [
+                                        "$state",
+                                        "filled"
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ],
+            "as": "bookings"
+        }
+    },
+    {
+        "$unwind": {
+            "path": "$bookings",
+            "preserveNullAndEmptyArrays": true
+        }
+    },
+    {
+        "$group": {
+            "_id": "$_id",
+            "description": {
+                "$push": "$bookings.name"
+            },
+            "event": {
+                "$first": "$$ROOT"
+            }
+        }
+    },
+    {
+        "$project": {
+            "_id": 0,
+            "event": 1,
+            "description": {
+                "$cond": {
+                    "if": {
+                        "$gt": [
+                            {
+                                "$size": "$description"
+                            },
+                            0
+                        ]
+                    },
+                    "then": {
+                        "$concat": [
+                            "Помещения",
+                            {
+                                "$reduce": {
+                                    "input": "$description",
+                                    "initialValue": ": ",
+                                    "in": {
+                                        "$cond": {
+                                            "if": {
+                                                "$eq": [
+                                                    "$$value",
+                                                    ": "
+                                                ]
+                                            },
+                                            "then": {
+                                                "$concat": [
+                                                    "$$value",
+                                                    "$$this"
+                                                ]
+                                            },
+                                            "else": {
+                                                "$concat": [
+                                                    "$$value",
+                                                    ", ",
+                                                    "$$this"
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "else": {
+                        "$toString": "-"
+                    }
+                }
+            },
+            "name": 1
+        }
+    },
+    {
+        "$lookup": {
+            "from": "event_group",
+            "let": {
+                "eventId": "$event._id"
+            },
+            "pipeline": [
+                {
+                    "$match": {
+                        "$and": [
+                            {
+                                "$expr": {
+                                    "$in": [
+                                        {
+                                            "$toString": "$$eventId"
+                                        },
+                                        "$events.eventId"
+                                    ]
+                                }
+                            },
+                            {
+                                "$expr": {
+                                    "$eq": [
+                                        "$state",
+                                        "active"
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ],
+            "as": "groups"
+        }
+    },
+    {
+        "$unwind": {
+            "path": "$groups",
+            "preserveNullAndEmptyArrays": true
+        }
+    },
+    {
+        "$addFields": {
+            "groups": {
+                "$ifNull": [
+                    "$groups",
+                    false
+                ]
+            }
+        }
+    },
+    {
+        "$addFields": {
+            "elementId": {
+                "$cond": {
+                    "if": {
+                        "$eq": [
+                            "$groups",
+                            false
+                        ]
+                    },
+                    "then": {
+                        "$toString": "$event.eventId"
+                    },
+                    "else": {
+                        "$toString": "$groups._id"
+                    }
+                }
+            },
+            "elementTitle": {
+                "$cond": {
+                    "if": {
+                        "$eq": [
+                            "$groups",
+                            false
+                        ]
+                    },
+                    "then": {
+                        "$toString": "$event.name"
+                    },
+                    "else": {
+                        "$concat": [
+                            "Группа мероприятий: ",
+                            {
+                                "$toString": "$groups.name"
+                            }
+                        ]
+                    }
+                }
+            },
+            "elementType": {
+                "$cond": {
+                    "if": {
+                        "$eq": [
+                            "$groups",
+                            false
+                        ]
+                    },
+                    "then": "single",
+                    "else": "group"
+                }
+            }
+        }
+    },
+    {
+        "$group": {
+            "_id": "$elementId",
+            "elementTitle": {
+                "$first": "$elementTitle"
+            },
+            "elementType": {
+                "$first": "$elementType"
+            },
+            "elementDescription": {
+                "$first": "$description"
+            },
+            "eventState": {
+                "$first": "$event.state"
+            },
+            "groupStates": {
+                "$push": "$event.state"
+            },
+            "installationStart": {
+                "$min": "$event.installationStart"
+            },
+            "installationEnd": {
+                "$max": "$event.installationEnd"
+            },
+            "eventStart": {
+                "$min": "$event.eventStart"
+            },
+            "eventEnd": {
+                "$max": "$event.eventEnd"
+            },
+            "deinstallationStart": {
+                "$min": "$event.deinstallationStart"
+            },
+            "deinstallationEnd": {
+                "$max": "$event.deinstallationEnd"
+            }
+        }
+    },
+    {
+        "$facet": {
+            "installationStage": [
+                {
+                    "$match": {
+                        "$and": [
+                            {
+                                "$expr": {
+                                    "$ifNull": [
+                                        "$installationStart",
+                                        false
+                                    ]
+                                }
+                            },
+                            {
+                                "$expr": {
+                                    "$ifNull": [
+                                        "$installationEnd",
+                                        false
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "$project": {
+                        "_id": 1,
+                        "elementTitle": 1,
+                        "elementType": 1,
+                        "elementDescription": 1,
+                        "elementColor": "installation",
+                        "elementStart": "$installationStart",
+                        "elementEnd": "$installationEnd"
+                    }
+                }
+            ],
+            "eventStage": [
+                {
+                    "$match": {
+                        "$and": [
+                            {
+                                "$expr": {
+                                    "$ifNull": [
+                                        "$eventStart",
+                                        false
+                                    ]
+                                }
+                            },
+                            {
+                                "$expr": {
+                                    "$ifNull": [
+                                        "$eventEnd",
+                                        false
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "$project": {
+                        "_id": 1,
+                        "elementTitle": 1,
+                        "elementType": 1,
+                        "elementDescription": 1,
+                        "elementColor": {
+                            "$cond": {
+                                "if": {
+                                    "$eq": [
+                                        "$elementType",
+                                        "single"
+                                    ]
+                                },
+                                "then": {
+                                    "$switch": {
+                                        "branches": [
+                                            {
+                                                "case": {
+                                                    "$eq": [
+                                                        "$eventState",
+                                                        "requested"
+                                                    ]
+                                                },
+                                                "then": "requested"
+                                            },
+                                            {
+                                                "case": {
+                                                    "$eq": [
+                                                        "$eventState",
+                                                        "agreed"
+                                                    ]
+                                                },
+                                                "then": "agreed"
+                                            },
+                                            {
+                                                "case": {
+                                                    "$eq": [
+                                                        "$eventState",
+                                                        "pre_booking"
+                                                    ]
+                                                },
+                                                "then": "preBooking"
+                                            },
+                                            {
+                                                "case": {
+                                                    "$eq": [
+                                                        "$eventState",
+                                                        "task_received"
+                                                    ]
+                                                },
+                                                "then": "taskReceived"
+                                            },
+                                            {
+                                                "case": {
+                                                    "$eq": [
+                                                        "$eventState",
+                                                        "check_in"
+                                                    ]
+                                                },
+                                                "then": "checkIn"
+                                            },
+                                            {
+                                                "case": {
+                                                    "$eq": [
+                                                        "$eventState",
+                                                        "check_out"
+                                                    ]
+                                                },
+                                                "then": "checkOut"
+                                            }
+                                        ],
+                                        "default": "$eventState"
+                                    }
+                                },
+                                "else": {
+                                    "$cond": {
+                                        "if": {
+                                            "$in": [
+                                                "check_out",
+                                                "$groupStates"
+                                            ]
+                                        },
+                                        "then": "checkOut",
+                                        "else": {
+                                            "$cond": {
+                                                "if": {
+                                                    "$in": [
+                                                        "check_in",
+                                                        "$groupStates"
+                                                    ]
+                                                },
+                                                "then": "checkIn",
+                                                "else": {
+                                                    "$cond": {
+                                                        "if": {
+                                                            "$in": [
+                                                                "agreed",
+                                                                "$groupStates"
+                                                            ]
+                                                        },
+                                                        "then": "agreed",
+                                                        "else": {
+                                                            "$cond": {
+                                                                "if": {
+                                                                    "$in": [
+                                                                        "task_received",
+                                                                        "$groupStates"
+                                                                    ]
+                                                                },
+                                                                "then": "taskReceived",
+                                                                "else": {
+                                                                    "$cond": {
+                                                                        "if": {
+                                                                            "$in": [
+                                                                                "requested",
+                                                                                "$groupStates"
+                                                                            ]
+                                                                        },
+                                                                        "then": "requested",
+                                                                        "else": "preBooking"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "elementStart": "$eventStart",
+                        "elementEnd": "$eventEnd"
+                    }
+                }
+            ],
+            "deinstallationStage": [
+                {
+                    "$match": {
+                        "$and": [
+                            {
+                                "$expr": {
+                                    "$ifNull": [
+                                        "$deinstallationStart",
+                                        false
+                                    ]
+                                }
+                            },
+                            {
+                                "$expr": {
+                                    "$ifNull": [
+                                        "$deinstallationEnd",
+                                        false
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "$project": {
+                        "_id": 1,
+                        "elementTitle": 1,
+                        "elementType": 1,
+                        "elementDescription": 1,
+                        "elementColor": "deinstallation",
+                        "elementStart": "$deinstallationStart",
+                        "elementEnd": "$deinstallationEnd"
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "$project": {
+            "result": {
+                "$concatArrays": [
+                    "$installationStage",
+                    "$eventStage",
+                    "$deinstallationStage"
+                ]
+            }
+        }
+    },
+    {
+        "$unwind": "$result"
+    },
+    {
+        "$replaceRoot": {
+            "newRoot": "$result"
+        }
+    },
+    {
+        "$match": {
+            "$expr": {
+                "$or": [
+                    {
+                        "$and": [
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            $startParam,
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$gte": [
+                                            "$elementStart",
+                                            {
+                                                "$toDate": $startParam
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            $endParam,
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$lte": [
+                                            "$elementStart",
+                                            {
+                                                "$toDate": $endParam
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "$and": [
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            $startParam,
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$gte": [
+                                            "$elementEnd",
+                                            {
+                                                "$toDate": $startParam
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            $endParam,
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$lte": [
+                                            "$elementEnd",
+                                            {
+                                                "$toDate": $endParam
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "$and": [
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            $startParam,
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$lte": [
+                                            "$elementStart",
+                                            {
+                                                "$toDate": $startParam
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            {
+                                "$cond": {
+                                    "if": {
+                                        "$eq": [
+                                            $endParam,
+                                            null
+                                        ]
+                                    },
+                                    "then": true,
+                                    "else": {
+                                        "$gte": [
+                                            "$elementEnd",
+                                            {
+                                                "$toDate": $endParam
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+]

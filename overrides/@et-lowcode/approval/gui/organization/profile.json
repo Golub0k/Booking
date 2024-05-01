@@ -1,0 +1,995 @@
+{
+  "@title": "Просмотр данных моей организации",
+  "@preload": {
+    "$from-context": {
+      "path": "$response.body.data.organization",
+      "data": {
+        "$api-data": {
+          "options": {
+            "observe": "response"
+          },
+          "query": "organization/profile"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "model": "#data",
+  "widget": {
+    "name": "form"
+  },
+  "properties": {
+    "breadcrumbs": {
+      "type": "object",
+      "widget": {
+        "name": "breadcrumb",
+        "mobileItems": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          }
+        ],
+        "items": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          },
+          {
+            "label": "Моя организация"
+          }
+        ],
+        "class": {
+          "group": "p-xs-auto mrg-lg-b-xl mrg-b-md"
+        }
+      }
+    },
+    "header-with-status": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "options": {
+          "label": {
+            "$from-context": {
+              "path": "@preload.shortName"
+            }
+          }
+        },
+        "class": {
+          "group": "header-badge-container mrg-b-lg",
+          "label": "h1 width-fit-content",
+          "value": "width-fit-content"
+        }
+      },
+      "properties": {
+        "badge": {
+          "type": "string",
+          "widget": "html",
+          "value": {
+            "$replace": {
+              "template": "<span class=\"badge badge_{{code}}\">{{name}}</span>",
+              "data": {
+                "$workflow-object-state": {
+                  "objectId": {
+                    "$active-user": {
+                      "field": "organization._id"
+                    }
+                  },
+                  "workflow": "organization"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "object": {
+      "type": "object",
+      "widget": {
+        "name": "container"
+      },
+      "properties": {
+        "generalInformation": {
+          "type": "object",
+          "model": false,
+          "widget": {
+            "name": "container",
+            "options": {
+              "label": "Общие данные"
+            },
+            "class": {
+              "group": "form-section",
+              "label": "h2 mrg-b-md"
+            }
+          },
+          "properties": {
+            "typeView": {
+              "type": "string",
+              "value": {
+                "$switch": {
+                  "condition": {
+                    "$from-context": {
+                      "path": "@preload.type"
+                    }
+                  },
+                  "default": "",
+                  "cases": [
+                    {
+                      "value": "ur",
+                      "action": "Юридическое лицо"
+                    },
+                    {
+                      "value": "fz",
+                      "action": "Физическое лицо"
+                    },
+                    {
+                      "value": "ip",
+                      "action": "Индивидуальный предприниматель"
+                    }
+                  ]
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Тип организации"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            },
+            "shortName": {
+              "type": "string",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.shortName"
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": {
+                    "$switch": {
+                      "condition": {
+                        "$from-context": {
+                          "path": "@preload.type"
+                        }
+                      },
+                      "default": "",
+                      "cases": [
+                        {
+                          "value": "ur",
+                          "action": "Краткое наименование организации"
+                        },
+                        {
+                          "value": "fz",
+                          "action": "Фамилия и инициалы"
+                        },
+                        {
+                          "value": "ip",
+                          "action": "Краткое наименование организации"
+                        }
+                      ]
+                    }
+                  },
+                  "emptyText": "Не указано"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            },
+            "fullName": {
+              "type": "string",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.fullName"
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": {
+                    "$switch": {
+                      "condition": {
+                        "$from-context": {
+                          "path": "@preload.type"
+                        }
+                      },
+                      "default": "",
+                      "cases": [
+                        {
+                          "value": "ur",
+                          "action": "Полное наименование организации"
+                        },
+                        {
+                          "value": "fz",
+                          "action": "ФИО полностью"
+                        },
+                        {
+                          "value": "ip",
+                          "action": "Полное наименование организации"
+                        }
+                      ]
+                    }
+                  },
+                  "emptyText": "Не указано"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            },
+            "inn": {
+              "type": "string",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.inn"
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "ИНН"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            },
+            "kpp": {
+              "type": "string",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.kpp"
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "КПП",
+                  "visible": {
+                    "===": {
+                      "operand1": {
+                        "$from-context": {
+                          "path": "@preload.type"
+                        }
+                      },
+                      "operand2": "ur"
+                    }
+                  },
+                  "emptyText": "Не указано"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            },
+            "ogrn": {
+              "type": "string",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.ogrn"
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": {
+                    "$switch": {
+                      "condition": {
+                        "$from-context": {
+                          "path": "@preload.type"
+                        }
+                      },
+                      "default": "",
+                      "cases": [
+                        {
+                          "value": "ur",
+                          "action": "ОГРН"
+                        },
+                        {
+                          "value": "ip",
+                          "action": "ОГРНИП"
+                        }
+                      ]
+                    }
+                  },
+                  "visible": {
+                    "!==": {
+                      "operand1": {
+                        "$from-context": {
+                          "path": "@preload.type"
+                        }
+                      },
+                      "operand2": "fz"
+                    }
+                  },
+                  "emptyText": "Не указано"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            },
+            "majorTaxPayerKpp": {
+              "type": "string",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.majorTaxPayerKpp"
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "КПП крупнейшего налогоплательщика",
+                  "visible": {
+                    "==": {
+                      "operand1": {
+                        "$from-context": {
+                          "path": "@preload.type"
+                        }
+                      },
+                      "operand2": "ur"
+                    }
+                  },
+                  "emptyText": "Не указано"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            },
+            "site": {
+              "type": "string",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.site"
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Адрес сайта",
+                  "visible": {
+                    "==": {
+                      "operand1": {
+                        "$from-context": {
+                          "path": "@preload.type"
+                        }
+                      },
+                      "operand2": "ur"
+                    }
+                  },
+                  "emptyText": "Не указано"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            }
+          }
+        },
+        "legal": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "options": {
+              "label": {
+                "$if": {
+                  "condition": {
+                    "==": {
+                      "operand1": {
+                        "$from-context": {
+                          "path": "@preload.type"
+                        }
+                      },
+                      "operand2": "ur"
+                    }
+                  },
+                  "then": "Юридический адрес",
+                  "else": "Адрес места нахождения"
+                }
+              }
+            },
+            "class": {
+              "group": "form-section",
+              "label": "h2 mrg-b-md"
+            }
+          },
+          "properties": {
+            "country": {
+              "type": "string",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.addresses.legal.country.fullname"
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Страна",
+                  "emptyText": "Не указано"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            },
+            "zip": {
+              "type": "string",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.addresses.legal.zip"
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Почтовый индекс",
+                  "visible": {
+                    "===": {
+                      "operand1": {
+                        "$from-context": {
+                          "path": "@preload.country.code"
+                        }
+                      },
+                      "operand2": "643"
+                    }
+                  },
+                  "emptyText": "Не указано"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            },
+            "region": {
+              "type": "string",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.addresses.legal.region"
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Регион/область",
+                  "emptyText": "Не указано"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            },
+            "city": {
+              "type": "string",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.addresses.legal.city"
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Город/район",
+                  "emptyText": "Не указано"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            },
+            "locality": {
+              "type": "string",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.addresses.legal.locality"
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Населенный пункт",
+                  "emptyText": "Не указано"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            },
+            "street": {
+              "type": "string",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.addresses.legal.street"
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Улица",
+                  "emptyText": "Не указано"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            },
+            "house": {
+              "type": "string",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.addresses.legal.house"
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Дом и офис",
+                  "emptyText": "Не указано"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            }
+          }
+        },
+        "factualSameAsLegal": {
+          "type": "object",
+          "model": false,
+          "widget": {
+            "name": "container",
+            "options": {
+              "visible": {
+                "===": {
+                  "operand1": {
+                    "$from-context": {
+                      "path": "@preload.addresses.factual.sameAsLegal"
+                    }
+                  },
+                  "operand2": true
+                }
+              }
+            },
+            "class": {
+              "value": "p-grid p-fluid"
+            }
+          },
+          "properties": {
+            "header": {
+              "type": "string",
+              "value": "Почтовый адрес",
+              "model": false,
+              "widget": {
+                "name": "info",
+                "class": {
+                  "group": "p-xs-12 p-md-4 p-xl-3",
+                  "value": "h2"
+                }
+              }
+            },
+            "sameAsLegal": {
+              "type": "boolean",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.addresses.factual.sameAsLegal"
+                }
+              },
+              "widget": {
+                "name": "checkbox",
+                "options": {
+                  "disabled": true,
+                  "optionLabel": {
+                    "$if": {
+                      "condition": {
+                        "==": {
+                          "operand1": {
+                            "$from-context": {
+                              "path": "@preload.type"
+                            }
+                          },
+                          "operand2": "ur"
+                        }
+                      },
+                      "then": "Совпадает с юридическим",
+                      "else": "Совпадает с адресом места нахождения"
+                    }
+                  }
+                },
+                "class": {
+                  "group": "form-item form-item_checkbox p-xs-12 p-md-6 p-xl-4",
+                  "value": "form-item-element form-item-element_checkbox"
+                }
+              }
+            }
+          }
+        },
+        "factual": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "options": {
+              "label": "Почтовый адрес",
+              "visible": {
+                "!==": {
+                  "operand1": {
+                    "$from-context": {
+                      "path": "@preload.addresses.factual.sameAsLegal"
+                    }
+                  },
+                  "operand2": true
+                }
+              }
+            },
+            "class": {
+              "group": "form-section",
+              "label": "h2 mrg-b-md"
+            }
+          },
+          "properties": {
+            "country": {
+              "type": "string",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.addresses.factual.country.fullname"
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Страна",
+                  "emptyText": "Не указано"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            },
+            "zip": {
+              "type": "string",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.addresses.factual.zip"
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Почтовый индекс",
+                  "visible": {
+                    "===": {
+                      "operand1": {
+                        "$from-context": {
+                          "path": "@preload.country.code"
+                        }
+                      },
+                      "operand2": "643"
+                    }
+                  },
+                  "emptyText": "Не указано"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            },
+            "region": {
+              "type": "string",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.addresses.factual.region"
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Регион/область",
+                  "emptyText": "Не указано"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            },
+            "city": {
+              "type": "string",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.addresses.factual.city"
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Город/район",
+                  "emptyText": "Не указано"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            },
+            "locality": {
+              "type": "string",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.addresses.factual.locality"
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Населенный пункт",
+                  "emptyText": "Не указано"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            },
+            "street": {
+              "type": "string",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.addresses.factual.street"
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Улица",
+                  "emptyText": "Не указано"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            },
+            "house": {
+              "type": "string",
+              "value": {
+                "$from-context": {
+                  "path": "@preload.addresses.factual.house"
+                }
+              },
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Дом и офис",
+                  "emptyText": "Не указано"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            }
+          }
+        },
+        "account": {
+          "type": "object",
+          "value": {
+            "$from-context": {
+              "path": "@preload.account"
+            }
+          },
+          "widget": {
+            "name": "container",
+            "options": {
+              "label": "Банковские реквизиты"
+            },
+            "class": {
+              "group": "form-section",
+              "label": "h2 mrg-b-md"
+            }
+          },
+          "properties": {
+            "checking": {
+              "type": "string",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": {
+                    "$if": {
+                      "condition": {
+                        "==": {
+                          "operand1": {
+                            "$from-context": {
+                              "path": "@preload.country.code"
+                            }
+                          },
+                          "operand2": "643"
+                        }
+                      },
+                      "then": "Расчетный счет",
+                      "else": "Расчетный счет/IBAN"
+                    }
+                  },
+                  "emptyText": "Не указано"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            },
+            "bik": {
+              "type": "string",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": {
+                    "$if": {
+                      "condition": {
+                        "==": {
+                          "operand1": {
+                            "$from-context": {
+                              "path": "@preload.country.code"
+                            }
+                          },
+                          "operand2": "643"
+                        }
+                      },
+                      "then": "БИК",
+                      "else": "Код банка"
+                    }
+                  },
+                  "emptyText": "Не указано"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            },
+            "bankName": {
+              "type": "string",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Наименование банка",
+                  "emptyText": "Не указано"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            },
+            "bankAddress": {
+              "type": "string",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Адрес банка",
+                  "emptyText": "Не указано"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            },
+            "correspondent": {
+              "type": "string",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": {
+                    "$if": {
+                      "condition": {
+                        "==": {
+                          "operand1": {
+                            "$from-context": {
+                              "path": "@preload.country.code"
+                            }
+                          },
+                          "operand2": "643"
+                        }
+                      },
+                      "then": "Корреспондентский счет",
+                      "else": "SWIFT"
+                    }
+                  },
+                  "emptyText": "Не указано"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+                  "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "model": false,
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "form-actions p-field p-grid mrg-t-lg",
+          "value": "p-jc-xs-end p-autolayout"
+        }
+      },
+      "properties": {
+        "edit": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Редактировать",
+              "visible": {
+                "$api-workflow-check-action": {
+                  "workflow": "organization",
+                  "action": "edit-profile"
+                }
+              }
+            },
+            "events": {
+              "click": {
+                "$go": {
+                  "workflow": "organization",
+                  "action": "edit-profile"
+                }
+              }
+            },
+            "class": {
+              "value": "mrg-r-sm"
+            }
+          }
+        }
+      }
+    }
+  }
+}

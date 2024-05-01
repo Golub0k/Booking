@@ -1,0 +1,156 @@
+{
+  "version": 2,
+  "objectType": "services_type",
+  "context": "services_type/context",
+  "description": "Жизненный цикл типа услуг",
+  "rbac": {
+    "visible": true,
+    "title": "Типы услуг"
+  },
+  "actions": {
+    "initialActions": {
+      "add": {
+        "title": "Создать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Добавить тип услуг"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "services_type/add",
+            "mode": "popup",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": []
+        },
+        "functions": [
+          {
+            "$workflow-object-create": {
+              "objectType": "services_type",
+              "query": "services_type/create",
+              "variables": {
+                "data": {
+                  "$from-context": {
+                    "path": "data"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "active"
+        }
+      }
+    },
+    "globalActions": {
+      "list": {
+        "title": "Реестр типов услуг",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Просмотреть справочник типов услуг"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "services_type/list",
+            "mode": "form",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "services_type/list"
+          ]
+        }
+      }
+    },
+    "statesActions": {
+      "delete": {
+        "title": "Удалить",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Удалить тип услуг"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "services_type/delete",
+            "mode": "popup",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "services_type/get",
+            "services_type/link_exists"
+          ]
+        },
+        "results": {
+          "unconditional": "deleted"
+        }
+      },
+      "edit": {
+        "title": "Редактировать",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Редактировать тип услуг"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "services_type/edit",
+            "mode": "popup",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "services_type/get"
+          ]
+        },
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "services_type/update",
+              "variables": {
+                "data": {
+                  "$from-context": {
+                    "path": "data"
+                  }
+                },
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "object"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "states": {
+    "active": {
+      "title": "Активен",
+      "description": "Активное состояние типа услуг",
+      "statesActions": [
+        "edit",
+        "delete"
+      ]
+    },
+    "deleted": {
+      "title": "Удален",
+      "description": "Удаленное состояние типа услуг",
+      "displaySettingsInLists": {
+        "hidden": true
+      },
+      "finish": true
+    }
+  }
+}

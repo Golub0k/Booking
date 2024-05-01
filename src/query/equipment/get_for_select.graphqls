@@ -1,0 +1,45 @@
+# @title: Получить список всего оборудования
+
+query (
+  $first: Int!
+  $rows: Int!
+  $typeOrNumber: String
+  $name: String
+  $sort: [FieldSortEquipmentInput]
+  $ids: [MongoID!]
+) {
+  pagination: equipmentPagination(
+    limit: $rows
+    offset: $first
+    sort: $sort
+    filter: {
+      AND: [
+        {
+          OR: [
+            { _regexp: { field: name, filter: $typeOrNumber } }
+            { _regexp: { field: nomenclatureNumber, filter: $typeOrNumber } }
+          ]
+        }
+        { _operators: { state: { nin: ["archived", "deleted"] } } }
+        { _operators: { _id: { in: $ids } } }
+        { name: $name }
+      ]
+    }
+  ) {
+    count
+    items {
+      equipmentId: _id
+      owner
+      ownerCode {
+        code
+        name
+      }
+      name
+      nomenclatureNumber
+      unitPrice
+      availableQuantity
+      comment
+      state
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "backend-validation": {
+    "enabled": true,
+    "options": {
+      "schema": "event/cancel",
+      "data": {
+        "$post-params": {
+          "name": null
+        }
+      },
+      "path": "#data"
+    },
+    "states": [
+      "requested",
+      "task_received",
+      "agreed",
+      "checkIn"
+    ]
+  }
+}

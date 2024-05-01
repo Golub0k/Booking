@@ -1,0 +1,434 @@
+{
+  "@title": "Рабочий стол",
+  "@preload": {
+    "stats": {
+      "$from-context": {
+        "path": "$response.body.data",
+        "data": {
+          "$api-data": {
+            "query": "notification/count-new",
+            "variables": {
+              "userId": {
+                "$active-user": {
+                  "field": "_id"
+                }
+              }
+            },
+            "options": {
+              "observe": "response"
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "widget": {
+    "name": "container"
+  },
+  "properties": {
+    "header": {
+      "type": "string",
+      "widget": {
+        "name": "container",
+        "options": {
+          "label": "Рабочий стол"
+        },
+        "kind": "container-h1-style"
+      }
+    },
+    "data": {
+      "type": "object",
+      "value": {
+        "$from-context": {
+          "path": "@preload.stats"
+        }
+      },
+      "model": "#data",
+      "widget": "container",
+      "properties": {
+        "organization": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "options": {
+              "visible": {
+                "$or": {
+                  "operands": [
+                    {
+                      "$active-user-has-permission": {
+                        "permission": "organization.list"
+                      }
+                    },
+                    {
+                      "$active-user-has-permission": {
+                        "permission": "user-role.list"
+                      }
+                    },
+                    {
+                      "$active-user-has-permission": {
+                        "permission": "user-user.list"
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "class": {
+              "label": "h2 mrg-b-lg",
+              "value": "stats-blocks-row"
+            }
+          },
+          "properties": {
+            "organizationsWrapper": {
+              "type": "object",
+              "widget": {
+                "name": "container",
+                "options": {
+                  "visible": {
+                    "$or": {
+                      "operands": [
+                        {
+                          "$active-user-has-permission": {
+                            "permission": "organization.list"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "class": {
+                  "group": "stats-block-wrapper p-lg-4 p-md-6 p-xs-12",
+                  "value": "stats-block"
+                }
+              },
+              "properties": {
+                "header": {
+                  "type": "string",
+                  "widget": {
+                    "name": "info",
+                    "options": {
+                      "label": "Организации"
+                    },
+                    "class": {
+                      "group": "mrg-min-lg-b-lg mrg-b-md",
+                      "label": "stats-block__label"
+                    }
+                  }
+                },
+                "listOrganizations": {
+                  "type": "object",
+                  "widget": {
+                    "name": "container",
+                    "class": {
+                      "group": "stats-block-item",
+                      "value": "p-autolayout p-jc-between"
+                    }
+                  },
+                  "properties": {
+                    "link": {
+                      "type": "string",
+                      "widget": {
+                        "name": "link",
+                        "options": {
+                          "visible": {
+                            "$active-user-has-permission": {
+                              "permission": "organization.list"
+                            }
+                          },
+                          "viewedValue": "Реестр организаций",
+                          "routerLink": "/cabinet/organization/list"
+                        },
+                        "class": {
+                          "link": "stats-block__link"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "usersWrapper": {
+              "type": "object",
+              "widget": {
+                "name": "container",
+                "options": {
+                  "visible": {
+                    "$or": {
+                      "operands": [
+                        {
+                          "$active-user-has-permission": {
+                            "permission": "user-role.list"
+                          }
+                        },
+                        {
+                          "$active-user-has-permission": {
+                            "permission": "user-user.list"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "class": {
+                  "group": "stats-block-wrapper p-lg-4 p-md-6 p-xs-12",
+                  "value": "stats-block"
+                }
+              },
+              "properties": {
+                "header": {
+                  "type": "string",
+                  "widget": {
+                    "name": "info",
+                    "options": {
+                      "label": "Пользователи"
+                    },
+                    "class": {
+                      "group": "mrg-min-lg-b-lg mrg-b-md",
+                      "label": "stats-block__label"
+                    }
+                  }
+                },
+                "listUsers": {
+                  "type": "object",
+                  "widget": {
+                    "name": "container",
+                    "class": {
+                      "group": "stats-block-item",
+                      "value": "p-autolayout p-jc-between"
+                    }
+                  },
+                  "properties": {
+                    "link": {
+                      "type": "string",
+                      "widget": {
+                        "name": "link",
+                        "options": {
+                          "visible": {
+                            "$active-user-has-permission": {
+                              "permission": "user.list"
+                            }
+                          },
+                          "viewedValue": "Реестр пользователей",
+                          "routerLink": "/cabinet/user/list"
+                        },
+                        "class": {
+                          "link": "stats-block__link"
+                        }
+                      }
+                    }
+                  }
+                },
+                "rolesUser": {
+                  "type": "string",
+                  "widget": {
+                    "name": "link",
+                    "options": {
+                      "visible": {
+                        "$active-user-has-permission": {
+                          "permission": "user-role.list"
+                        }
+                      },
+                      "viewedValue": "Роли пользователей",
+                      "routerLink": "/cabinet/user-role/list"
+                    },
+                    "class": {
+                      "link": "stats-block__link"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "contentManage": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "group": "mrg-t-xl mrg-b-md",
+              "value": "stats-blocks-row",
+              "label": "h2 mrg-b-md"
+            }
+          },
+          "properties": {
+            "messagesWrapper": {
+              "type": "object",
+              "widget": {
+                "name": "container",
+                "options": {
+                  "visible": {
+                    "$or": {
+                      "operands": [
+                        {
+                          "$active-user-has-permission": {
+                            "permission": "notification.list-sent"
+                          }
+                        },
+                        {
+                          "$active-user-has-permission": {
+                            "permission": "notification.list"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "class": {
+                  "group": "stats-block-wrapper p-lg-4 p-md-6 p-xs-12",
+                  "value": "stats-block"
+                }
+              },
+              "properties": {
+                "header": {
+                  "type": "string",
+                  "widget": {
+                    "name": "info",
+                    "options": {
+                      "label": "Уведомления"
+                    },
+                    "class": {
+                      "group": "mrg-min-lg-b-lg mrg-b-md",
+                      "label": "stats-block__label"
+                    }
+                  }
+                },
+                "inbox": {
+                  "type": "object",
+                  "widget": {
+                    "name": "container",
+                    "options": {
+                      "visible": {
+                        "$active-user-has-permission": {
+                          "permission": "notification.list"
+                        }
+                      }
+                    },
+                    "class": {
+                      "group": "stats-block-item",
+                      "value": "p-autolayout p-jc-between"
+                    }
+                  },
+                  "properties": {
+                    "inboxLink": {
+                      "type": "string",
+                      "widget": {
+                        "name": "link",
+                        "options": {
+                          "viewedValue": "Входящие уведомления",
+                          "routerLink": "/cabinet/notification/list"
+                        },
+                        "class": {
+                          "link": "stats-block__link"
+                        }
+                      }
+                    },
+                    "count": {
+                      "type": "string",
+                      "value": {
+                        "$replace": {
+                          "template": "<span class=\"badge badge_statistics\">{{count}}</span>",
+                          "data": {
+                            "count": {
+                              "$from-context": {
+                                "path": "@preload.stats.count"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "widget": {
+                        "name": "html"
+                      }
+                    }
+                  }
+                },
+                "sent": {
+                  "type": "string",
+                  "widget": {
+                    "name": "link",
+                    "options": {
+                      "visible": {
+                        "$active-user-has-permission": {
+                          "permission": "notification.list-sent"
+                        }
+                      },
+                      "viewedValue": "Исходящие уведомления",
+                      "routerLink": "/cabinet/notification/list-sent"
+                    },
+                    "class": {
+                      "group": "stats-block-item",
+                      "link": "stats-block__link"
+                    }
+                  }
+                }
+              }
+            },
+            "nsiWrapper": {
+              "type": "object",
+              "widget": {
+                "name": "container",
+                "options": {
+                  "visible": {
+                    "$or": {
+                      "operands": [
+                        {
+                          "$active-user-has-permission": {
+                            "permission": "nsi_oksm.list"
+                          }
+                        },
+                        {
+                          "$active-user-has-permission": {
+                            "permission": "nsi_region.list"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "class": {
+                  "group": "stats-block-wrapper p-lg-4 p-md-6 p-xs-12",
+                  "value": "stats-block"
+                }
+              },
+              "properties": {
+                "header": {
+                  "type": "string",
+                  "widget": {
+                    "name": "info",
+                    "options": {
+                      "label": "Справочники"
+                    },
+                    "class": {
+                      "group": "mrg-min-lg-b-lg mrg-b-md",
+                      "label": "stats-block__label"
+                    }
+                  }
+                },
+                "nsi_oksm": {
+                  "type": "string",
+                  "widget": {
+                    "name": "link",
+                    "options": {
+                      "visible": {
+                        "$active-user-has-permission": {
+                          "permission": "nsi_oksm.list"
+                        }
+                      },
+                      "viewedValue": "Страны",
+                      "routerLink": "/cabinet/nsi_oksm/list"
+                    },
+                    "class": {
+                      "group": "stats-block-item",
+                      "link": "stats-block__link"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

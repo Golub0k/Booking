@@ -1,0 +1,17 @@
+domain: "${DOMAIN}"
+
+serviceName: "uiremote"
+serviceVersion: ${UIREMOTE_VERSION}
+
+image:
+  registry: "${CI_REGISTRY}"
+  repository: "lowcode/projects/kazan-expo"
+  imageName: "ui-remote"
+  credentials:
+    username: "${CI_REGISTRY_USERNAME}"
+    password: "${CI_REGISTRY_TOKEN}"
+
+s3Bucket: "${PROJECT_NAME}-files-public"
+s3BasePath: "${CI_COMMIT_REF_NAME}/remotes"
+s3KeyId: "${CI_S3_KEY_ID}"
+s3Key: "${CI_S3_KEY}"

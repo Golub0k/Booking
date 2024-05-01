@@ -1,0 +1,216 @@
+{
+  "@title": "Подтверждение удаления контрагента",
+  "@preload": {
+    "partner": {
+      "$from-context": {
+        "path": "$response.body.data.user",
+        "data": {
+          "$api-data": {
+            "query": "partner/get_name",
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            },
+            "options": {
+              "observe": "response"
+            },
+            "variables": {
+              "id": {
+                "$query-params": {
+                  "name": "id"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "widget": {
+    "name": "container"
+  },
+  "model": "/",
+  "properties": {
+    "form": {
+      "type": "object",
+      "model": "#data",
+      "widget": {
+        "name": "form"
+      },
+      "properties": {
+        "header": {
+          "model": false,
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "value": "p-autolayout p-jc-between p-ai-center"
+            }
+          },
+          "properties": {
+            "label": {
+              "model": false,
+              "type": "string",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "viewedValue": "Подтверждение удаления"
+                },
+                "class": {
+                  "value": "h3 mrg-b-lg"
+                }
+              }
+            }
+          }
+        },
+        "content": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "group": "popup",
+              "label": "h1 mrg-b-lg",
+              "value": "form-group_popup-collapse"
+            }
+          },
+          "properties": {
+            "text": {
+              "type": "string",
+              "widget": "html",
+              "value": {
+                "$replace": {
+                  "template": "<p>Вы действительно хотите удалить контрагента {{0}}?</p>",
+                  "data": [
+                    {
+                      "$from-context": {
+                        "path": "@preload.partner.name"
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "actions": {
+              "type": "object",
+              "widget": {
+                "name": "container",
+                "class": {
+                  "group": "form-actions p-field p-grid mrg-t-lg",
+                  "value": "p-jc-xl-end p-autolayout"
+                }
+              },
+              "properties": {
+                "delete": {
+                  "widget": {
+                    "name": "button",
+                    "options": {
+                      "label": "Удалить"
+                    },
+                    "events": {
+                      "click": {
+                        "$if": {
+                          "condition": {
+                            "$validate": {
+                              "path": "/"
+                            }
+                          },
+                          "then": {
+                            "$waterfall": {
+                              "arrayFunctions": [
+                                "$ref:operation-frontend:snippets/element/_loading/onclick-loading-enable",
+                                {
+                                  "$http-code": {
+                                    "200": [
+                                      {
+                                        "$event-bus-publish": {
+                                          "type": "reload-table"
+                                        }
+                                      },
+                                      {
+                                        "$navigate-by-url": {
+                                          "url": "/cabinet/partner/list"
+                                        }
+                                      },
+                                      {
+                                        "$message": {
+                                          "severity": "success",
+                                          "summary": "Удаление контрагента",
+                                          "detail": "Контрагент успешно удален"
+                                        }
+                                      }
+                                    ],
+                                    "422": [
+                                      "$ref:operation-frontend:snippets/element/_loading/onclick-loading-disable",
+                                      {
+                                        "$validate": {
+                                          "errors": {
+                                            "$from-context": {
+                                              "path": "$response.error.errors"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "client": {
+                                      "$api-workflow": {
+                                        "options": {
+                                          "observe": "response"
+                                        },
+                                        "workflow": "partner",
+                                        "action": "delete",
+                                        "id": {
+                                          "$query-params": {
+                                            "name": "id"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "default": [
+                                      "$ref:operation-frontend:snippets/element/_loading/onclick-loading-disable",
+                                      {
+                                        "$message": {
+                                          "severity": "error",
+                                          "summary": "Удаление контрагента",
+                                          "detail": "Непредвиденная ошибка"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          "else": {
+                            "$form-control-mark": {
+                              "key": "form"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "cancel": {
+                  "widget": {
+                    "name": "button",
+                    "options": {
+                      "label": "Отмена"
+                    },
+                    "events": {
+                      "click": {
+                        "$close-popup": null
+                      }
+                    },
+                    "kind": "button-btn-outline-last-style"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,947 @@
+{
+  "@title": "Создание отчета",
+  "@preload": {
+    "roles": {
+      "$array-pluck": {
+        "array": {
+          "$from-context": {
+            "path": "$response.body.data.roles",
+            "data": {
+              "$api-data": {
+                "options": {
+                  "observe": "response"
+                },
+                "workflow": "report",
+                "action": "add",
+                "query": "role/get_by_permission",
+                "variables": {
+                  "permission": "event.create"
+                }
+              }
+            }
+          }
+        },
+        "key": "_id"
+      }
+    }
+  },
+  "type": "object",
+  "model": "#data",
+  "widget": {
+    "name": "container"
+  },
+  "properties": {
+    "header": {
+      "type": "string",
+      "model": false,
+      "widget": {
+        "name": "info",
+        "options": {
+          "label": {
+            "$switch": {
+              "condition": {
+                "$query-params": {
+                  "name": "reportType"
+                }
+              },
+              "cases": [
+                {
+                  "value": "calendar",
+                  "action": "Формирование отчета \"Календарный план\""
+                },
+                {
+                  "value": "cancel",
+                  "action": "Формирование отчета \"Отмененные мероприятия\""
+                },
+                {
+                  "value": "sale",
+                  "action": "Формирование отчета \"Продажи по менеджерам\""
+                },
+                {
+                  "value": "availableRoom",
+                  "action": "Формирование отчета \"Наличие помещений\""
+                },
+                {
+                  "value": "bRoom",
+                  "action": "Формирование отчета \"Бронирование помещений\""
+                },
+                {
+                  "value": "bEquipment",
+                  "action": "Формирование отчета \"Бронирование оборудования\""
+                },
+                {
+                  "value": "bAdditionalServices",
+                  "action": "Формирование отчета \"Бронирование дополнительных услуг\""
+                },
+                {
+                  "value": "bFurniture",
+                  "action": "Формирование отчета \"Бронирование мебели\""
+                },
+                {
+                  "value": "gStatistics",
+                  "action": "Формирование отчета \"Общая статистика\""
+                }
+              ]
+            }
+          }
+        },
+        "class": {
+          "group": "popup",
+          "label": "h1 mrg-b-lg"
+        }
+      }
+    },
+    "object": {
+      "type": "object",
+      "model": false,
+      "widget": {
+        "name": "container"
+      },
+      "properties": {
+        "range": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "group": "p-field p-grid p-fluid mrg-b-lg",
+              "label": "form-label form-label_required form-label_top p-col-12",
+              "value": "form-item p-field p-grid p-fluid row"
+            },
+            "options": {
+              "label": {
+                "$switch": {
+                  "condition": {
+                    "$query-params": {
+                      "name": "reportType"
+                    }
+                  },
+                  "default": "",
+                  "cases": [
+                    {
+                      "value": "calendar",
+                      "action": "Дата проведения мероприятия"
+                    },
+                    {
+                      "value": "cancel",
+                      "action": "Дата запланированного проведения"
+                    },
+                    {
+                      "value": "sale",
+                      "action": "Дата проведения мероприятия"
+                    },
+                    {
+                      "value": "availableRoom",
+                      "action": "Период отчетности"
+                    },
+                    {
+                      "value": "bRoom",
+                      "action": "Период отчетности"
+                    },
+                    {
+                      "value": "bEquipment",
+                      "action": "Период отчетности"
+                    },
+                    {
+                      "value": "bAdditionalServices",
+                      "action": "Период отчетности"
+                    },
+                    {
+                      "value": "bFurniture",
+                      "action": "Период отчетности"
+                    },
+                    {
+                      "value": "gStatistics",
+                      "action": "Период отчетности"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "properties": {
+            "from": {
+              "type": "date",
+              "widget": {
+                "name": "calendar",
+                "options": {
+                  "dataType": "string",
+                  "timeZone": {
+                    "$if": {
+                      "condition": {
+                        "$not-empty": {
+                          "data": {
+                            "$active-user": {
+                              "field": "timezone.offset"
+                            }
+                          }
+                        }
+                      },
+                      "then": {
+                        "$fetch-object": {
+                          "path": "1",
+                          "data": {
+                            "$string-split": {
+                              "string": {
+                                "$active-user": {
+                                  "field": "timezone.offset"
+                                }
+                              },
+                              "separator": "UTC"
+                            }
+                          }
+                        }
+                      },
+                      "else": ""
+                    }
+                  }
+                },
+                "class": {
+                  "group": "form-item-element calendar-range_start p-col-12 p-md-6 p-lg-6"
+                }
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$not-empty": {
+                        "data": {
+                          "$var": {
+                            "path": "."
+                          }
+                        }
+                      }
+                    },
+                    "message": "Поле обязательно для заполнения"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                },
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$if": {
+                        "condition": {
+                          "$and": {
+                            "operands": [
+                              {
+                                "$not-empty": {
+                                  "data": {
+                                    "$var": {
+                                      "path": "."
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "$not-empty": {
+                                  "data": {
+                                    "$var": {
+                                      "path": "#data.range.to"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "then": {
+                          "<": {
+                            "operand1": {
+                              "$date-from": {
+                                "data": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                }
+                              }
+                            },
+                            "operand2": {
+                              "$date-from": {
+                                "data": {
+                                  "$var": {
+                                    "path": "#data.range.to"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "else": true
+                      }
+                    },
+                    "message": "Указанная дата должна быть меньше даты конца периода отчетности"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                },
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$if": {
+                        "condition": {
+                          "$and": {
+                            "operands": [
+                              {
+                                "$not-empty": {
+                                  "data": {
+                                    "$var": {
+                                      "path": "."
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "$not-empty": {
+                                  "data": {
+                                    "$var": {
+                                      "path": "#data.range.to"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "then": {
+                          "===": {
+                            "operand1": {
+                              "$apply-func": {
+                                "func": "function differenceBetweenDates(date1, date2) { const date1Ms = date1.getTime(); const date2Ms = date2.getTime(); const differenceMs = Math.abs(date2Ms - date1Ms); const differenceDays = differenceMs / (1000 * 60 * 60 * 24); return differenceDays < 1096;} const dateTo = new Date(To); const dateFrom = new Date(From); const daysDifference = differenceBetweenDates(dateFrom, dateTo); return daysDifference;",
+                                "args": {
+                                  "From": {
+                                    "$var": {
+                                      "path": "."
+                                    }
+                                  },
+                                  "To": {
+                                    "$var": {
+                                      "path": "#data.range.to"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "operand2": true
+                          }
+                        },
+                        "else": true
+                      }
+                    },
+                    "message": "Указанная дата может быть меньше даты конца периода отчетности максимум на 3 года"
+                  },
+                  "events": [
+                    "onUpdate",
+                    "onBackend"
+                  ]
+                }
+              ]
+            },
+            "to": {
+              "type": "date",
+              "widget": {
+                "name": "calendar",
+                "options": {
+                  "dataType": "string",
+                  "timeZone": {
+                    "$if": {
+                      "condition": {
+                        "$not-empty": {
+                          "data": {
+                            "$active-user": {
+                              "field": "timezone.offset"
+                            }
+                          }
+                        }
+                      },
+                      "then": {
+                        "$fetch-object": {
+                          "path": "1",
+                          "data": {
+                            "$string-split": {
+                              "string": {
+                                "$active-user": {
+                                  "field": "timezone.offset"
+                                }
+                              },
+                              "separator": "UTC"
+                            }
+                          }
+                        }
+                      },
+                      "else": ""
+                    }
+                  }
+                },
+                "class": {
+                  "group": "form-item-element calendar-range_end p-col-12 p-md-6 p-lg-6 mrg-sm-t-sm mrg-md-t-sm"
+                }
+              },
+              "validation": [
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$not-empty": {
+                        "data": {
+                          "$var": {
+                            "path": "."
+                          }
+                        }
+                      }
+                    },
+                    "message": "Поле обязательно для заполнения"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                },
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": "$ref:rule-validation:snippets/validation/checks/datetime_greater_datetime@@#data.range.from",
+                    "message": "Указанная дата должна быть больше даты начала периода отчетности"
+                  },
+                  "events": [
+                    "onBackend",
+                    "onUpdate"
+                  ]
+                },
+                {
+                  "type": "schema",
+                  "params": {
+                    "rule": {
+                      "$if": {
+                        "condition": {
+                          "$empty": {
+                            "data": {
+                              "$var": {
+                                "path": "."
+                              }
+                            }
+                          }
+                        },
+                        "then": true,
+                        "else": {
+                          "===": {
+                            "operand1": {
+                              "$apply-func": {
+                                "func": "function differenceBetweenDates(date1, date2) { const date1Ms = date1.getTime(); const date2Ms = date2.getTime(); const differenceMs = Math.abs(date2Ms - date1Ms); const differenceDays = differenceMs / (1000 * 60 * 60 * 24); return differenceDays < 1096;} const dateTo = new Date(To); const dateFrom = new Date(From); const daysDifference = differenceBetweenDates(dateFrom, dateTo); return daysDifference;",
+                                "args": {
+                                  "To": {
+                                    "$var": {
+                                      "path": "."
+                                    }
+                                  },
+                                  "From": {
+                                    "$var": {
+                                      "path": "#data.range.from"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "operand2": true
+                          }
+                        }
+                      }
+                    },
+                    "message": "Указанная дата может быть больше даты начала периода отчетности максимум на 3 года"
+                  },
+                  "events": [
+                    "onUpdate",
+                    "onBackend"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "events": {
+          "type": "any",
+          "widget": {
+            "name": "multiselect",
+            "options": {
+              "label": "Мероприятие",
+              "placeholder": "Выбрать",
+              "disabled": {
+                "$not": {
+                  "data": {
+                    "$and": {
+                      "operands": [
+                        {
+                          "$not-empty": {
+                            "data": {
+                              "$subs": {
+                                "path": "#data.range.from"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "$not-empty": {
+                            "data": {
+                              "$subs": {
+                                "path": "#data.range.to"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "visible": {
+                "===": {
+                  "operand1": {
+                    "$query-params": {
+                      "name": "reportType"
+                    }
+                  },
+                  "operand2": "gStatistics"
+                }
+              },
+              "dataKey": "id",
+              "valueKey": "id",
+              "optionLabel": "name",
+              "isMulticheckbox": true,
+              "emptyFilterMessage": "Данные не найдены",
+              "valueOptions": {
+                "$if": {
+                  "condition": {
+                    "$and": {
+                      "operands": [
+                        {
+                          "$not-empty": {
+                            "data": {
+                              "$subs": {
+                                "path": "#data.range.from"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "$not-empty": {
+                            "data": {
+                              "$subs": {
+                                "path": "#data.range.to"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "then": {
+                    "$fetch-object": {
+                      "path": "data.items",
+                      "data": {
+                        "$api-data": {
+                          "query": "event/get_for_dropdown_for_report",
+                          "variables": {
+                            "dateFrom": {
+                              "$date-add": {
+                                "date": {
+                                  "$subs": {
+                                    "path": "#data.range.from"
+                                  }
+                                },
+                                "number": -3,
+                                "interval": "h"
+                              }
+                            },
+                            "dateTo": {
+                              "$date-add": {
+                                "date": {
+                                  "$subs": {
+                                    "path": "#data.range.to"
+                                  }
+                                },
+                                "number": -3,
+                                "interval": "h"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "else": []
+                }
+              }
+            },
+            "class": {
+              "group": "p-field p-grid p-fluid mrg-b-lg",
+              "value": "flex-column filter-block_checkbox"
+            }
+          }
+        },
+        "rooms": {
+          "type": "any",
+          "widget": {
+            "name": "multiselect",
+            "options": {
+              "label": "Помещение",
+              "placeholder": "Выбрать",
+              "visible": {
+                "$or": {
+                  "operands": [
+                    {
+                      "===": {
+                        "operand1": {
+                          "$query-params": {
+                            "name": "reportType"
+                          }
+                        },
+                        "operand2": "availableRoom"
+                      }
+                    },
+                    {
+                      "===": {
+                        "operand1": {
+                          "$query-params": {
+                            "name": "reportType"
+                          }
+                        },
+                        "operand2": "bRoom"
+                      }
+                    }
+                  ]
+                }
+              },
+              "dataKey": "id",
+              "valueKey": "id",
+              "optionLabel": "name",
+              "isMulticheckbox": true,
+              "valueOptions": {
+                "$fetch-object": {
+                  "path": "data.items",
+                  "data": {
+                    "$api-data": {
+                      "query": "room/get_for_dropdown"
+                    }
+                  }
+                }
+              }
+            },
+            "class": {
+              "group": "p-field p-grid p-fluid mrg-b-lg",
+              "value": "flex-column filter-block_checkbox"
+            }
+          }
+        },
+        "curators": {
+          "type": "any",
+          "widget": {
+            "name": "multiselect",
+            "options": {
+              "label": "Менеджер",
+              "placeholder": "Выбрать",
+              "visible": {
+                "===": {
+                  "operand1": {
+                    "$query-params": {
+                      "name": "reportType"
+                    }
+                  },
+                  "operand2": "sale"
+                }
+              },
+              "dataKey": "id",
+              "valueKey": "id",
+              "optionLabel": "fullName",
+              "isMulticheckbox": true,
+              "valueOptions": {
+                "$if": {
+                  "condition": {
+                    "$not-empty": {
+                      "data": {
+                        "$from-context": {
+                          "path": "@preload.roles"
+                        }
+                      }
+                    }
+                  },
+                  "then": {
+                    "$fetch-object": {
+                      "path": "data.pagination.items",
+                      "data": {
+                        "$api-data": {
+                          "query": "user/get_for_dropdown_for_report",
+                          "variables": {
+                            "roles": {
+                              "$from-context": {
+                                "path": "@preload.roles"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "else": ""
+                }
+              }
+            },
+            "class": {
+              "group": "p-field p-grid p-fluid mrg-b-lg",
+              "value": "flex-column filter-block_checkbox"
+            }
+          }
+        },
+        "state": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "widget": {
+              "name": "input"
+            }
+          },
+          "widget": {
+            "name": "multiselect",
+            "options": {
+              "label": "Статус мероприятия",
+              "placeholder": "Выбрать",
+              "visible": {
+                "$or": {
+                  "operands": [
+                    {
+                      "===": {
+                        "operand1": {
+                          "$query-params": {
+                            "name": "reportType"
+                          }
+                        },
+                        "operand2": "calendar"
+                      }
+                    },
+                    {
+                      "===": {
+                        "operand1": {
+                          "$query-params": {
+                            "name": "reportType"
+                          }
+                        },
+                        "operand2": "sale"
+                      }
+                    }
+                  ]
+                }
+              },
+              "dataKey": "code",
+              "valueKey": "code",
+              "optionLabel": "name",
+              "isMulticheckbox": true,
+              "valueOptions": {
+                "$array-filter": {
+                  "array": {
+                    "$workflow-states": {
+                      "workflow": "event"
+                    }
+                  },
+                  "filter": {
+                    "$not": {
+                      "data": {
+                        "$in": {
+                          "value": {
+                            "$from-context": {
+                              "path": "$data.code"
+                            }
+                          },
+                          "array": [
+                            "new",
+                            "draft",
+                            "canceled",
+                            "deleted"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "class": {
+              "group": "p-field p-grid p-fluid mrg-b-lg",
+              "value": "flex-column filter-block_checkbox"
+            }
+          }
+        },
+        "createdBy": {
+          "type": "string",
+          "widget": {
+            "name": "hidden"
+          },
+          "value": {
+            "$active-user": {
+              "field": "_id"
+            }
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "form-actions p-field p-grid mrg-t-lg",
+          "value": "p-jc-xs-end p-autolayout"
+        }
+      },
+      "properties": {
+        "generate": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Сформировать отчет"
+            },
+            "events": {
+              "click": {
+                "$if": {
+                  "condition": {
+                    "$validate": {
+                      "path": "/"
+                    }
+                  },
+                  "then": {
+                    "$waterfall": {
+                      "arrayFunctions": [
+                        {
+                          "$message": {
+                            "severity": "info",
+                            "summary": {
+                              "$switch": {
+                                "condition": {
+                                  "$query-params": {
+                                    "name": "reportType"
+                                  }
+                                },
+                                "cases": [
+                                  {
+                                    "value": "calendar",
+                                    "action": "Отчет \"Календарный план\""
+                                  },
+                                  {
+                                    "value": "cancel",
+                                    "action": "Отчет \"Отмененные мероприятия\""
+                                  },
+                                  {
+                                    "value": "sale",
+                                    "action": "Отчет \"Продажи по менеджерам\""
+                                  },
+                                  {
+                                    "value": "availableRoom",
+                                    "action": "Отчет \"Наличие помещений\""
+                                  },
+                                  {
+                                    "value": "bEquipment",
+                                    "action": "Отчет \"Бронирование оборудования\""
+                                  },
+                                  {
+                                    "value": "bRoom",
+                                    "action": "Отчет \"Бронирование помещений\""
+                                  },
+                                  {
+                                    "value": "bAdditionalServices",
+                                    "action": "Отчет \"Бронирование дополнительных услуг\""
+                                  },
+                                  {
+                                    "value": "bFurniture",
+                                    "action": "Отчет \"Бронирование мебели\""
+                                  },
+                                  {
+                                    "value": "gStatistics",
+                                    "action": "Отчет \"Общая статистика\""
+                                  }
+                                ]
+                              }
+                            },
+                            "detail": "Идет формирование файла..."
+                          }
+                        },
+                        {
+                          "$api-workflow": {
+                            "type": "post",
+                            "workflow": "report",
+                            "action": "form",
+                            "data": {
+                              "$assign-object": {
+                                "path": "reportType",
+                                "data": {
+                                  "$query-params": {
+                                    "name": "reportType"
+                                  }
+                                },
+                                "object": {
+                                  "$var": {
+                                    "path": "#data"
+                                  }
+                                }
+                              }
+                            },
+                            "options": {
+                              "responseType": "blob",
+                              "observe": "response"
+                            }
+                          }
+                        },
+                        {
+                          "$close-popup": null
+                        },
+                        {
+                          "$event-bus-publish": {
+                            "type": "reload-table"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "else": {}
+                }
+              }
+            },
+            "class": {
+              "value": "mrg-r-sm"
+            }
+          }
+        },
+        "cancel": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Сбросить"
+            },
+            "events": {
+              "click": [
+                {
+                  "$populate": {
+                    "path": "#data",
+                    "data": {}
+                  }
+                },
+                {
+                  "$populate": {
+                    "path": "#data.curators",
+                    "data": ""
+                  }
+                }
+              ]
+            },
+            "class": {
+              "value": "button_outline mrg-r-0 mrg-b-0"
+            }
+          }
+        }
+      }
+    }
+  }
+}

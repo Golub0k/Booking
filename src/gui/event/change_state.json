@@ -1,0 +1,176 @@
+{
+  "@title": "Изменение статуса мероприятия",
+  "@preload": {
+    "event": {
+      "$from-context": {
+        "path": "$response.body.data.items.0",
+        "data": {
+          "$api-data": {
+            "query": "event/get_name",
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            },
+            "options": {
+              "observe": "response"
+            },
+            "variables": {
+              "id": {
+                "$query-params": {
+                  "name": "id"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "widget": {
+    "name": "container"
+  },
+  "model": "/",
+  "properties": {
+    "form": {
+      "type": "object",
+      "model": "#data",
+      "widget": {
+        "name": "form",
+        "options": {
+          "label": "Подтверждение изменения статуса"
+        },
+        "kind": "form-popup-with-h1-style"
+      },
+      "properties": {
+        "text": {
+          "type": "string",
+          "model": false,
+          "widget": {
+            "name": "html",
+            "class": {
+              "value": "mrg-b-lg"
+            }
+          },
+          "value": {
+            "$replace": {
+              "template": "<p>Вы действительно хотите изменить статус мероприятия \"{{0}}\" на \"{{1}}\"?</p>",
+              "data": [
+                {
+                  "$from-context": {
+                    "path": "@preload.event.name"
+                  }
+                },
+                {
+                  "$switch": {
+                    "condition": {
+                      "$route-params": {
+                        "name": "action"
+                      }
+                    },
+                    "default": "",
+                    "cases": [
+                      {
+                        "value": "to_requested",
+                        "action": "Получен запрос"
+                      },
+                      {
+                        "value": "to_task_received",
+                        "action": "Получено ТЗ"
+                      },
+                      {
+                        "value": "to_agreed",
+                        "action": "Согласована смета"
+                      },
+                      {
+                        "value": "to_check_in",
+                        "action": "Пройден check-in"
+                      },
+                      {
+                        "value": "to_check_out",
+                        "action": "Пройден check-out"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "actions": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "group": "form-actions p-field p-grid mrg-t-lg",
+              "value": "p-jc-xs-end p-autolayout"
+            }
+          },
+          "properties": {
+            "accept": {
+              "widget": {
+                "name": "submit-button",
+                "options": {
+                  "label": "Подтвердить",
+                  "clientValidation": true,
+                  "dataForClientValidation": "/",
+                  "showClientValidationErrorsForElement": "form",
+                  "showClientValidationErrorMessage": true,
+                  "clientValidationErrorMessageSummary": "Ошибка",
+                  "clientValidationErrorMessageDetail": "Одно или несколько полей заполнены некорректно",
+                  "workflowAction": {
+                    "$replace": {
+                      "template": "event.{{0}}",
+                      "data": [
+                        {
+                          "$route-params": {
+                            "name": "action"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "workflowObjectId": {
+                    "$query-params": {
+                      "name": "id"
+                    }
+                  },
+                  "showSuccessMessage": true,
+                  "successMessageSummary": "Изменение статуса мероприятия",
+                  "successMessageDetail": "Статус мероприятия успешно изменен",
+                  "urlInCaseOfSuccess": "/cabinet/event/list",
+                  "showServerValidationErrorMessage": true,
+                  "serverValidationErrorMessageSummary": "Изменение статуса мероприятия",
+                  "serverValidationErrorMessageDetail": "Форма содержит ошибки",
+                  "showOtherErrorMessageSummary": true,
+                  "otherErrorMessageSummary": "Изменение статуса мероприятия",
+                  "otherErrorMessageDetail": "Непредвиденная ошибка",
+                  "reloadTable": true,
+                  "closePopup": false
+                },
+                "class": {
+                  "value": "mrg-r-sm"
+                }
+              }
+            },
+            "cancel": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Отмена"
+                },
+                "events": {
+                  "click": {
+                    "$close-popup": null
+                  }
+                },
+                "kind": "button-btn-outline-last-style"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

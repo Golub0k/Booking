@@ -1,0 +1,7 @@
+# @title: Кол-во связей объекта "Тип помещений" с помещениями
+
+query ($name: String!) {
+  count: roomTypeGet(filter: { name: $name }) {
+    roomTypeRoomCount(filter: { _operators: { state: { ne: "deleted" } } })
+  }
+}

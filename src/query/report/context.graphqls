@@ -1,0 +1,7 @@
+# @title: Получить контекст для объекта "export_event"
+
+query ($ids: [MongoID!]) {
+  items: exportEventGet(_id: $ids) {
+    id: _id
+  }
+}

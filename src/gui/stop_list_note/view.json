@@ -1,0 +1,187 @@
+{
+  "@title": "Добавление помещения в стоп-лист",
+  "@preload": {
+    "stopListNote": {
+      "$from-context": {
+        "path": "$response.body.data.items.0",
+        "data": {
+          "$api-data": {
+            "query": "stop_list_note/get",
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            },
+            "options": {
+              "observe": "response"
+            },
+            "variables": {
+              "id": {
+                "$query-params": {
+                  "name": "id"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "widget": {
+    "name": "container"
+  },
+  "model": "/",
+  "properties": {
+    "form": {
+      "type": "object",
+      "model": "#data",
+      "value": "$ref:operation-frontend:snippets/element/preload_delayed_value@@@preload.stopListNote",
+      "widget": {
+        "name": "form",
+        "options": {
+          "label": {
+            "$replace": {
+              "template": "Просмотр записи стоп-листа №{{number}}",
+              "data": {
+                "number": {
+                  "$from-context": {
+                    "path": "@preload.stopListNote.number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "kind": "form-popup-with-h1-no-form-collapsed-style"
+      },
+      "properties": {
+        "room": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "widget": {
+                "name": "info",
+                "options": {
+                  "label": "Помещение"
+                },
+                "class": {
+                  "group": "form-item p-field p-grid",
+                  "label": "form-label form-label_view",
+                  "value": "form-item-element form-item-element_view"
+                }
+              }
+            }
+          },
+          "widget": "container"
+        },
+        "dateTimeFrom": {
+          "type": "datetime",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Дата начала периода недоступности для бронирования",
+              "formatter": "datetime:\"DD.MM.YYYY HH:mm\""
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element p-xs-8 p-md-6 mrg-tb-xs"
+            }
+          }
+        },
+        "dateTimeTo": {
+          "type": "datetime",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Дата начала окончания недоступности для бронирования",
+              "formatter": "datetime:\"DD.MM.YYYY HH:mm\""
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element p-xs-8 p-md-6 mrg-tb-xs"
+            }
+          }
+        },
+        "reason": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Причина"
+            },
+            "class": {
+              "group": "form-item p-field p-grid",
+              "label": "form-label form-label_view",
+              "value": "form-item-element p-xs-8 p-md-6 mrg-tb-xs"
+            }
+          }
+        },
+        "actions": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "group": "form-actions p-field p-grid mrg-t-lg",
+              "value": "p-jc-xs-end p-autolayout"
+            }
+          },
+          "properties": {
+            "edit": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Редактировать",
+                  "visible": {
+                    "$api-workflow-check-action": {
+                      "workflow": "stop_list_note",
+                      "action": "edit",
+                      "id": {
+                        "$query-params": {
+                          "name": "id"
+                        }
+                      }
+                    }
+                  }
+                },
+                "events": {
+                  "click": {
+                    "$open-popup": {
+                      "workflow": "stop_list_note",
+                      "action": "edit",
+                      "id": {
+                        "$query-params": {
+                          "name": "id"
+                        }
+                      }
+                    }
+                  }
+                },
+                "class": {
+                  "value": "mrg-r-sm"
+                }
+              }
+            },
+            "cancel": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Отмена"
+                },
+                "events": {
+                  "click": {
+                    "$close-popup": null
+                  }
+                },
+                "kind": "button-btn-outline-last-style"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

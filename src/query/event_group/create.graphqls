@@ -1,0 +1,7 @@
+# @title: Создать экземпляры объекта "Группа мероприятий"
+
+mutation ($data: [CreateEventGroupInput!]!) {
+  items: eventGroupCreate(records: $data) {
+    id: recordIds
+  }
+}

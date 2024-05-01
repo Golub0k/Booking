@@ -1,0 +1,126 @@
+{
+  "@title": "Подтверждение удаления системной настройки",
+  "@preload": {
+    "$from-context": {
+      "path": "$response.body.data",
+      "data": {
+        "$http-code": {
+          "client": {
+            "$api-data": {
+              "workflow": "settings",
+              "action": "delete",
+              "query": "settings/get",
+              "id": {
+                "$query-params": {
+                  "name": "id"
+                }
+              },
+              "options": {
+                "observe": "response"
+              },
+              "variables": {
+                "id": {
+                  "$query-params": {
+                    "name": "id"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "model": "#data",
+  "widget": {
+    "name": "form",
+    "options": {
+      "label": "Подтверждение удаления"
+    },
+    "kind": "form-popup-with-h1-style"
+  },
+  "properties": {
+    "text": {
+      "type": "string",
+      "model": false,
+      "widget": {
+        "name": "html",
+        "class": {
+          "value": "mrg-b-lg"
+        }
+      },
+      "value": {
+        "$replace": {
+          "template": "Вы действительно хотите удалить системную настройку \"{{name}}\"?",
+          "data": {
+            "$from-context": {
+              "path": "@preload.object"
+            }
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "form-actions p-field p-grid mrg-t-lg",
+          "value": "p-jc-xs-end p-autolayout"
+        }
+      },
+      "properties": {
+        "add": {
+          "widget": {
+            "name": "submit-button",
+            "options": {
+              "label": "Удалить",
+              "clientValidation": false,
+              "dataForClientValidation": "/",
+              "showClientValidationErrorsForElement": "form",
+              "showClientValidationErrorMessage": true,
+              "clientValidationErrorMessageSummary": "Ошибка",
+              "clientValidationErrorMessageDetail": "Одно или несколько полей заполнены некорректно",
+              "workflowAction": "settings.delete",
+              "workflowObjectId": {
+                "$query-params": {
+                  "name": "id"
+                }
+              },
+              "showSuccessMessage": true,
+              "successMessageSummary": "Удаление системной настройки",
+              "successMessageDetail": "Системная настройка успешно удалена",
+              "urlInCaseOfSuccess": "/cabinet/settings/list-configurator",
+              "showServerValidationErrorMessage": true,
+              "serverValidationErrorMessageSummary": "Удаление системной настройки",
+              "serverValidationErrorMessageDetail": "Форма содержит ошибки",
+              "showOtherErrorMessageSummary": true,
+              "otherErrorMessageSummary": "Удаление системной настройки",
+              "otherErrorMessageDetail": "Непредвиденная ошибка",
+              "reloadTable": true,
+              "closePopup": true
+            },
+            "class": {
+              "value": "mrg-r-sm"
+            }
+          }
+        },
+        "cancel": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Отмена"
+            },
+            "events": {
+              "click": {
+                "$close-popup": null
+              }
+            },
+            "kind": "button-btn-outline-last-style"
+          }
+        }
+      }
+    }
+  }
+}

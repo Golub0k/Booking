@@ -1,0 +1,172 @@
+{
+  "@title": "Подтверждение удаления выбранных уведомлений",
+  "type": "object",
+  "model": "#data",
+  "widget": {
+    "name": "form",
+    "options": {
+      "label": "Подтверждение удаления"
+    },
+    "kind": "form-popup-with-h1-style"
+  },
+  "properties": {
+    "object": {
+      "type": "object",
+      "widget": {
+        "name": "info",
+        "options": {
+          "viewedValue": "Вы действительно хотите удалить выбранные уведомления?"
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "form-actions p-field p-grid mrg-t-lg",
+          "value": "p-jc-xs-end p-autolayout"
+        }
+      },
+      "properties": {
+        "save": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Удалить"
+            },
+            "events": {
+              "click": {
+                "$if": {
+                  "condition": {
+                    "$validate": {
+                      "path": "/"
+                    }
+                  },
+                  "then": [
+                    {
+                      "$waterfall": {
+                        "arrayFunctions": [
+                          "$ref:operation-frontend:snippets/element/_loading/onclick-loading-enable",
+                          {
+                            "$array-map": {
+                              "array": {
+                                "$query-params": {
+                                  "name": "id"
+                                }
+                              },
+                              "map": {
+                                "$waterfall": {
+                                  "arrayFunctions": [
+                                    {
+                                      "$http-code": {
+                                        "200": [
+                                          {
+                                            "$event-bus-publish": {
+                                              "type": "delete-notification",
+                                              "publisher": "delete-multiple",
+                                              "next": {
+                                                "$from-context": {
+                                                  "path": "$data"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        ],
+                                        "422": [
+                                          {
+                                            "$validate": {
+                                              "errors": {
+                                                "$from-context": {
+                                                  "path": "$response.error.errors"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        ],
+                                        "client": {
+                                          "$api-workflow": {
+                                            "options": {
+                                              "observe": "response"
+                                            },
+                                            "workflow": "notification",
+                                            "action": "delete",
+                                            "type": "get",
+                                            "id": {
+                                              "$from-context": {
+                                                "path": "$data"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "default": [
+                                          {
+                                            "$message": {
+                                              "severity": "error",
+                                              "summary": "Удаление уведомления",
+                                              "detail": "Непредвиденная ошибка"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "$message": {
+                              "severity": "success",
+                              "summary": "Удаление уведомления",
+                              "detail": "Уведомления успешно удалены"
+                            }
+                          },
+                          {
+                            "$event-bus-publish": {
+                              "type": "reload-table"
+                            }
+                          },
+                          {
+                            "$go": {
+                              "workflow": "notification",
+                              "action": "list",
+                              "id": ""
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "else": {
+                    "$form-control-mark": {
+                      "key": "form"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "cancel": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Отменить"
+            },
+            "events": {
+              "click": {
+                "$go": {
+                  "workflow": "notification",
+                  "action": "list",
+                  "id": ""
+                }
+              }
+            },
+            "kind": "button-btn-outline-last-style"
+          }
+        }
+      }
+    }
+  }
+}

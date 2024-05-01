@@ -1,0 +1,32 @@
+# @title: Получить список изменений
+
+query ($first: Int, $rows: Int, $eventId: String, $bookingId: [String], $additionalFacilitiesId: [String]) {
+  pagination: eventHistoryPagination(
+    offset: $first
+    limit: $rows
+    filter: {
+      OR: [
+        { _operators: { bookingId: { in: $bookingId } } }
+        { _operators: { additionalFacilitiesId: { in: $additionalFacilitiesId } } }
+        { eventId: $eventId }
+      ]
+    }
+    sort: { field: createdAt, type: DESC }
+  ) {
+    count
+    items {
+      id: _id
+      user {
+        fullName
+        userId: _id
+      }
+      additionalFacilitiesId
+      actionTitle
+      createdAt
+      eventId
+      bookingId
+      actionTitle
+      createdAt
+    }
+  }
+}

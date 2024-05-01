@@ -1,0 +1,22 @@
+query ($id: MongoID!) {
+  object: approvalTaskOne(filter: { _id: $id }) {
+    id: _id
+    approvalStage
+    sequence
+    stageId {
+      name
+      process
+      processId {
+        name
+        objectId
+        objectType
+      }
+      solutionsOptions {
+        id: _id
+        solutionName
+        solutionValue
+        solutionScript
+      }
+    }
+  }
+}

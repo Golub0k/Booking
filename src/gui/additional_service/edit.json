@@ -1,0 +1,374 @@
+{
+  "@title": "Редактирование дополнительной услуги",
+  "@preload": {
+    "$from-context": {
+      "path": "$response.body.data.items.0",
+      "data": {
+        "$api-data": {
+          "id": {
+            "$query-params": {
+              "name": "id"
+            }
+          },
+          "options": {
+            "observe": "response"
+          },
+          "variables": {
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            }
+          },
+          "query": "additional_service/get"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "model": "#data",
+  "widget": {
+    "name": "container"
+  },
+  "properties": {
+    "header": {
+      "type": "string",
+      "model": false,
+      "widget": {
+        "name": "info",
+        "options": {
+          "label": "Редактирование дополнительной услуги"
+        },
+        "class": {
+          "group": "popup",
+          "label": "h1 mrg-b-lg"
+        }
+      }
+    },
+    "object": {
+      "type": "object",
+      "value": {
+        "$from-context": {
+          "path": "@preload"
+        }
+      },
+      "widget": {
+        "name": "container"
+      },
+      "properties": {
+        "name": {
+          "type": "string",
+          "widget": {
+            "name": "input",
+            "options": {
+              "label": "Наименование услуги"
+            },
+            "class": {
+              "group": "p-field p-grid p-fluid mrg-b-lg",
+              "label": "form-label form-label_required form-label_top p-col-12",
+              "value": "form-item-element p-col-12"
+            }
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$not-empty": {
+                    "data": {
+                      "$var": {
+                        "path": "."
+                      }
+                    }
+                  }
+                },
+                "message": "Поле обязательно для заполнения"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            },
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "===": {
+                    "operand1": 0,
+                    "operand2": {
+                      "$fetch-object": {
+                        "path": "data.count",
+                        "data": {
+                          "$api-data": {
+                            "query": "additional_service/name_exists",
+                            "variables": {
+                              "name": {
+                                "$var": {
+                                  "path": "."
+                                }
+                              },
+                              "except": {
+                                "$query-params": {
+                                  "name": "id"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "message": "Данное наименование уже используется для другой дополнительной услуги."
+              },
+              "events": [
+                "onBackend"
+              ]
+            }
+          ]
+        },
+        "serviceTypeId": {
+          "type": "string",
+          "widget": {
+            "name": "dropdown",
+            "options": {
+              "label": "Тип услуги",
+              "placeholder": "Выбрать",
+              "optionLabel": "name",
+              "filter": true,
+              "showClear": true,
+              "dataKey": "id",
+              "valueKey": "id",
+              "valueOptions": {
+                "$from-context": {
+                  "path": "$response.body.data.items",
+                  "data": {
+                    "$api-data": {
+                      "query": "services_type/get_for_select",
+                      "id": {
+                        "$query-params": {
+                          "name": "id"
+                        }
+                      },
+                      "options": {
+                        "observe": "response"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "class": {
+              "group": "p-field p-grid p-fluid mrg-b-lg",
+              "label": "form-label form-label_required form-label_top p-col-12",
+              "value": "form-item-element p-col-12"
+            }
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$not-empty": {
+                    "data": {
+                      "$var": {
+                        "path": "."
+                      }
+                    }
+                  }
+                },
+                "message": "Поле обязательно для заполнения"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            }
+          ]
+        },
+        "unitPrice": {
+          "type": "number",
+          "widget": {
+            "name": "input",
+            "options": {
+              "label": "Цена за единицу услуги",
+              "inputmask": {
+                "alias": "decimal",
+                "groupSeparator": " ",
+                "autoGroup": true,
+                "rightAlign": false,
+                "allowMinus": false,
+                "digits": 2,
+                "radixPoint": ","
+              }
+            },
+            "class": {
+              "group": "p-field p-grid p-fluid mrg-b-lg",
+              "label": "form-label form-label_required form-label_top p-col-12",
+              "value": "form-item-element p-col-12"
+            }
+          },
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$not-empty": {
+                    "data": {
+                      "$var": {
+                        "path": "."
+                      }
+                    }
+                  }
+                },
+                "message": "Поле обязательно для заполнения"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            },
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "$if": {
+                    "condition": {
+                      "$empty": {
+                        "data": {
+                          "$var": {
+                            "path": "."
+                          }
+                        }
+                      }
+                    },
+                    "then": true,
+                    "else": {
+                      ">": {
+                        "operand1": {
+                          "$var": {
+                            "path": "."
+                          }
+                        },
+                        "operand2": 0
+                      }
+                    }
+                  }
+                },
+                "message": "Должно быть указано положительное число"
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            }
+          ]
+        },
+        "unit": {
+          "type": "string",
+          "widget": {
+            "name": "input",
+            "options": {
+              "label": "Единица измерения"
+            },
+            "class": {
+              "group": "p-field p-grid p-fluid mrg-b-lg",
+              "label": "form-label p-xs-12 p-md-4 p-xl-3",
+              "value": "form-item-element p-col-12"
+            }
+          }
+        },
+        "comment": {
+          "type": "string",
+          "widget": {
+            "name": "input",
+            "options": {
+              "label": "Примечание"
+            },
+            "class": {
+              "group": "p-field p-grid p-fluid mrg-b-lg",
+              "label": "form-label p-xs-12 p-md-4 p-xl-3",
+              "value": "form-item-element p-col-12"
+            }
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "form-actions p-field p-grid mrg-t-lg",
+          "value": "p-jc-xs-end p-autolayout"
+        }
+      },
+      "properties": {
+        "save": {
+          "widget": {
+            "name": "submit-button",
+            "options": {
+              "label": "Сохранить",
+              "clientValidation": true,
+              "dataForClientValidation": "/",
+              "showClientValidationErrorsForElement": "form",
+              "showClientValidationErrorMessage": true,
+              "clientValidationErrorMessageSummary": "Ошибка",
+              "clientValidationErrorMessageDetail": "Одно или несколько полей заполнены некорректно",
+              "workflowAction": "additional_service.edit",
+              "workflowObjectId": {
+                "$query-params": {
+                  "name": "id"
+                }
+              },
+              "dataForSubmit": {
+                "$filter-empty": {
+                  "data": {
+                    "$var": {
+                      "path": "#data.object"
+                    }
+                  },
+                  "mode": "to_null"
+                }
+              },
+              "showSuccessMessage": true,
+              "successMessageSummary": "Редактирование дополнительной услуги",
+              "successMessageDetail": "Дополнительная услуга успешно изменена",
+              "urlInCaseOfSuccess": "/cabinet/additional_service/list",
+              "showServerValidationErrorMessage": true,
+              "serverValidationErrorMessageSummary": "Редактирование дополнительной услуги",
+              "serverValidationErrorMessageDetail": "Форма содержит ошибки",
+              "showOtherErrorMessageSummary": true,
+              "otherErrorMessageSummary": "Редактирование дополнительной услуги",
+              "otherErrorMessageDetail": "Непредвиденная ошибка",
+              "reloadTable": true,
+              "closePopup": true
+            },
+            "class": {
+              "value": "mrg-r-sm"
+            }
+          }
+        },
+        "cancel": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Отмена"
+            },
+            "events": {
+              "click": {
+                "$go": {
+                  "workflow": "additional_service",
+                  "action": "list"
+                }
+              }
+            },
+            "class": {
+              "value": "button_outline mrg-r-0 mrg-b-0"
+            }
+          }
+        }
+      }
+    }
+  }
+}

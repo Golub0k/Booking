@@ -1,0 +1,595 @@
+{
+  "version": 2,
+  "objectType": "approval_task",
+  "context": "default/approval_task/context",
+  "description": "Жизненный цикл задачи на согласование",
+  "rbac": {
+    "visible": true,
+    "title": "Задача на согласование"
+  },
+  "actions": {
+    "initialActions": {
+      "add": {
+        "title": "Добавить",
+        "description": "Задача создана в рамках процесса",
+        "grants": {
+          "rbac": {
+            "enabled": false
+          },
+          "system": true
+        },
+        "functions": [
+          {
+            "$workflow-object-create": {
+              "variables": {
+                "data": {
+                  "$exclude": {
+                    "data": {
+                      "$from-context": {
+                        "path": "data"
+                      }
+                    },
+                    "exclude": [
+                      "users"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "await_approval"
+        }
+      }
+    },
+    "globalActions": {
+      "list": {
+        "title": "Просмотреть реестр задач на согласование",
+        "description": "Просмотреть реестр задач на согласование",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "title": "Просмотреть реестр задач на согласование",
+            "visible": true
+          },
+          "includeInActionsList": {
+            "availableForViews": "forAll"
+          }
+        },
+        "views": {
+          "availableQueriesInViews": [
+            "default/approval_task/list",
+            "request/get_preview",
+            "default/process_object_type/get_for_select"
+          ],
+          "gui": {
+            "path": "default/approval_task/list",
+            "layout": "cabinet",
+            "mode": "form"
+          }
+        }
+      },
+      "add-document-upload": {
+        "title": "Загрузка вложений в рамках принятия решения",
+        "description": "Загрузка вложений в рамках принятия решения",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "permissionCode": "approval_task.resolve.in_process"
+          }
+        }
+      }
+    },
+    "statesActions": {
+      "view": {
+        "title": "Просмотреть процесс",
+        "description": "Просмотреть процесс к которому относится задача",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "permissionCode": "approval_process.view"
+          }
+        },
+        "views": {
+          "gui": {
+            "layout": "cabinet"
+          }
+        },
+        "additionalParams": {
+          "actionsList": {
+            "routerLink": "{{stageId.processId.objectType}}/view_task?id={{stageId.processId.objectId}}"
+          }
+        }
+      },
+      "resolve": {
+        "title": "Принять решение",
+        "description": "Принять решение по задаче на согласование",
+        "grants": {
+          "rbac": {
+            "enabled": true,
+            "visible": true,
+            "title": "Принять решение по задаче на согласование"
+          }
+        },
+        "views": {
+          "gui": {
+            "path": "default/approval_task/resolve",
+            "mode": "popup",
+            "layout": "cabinet"
+          },
+          "availableQueriesInViews": [
+            "default/approval_task/get_for_resolve"
+          ]
+        },
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "default/approval_task/update",
+              "variables": {
+                "data": {
+                  "decision": {
+                    "$from-context": {
+                      "path": "data.decision.solutionValue"
+                    }
+                  },
+                  "comment": {
+                    "$from-context": {
+                      "path": "data.comment"
+                    }
+                  },
+                  "file": {
+                    "$from-context": {
+                      "path": "data.file"
+                    }
+                  },
+                  "decisionTime": {
+                    "$datetime-now": {}
+                  }
+                },
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "object"
+            }
+          },
+          {
+            "$from-context": {
+              "path": "data"
+            }
+          },
+          {
+            "$workflow-run": {
+              "workflowName": "approval_process_history",
+              "action": "create",
+              "data": {
+                "approvalProcessId": {
+                  "$from-context": {
+                    "path": "data.processId"
+                  }
+                },
+                "typeProcess": "decide",
+                "decisionTime": {
+                  "$datetime-now": {}
+                },
+                "decision": {
+                  "$from-context": {
+                    "path": "data.decision.solutionValue"
+                  }
+                },
+                "comment": {
+                  "$from-context": {
+                    "path": "data.comment"
+                  }
+                },
+                "file": {
+                  "$from-context": {
+                    "path": "data.file"
+                  }
+                },
+                "createdBy": {
+                  "$active-user": {
+                    "field": "_id"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$assign-context": {
+              "data": {
+                "$api-data-query": {
+                  "query": "default/approval_task/get_all_info",
+                  "variables": {
+                    "id": {
+                      "$from-context": {
+                        "path": "objectId"
+                      }
+                    },
+                    "sequence": {
+                      "$type-conversion": {
+                        "data": {
+                          "$sum": {
+                            "terms": [
+                              {
+                                "$from-context": {
+                                  "path": "data.sequence"
+                                }
+                              },
+                              1
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "path": "$task"
+            }
+          },
+          {
+            "$if": {
+              "condition": {
+                "===": {
+                  "operand1": {
+                    "$from-context": {
+                      "path": "$task.objectConsistent.stageId.processType"
+                    }
+                  },
+                  "operand2": "consistent"
+                }
+              },
+              "then": {
+                "$if": {
+                  "condition": {
+                    "$empty": {
+                      "data": {
+                        "$from-context": {
+                          "path": "$task.objectConsistent.stageId.tasks"
+                        }
+                      }
+                    }
+                  },
+                  "then": {
+                    "$workflow-run": {
+                      "action": "resolve",
+                      "workflowName": "approval_stage",
+                      "objectId": {
+                        "$from-context": {
+                          "path": "$task.objectConsistent.approvalStage"
+                        }
+                      },
+                      "data": {
+                        "number": {
+                          "$from-context": {
+                            "path": "$task.objectParallel.stageId.number"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "else": {
+                    "$workflow-run": {
+                      "action": "to_in_process",
+                      "workflowName": "approval_task",
+                      "objectId": {
+                        "$from-context": {
+                          "path": "$task.objectConsistent.stageId.tasks.0._id"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "else": {
+                "$if": {
+                  "condition": {
+                    "$empty": {
+                      "data": {
+                        "$array-filter": {
+                          "array": {
+                            "$from-context": {
+                              "path": "$task.objectParallel.stageId.tasks"
+                            }
+                          },
+                          "filter": {
+                            "!==": {
+                              "operand1": {
+                                "$from-context": {
+                                  "path": "$data.state"
+                                }
+                              },
+                              "operand2": "resolved"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "then": {
+                    "$workflow-run": {
+                      "action": "resolve",
+                      "workflowName": "approval_stage",
+                      "objectId": {
+                        "$from-context": {
+                          "path": "$task.objectParallel.approvalStage"
+                        }
+                      },
+                      "data": {
+                        "number": {
+                          "$from-context": {
+                            "path": "$task.objectParallel.stageId.number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "$assign-event-data": {
+              "key": "objectId",
+              "data": {
+                "$api-data-query": {
+                  "query": "default/approval_process/get_object_info",
+                  "variables": {
+                    "id": {
+                      "$from-context": {
+                        "path": "data.processId"
+                      }
+                    }
+                  },
+                  "responsePath": "items.0.objectId"
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "resolved"
+        }
+      },
+      "delete": {
+        "title": "Удалить",
+        "grants": {
+          "rbac": {
+            "enabled": false
+          },
+          "system": true
+        },
+        "results": {
+          "unconditional": "deleted"
+        }
+      },
+      "edit": {
+        "title": "Редактировать",
+        "grants": {
+          "rbac": {
+            "enabled": false
+          },
+          "system": true
+        },
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "default/approval_task/update",
+              "variables": {
+                "data": {
+                  "$exclude": {
+                    "data": {
+                      "$from-context": {
+                        "path": "data"
+                      }
+                    },
+                    "exclude": [
+                      "id"
+                    ]
+                  }
+                },
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "object"
+            }
+          }
+        ]
+      },
+      "to_in_process": {
+        "title": "Перевести на согласование",
+        "grants": {
+          "rbac": {
+            "enabled": false
+          },
+          "system": true
+        },
+        "functions": [
+          {
+            "$api-data-query": {
+              "query": "default/approval_task/update",
+              "variables": {
+                "data": {
+                  "transferToWorkTime": {
+                    "$datetime-now": {}
+                  }
+                },
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "object"
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "default/approval_task/get_for_notification",
+              "variables": {
+                "id": {
+                  "$from-context": {
+                    "path": "objectId"
+                  }
+                }
+              },
+              "responsePath": "items.0",
+              "resultPath": "$task"
+            }
+          },
+          {
+            "$api-data-query": {
+              "query": "default/notification_template/task_for_approval",
+              "variables": {
+                "userId": {
+                  "$from-context": {
+                    "path": "$task.user"
+                  }
+                }
+              },
+              "responsePath": "recipients.0",
+              "resultPath": "$user"
+            }
+          },
+          {
+            "$notification-send": {
+              "template": "message-to-user-about-task-for-approval",
+              "params": {
+                "userId": {
+                  "$from-context": {
+                    "path": "$task.user"
+                  }
+                },
+                "objectType": {
+                  "$switch": {
+                    "condition": {
+                      "$from-context": {
+                        "path": "$task.stageId.processId.objectType"
+                      }
+                    },
+                    "default": "",
+                    "cases": [
+                      {
+                        "value": "news",
+                        "action": "новости"
+                      }
+                    ]
+                  }
+                },
+                "taskNumber": {
+                  "$from-context": {
+                    "path": "$task.number"
+                  }
+                },
+                "nameMiddleName": {
+                  "$replace": {
+                    "template": "{{0}} {{1}}",
+                    "data": [
+                      {
+                        "$from-context": {
+                          "path": "$user.firstName"
+                        }
+                      },
+                      {
+                        "$from-context": {
+                          "path": "$user.middleName"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "link": {
+                  "$replace": {
+                    "template": "%$ref:settings:SystemDomain%/cabinet/{{object}}/view?id={{id}}",
+                    "data": {
+                      "object": {
+                        "$from-context": {
+                          "path": "$task.stageId.processId.objectType"
+                        }
+                      },
+                      "id": {
+                        "$from-context": {
+                          "path": "$task.stageId.processId.objectId"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "results": {
+          "unconditional": "in_process"
+        }
+      },
+      "to_canceled": {
+        "title": "Отменить задачу",
+        "grants": {
+          "rbac": {
+            "enabled": false
+          },
+          "system": true
+        },
+        "results": {
+          "unconditional": "canceled"
+        }
+      }
+    }
+  },
+  "states": {
+    "await_approval": {
+      "title": "Ожидает согласования",
+      "description": "Задача ожидает согласования",
+      "statesActions": [
+        "view",
+        "edit",
+        "to_in_process",
+        "to_canceled",
+        "delete"
+      ]
+    },
+    "in_process": {
+      "title": "На согласовании",
+      "description": "Этап находится на согласовании",
+      "statesActions": [
+        "view",
+        "resolve",
+        "to_canceled",
+        "delete"
+      ]
+    },
+    "resolved": {
+      "title": "Решение принято",
+      "description": "Задача с принятым решение",
+      "statesActions": [
+        "view"
+      ],
+      "finish": true
+    },
+    "canceled": {
+      "title": "Отменена",
+      "description": "Задача отменена",
+      "statesActions": [
+        "view"
+      ],
+      "finish": true
+    },
+    "deleted": {
+      "title": "Удалена",
+      "description": "Задача удалена",
+      "statesActions": [],
+      "finish": true,
+      "displaySettingsInLists": {
+        "hidden": true
+      }
+    }
+  }
+}

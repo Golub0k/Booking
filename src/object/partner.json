@@ -1,0 +1,116 @@
+{
+  "type": "object",
+  "title": "Контрагент",
+  "properties": {
+    "name": {
+      "type": "string",
+      "fieldDescription": "Наименование",
+      "required": true,
+      "trim": true
+    },
+    "type": {
+      "type": "string",
+      "fieldDescription": "Тип",
+      "required": true,
+      "enum": [
+        "ip",
+        "ur",
+        "fz",
+        "sm"
+      ]
+    },
+    "parentId": {
+      "type": "string",
+      "fieldDescription": "ID родительской организации"
+    },
+    "country": {
+      "code": {
+        "type": "string",
+        "trim": true
+      },
+      "fullName": {
+        "type": "string",
+        "trim": true
+      }
+    },
+    "inn": {
+      "type": "string",
+      "fieldDescription": "ИНН",
+      "required": true,
+      "trim": true
+    },
+    "kpp": {
+      "type": "string",
+      "fieldDescription": "КПП",
+      "trim": true
+    },
+    "ogrn": {
+      "type": "string",
+      "fieldDescription": "ОГРН",
+      "trim": true
+    },
+    "isClient": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "isSupplier": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "checking": {
+      "type": "string",
+      "fieldDescription": "Расчётный счёт",
+      "trim": true
+    },
+    "personal": {
+      "type": "string",
+      "fieldDescription": "Лицевой счёт",
+      "trim": true
+    },
+    "correspondent": {
+      "type": "string",
+      "fieldDescription": "Корреспондентский счёт",
+      "trim": true
+    },
+    "bik": {
+      "type": "string",
+      "fieldDescription": "БИК",
+      "trim": true
+    },
+    "bankName": {
+      "type": "string",
+      "fieldDescription": "Наименование банка",
+      "trim": true
+    },
+    "bankAddress": {
+      "type": "string",
+      "fieldDescription": "Адрес банка",
+      "trim": true
+    },
+    "websiteAddress": {
+      "type": "string",
+      "fieldDescription": "Адрес сайта",
+      "trim": true
+    },
+    "blockReason": {
+      "type": "string",
+      "fieldDescription": "Причина блокировки",
+      "trim": true
+    },
+    "mainContactPerson": {
+      "fieldDescription": "Главное контактное лицо",
+      "fullName": {
+        "type": "string",
+        "fieldDescription": "ФИО главного контактного лица",
+        "required": false
+      },
+      "phone": {
+        "type": "string",
+        "fieldDescription": "Номер главного контактного лица",
+        "required": false
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+# @title: Получить данные экземпляров объекта "Дополнительная услуга"
+
+query ($id: [MongoID!], $filter: FilterGetAdditionalServiceInput) {
+  items: additionalServiceGet(_id: $id, filter: $filter) {
+    id: _id
+    state
+    serviceTypeId
+    name
+    unit
+    unitPrice
+    comment
+  }
+}

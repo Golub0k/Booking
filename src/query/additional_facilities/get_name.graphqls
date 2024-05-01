@@ -1,0 +1,18 @@
+# @title: Получить экземпляр объекта "Бронь оснащения"
+
+query ($id: [MongoID]) {
+  items: additionalFacilitiesGet(filter: { _operators: { _id: { in: $id } } }) {
+    id: _id
+    eventId
+    additionalService {
+      name
+    }
+    equipment {
+      name
+    }
+    furniture {
+      name
+    }
+    type
+  }
+}

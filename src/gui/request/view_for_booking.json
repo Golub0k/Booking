@@ -1,0 +1,1806 @@
+{
+  "@title": "Просмотр информации о заявке",
+  "@preload": {
+    "request": {
+      "$from-context": {
+        "path": "$response.body.data.items.0",
+        "data": {
+          "$api-data": {
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            },
+            "options": {
+              "observe": "response"
+            },
+            "variables": {
+              "id": {
+                "$query-params": {
+                  "name": "id"
+                }
+              }
+            },
+            "query": "request/get_for_booking_request"
+          }
+        }
+      }
+    },
+    "process": "$ref:fieldset:approval/get_process_for_view_object"
+  },
+  "type": "object",
+  "model": "#data",
+  "widget": {
+    "name": "form",
+    "events": {
+      "init": [
+        {
+          "$session-storage-set": {
+            "key": "previousPage",
+            "value": "view_for_booking"
+          }
+        }
+      ]
+    }
+  },
+  "value": {
+    "$if": {
+      "condition": {
+        "$not-empty": {
+          "data": {
+            "$from-context": {
+              "path": "@preload.process"
+            }
+          }
+        }
+      },
+      "then": {
+        "$json-model": {
+          "alias": "#data",
+          "data": {
+            "$assign-object": {
+              "object": {
+                "$from-context": {
+                  "path": "@preload.process"
+                }
+              },
+              "path": "stages",
+              "data": {
+                "$array-map": {
+                  "array": {
+                    "$from-context": {
+                      "path": "@preload.process.stages"
+                    }
+                  },
+                  "map": {
+                    "$assign-object": {
+                      "object": {
+                        "$from-context": {
+                          "path": "$data"
+                        }
+                      },
+                      "path": "tasks",
+                      "data": {
+                        "$array-map": {
+                          "array": {
+                            "$from-context": {
+                              "path": "$data.tasks"
+                            }
+                          },
+                          "map": {
+                            "$exclude": {
+                              "data": {
+                                "$assign-object": {
+                                  "object": {
+                                    "$from-context": {
+                                      "path": "$data.1"
+                                    }
+                                  },
+                                  "path": "",
+                                  "data": {
+                                    "fullName": {
+                                      "$from-context": {
+                                        "path": "$data.1.user.fullName"
+                                      }
+                                    },
+                                    "position": {
+                                      "$from-context": {
+                                        "path": "$data.1.user.position"
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "exclude": [
+                                "user"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "else": {}
+    }
+  },
+  "properties": {
+    "breadcrumbs": {
+      "type": "object",
+      "widget": {
+        "name": "breadcrumb",
+        "mobileItems": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          }
+        ],
+        "items": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          },
+          {
+            "label": "Заявки",
+            "routerLink": "/cabinet/request/list"
+          },
+          {
+            "label": {
+              "$replace": {
+                "template": "Заявка №{{number}} на {{type}} брони помещения \"{{name}}\"",
+                "data": {
+                  "number": {
+                    "$from-context": {
+                      "path": "@preload.request.number"
+                    }
+                  },
+                  "type": {
+                    "$switch": {
+                      "condition": {
+                        "$from-context": {
+                          "path": "@preload.request.type"
+                        }
+                      },
+                      "default": "",
+                      "cases": [
+                        {
+                          "value": "edit_booking",
+                          "action": "изменение"
+                        },
+                        {
+                          "value": "edit_booking_cost",
+                          "action": "изменение стоимости"
+                        }
+                      ]
+                    }
+                  },
+                  "name": {
+                    "$from-context": {
+                      "path": "@preload.request.bookingMain.name"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "class": {
+          "group": "p-xs-auto mrg-lg-b-xl mrg-b-md"
+        }
+      }
+    },
+    "datesArray": {
+      "type": "array",
+      "widget": "hidden",
+      "model": "#datesArray",
+      "value": {
+        "$apply-func": {
+          "func": "$ref:js:request/get-dates",
+          "args": {
+            "oldData": {
+              "installationDates": {
+                "$from-context": {
+                  "path": "@preload.request.bookingOld.installationDates"
+                }
+              },
+              "eventDates": {
+                "$from-context": {
+                  "path": "@preload.request.bookingOld.eventDates"
+                }
+              },
+              "deinstallationDates": {
+                "$from-context": {
+                  "path": "@preload.request.bookingOld.deinstallationDates"
+                }
+              }
+            },
+            "newData": {
+              "installationDates": {
+                "$from-context": {
+                  "path": "@preload.request.bookingNew.installationDates"
+                }
+              },
+              "eventDates": {
+                "$from-context": {
+                  "path": "@preload.request.bookingNew.eventDates"
+                }
+              },
+              "deinstallationDates": {
+                "$from-context": {
+                  "path": "@preload.request.bookingNew.deinstallationDates"
+                }
+              }
+            }
+          }
+        }
+      },
+      "items": {
+        "type": "object",
+        "properties": {
+          "stage": {
+            "type": "string"
+          },
+          "oldValue": {
+            "type": "string"
+          },
+          "newValue": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "header-with-status": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "options": {
+          "label": {
+            "$replace": {
+              "template": "Заявка №{{number}} на {{type}} брони помещения \"{{name}}\"",
+              "data": {
+                "number": {
+                  "$from-context": {
+                    "path": "@preload.request.number"
+                  }
+                },
+                "type": {
+                  "$switch": {
+                    "condition": {
+                      "$from-context": {
+                        "path": "@preload.request.type"
+                      }
+                    },
+                    "default": "",
+                    "cases": [
+                      {
+                        "value": "edit_booking",
+                        "action": "изменение"
+                      },
+                      {
+                        "value": "edit_booking_cost",
+                        "action": "изменение стоимости"
+                      }
+                    ]
+                  }
+                },
+                "name": {
+                  "$from-context": {
+                    "path": "@preload.request.bookingMain.name"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "class": {
+          "group": "header-badge-container mrg-b-lg",
+          "label": "h1 width-fit-content",
+          "value": "width-fit-content"
+        }
+      },
+      "properties": {
+        "badge": {
+          "type": "string",
+          "widget": "html",
+          "value": {
+            "$replace": {
+              "template": "<span class=\"badge badge_{{code}}\">{{name}}</span>",
+              "data": {
+                "name": {
+                  "$fetch-object": {
+                    "data": {
+                      "$workflow-object-state": {
+                        "objectId": {
+                          "$query-params": {
+                            "name": "id"
+                          }
+                        },
+                        "workflow": "request"
+                      }
+                    },
+                    "path": "name"
+                  }
+                },
+                "code": {
+                  "$switch": {
+                    "condition": {
+                      "$from-context": {
+                        "path": "@preload.request.state"
+                      }
+                    },
+                    "default": "default",
+                    "cases": [
+                      {
+                        "action": "new",
+                        "value": "new"
+                      },
+                      {
+                        "action": "new",
+                        "value": "on_approve"
+                      },
+                      {
+                        "action": "active",
+                        "value": "accepted"
+                      },
+                      {
+                        "action": "error",
+                        "value": "rejected"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "tabs": {
+      "type": "object",
+      "widget": {
+        "key": "tabs",
+        "name": "tab-view"
+      },
+      "properties": {
+        "object": {
+          "type": "object",
+          "model": false,
+          "widget": {
+            "key": "object",
+            "name": "tab-panel",
+            "options": {
+              "label": "Заявка",
+              "visible": true
+            }
+          },
+          "properties": {
+            "object": {
+              "type": "object",
+              "widget": "container",
+              "properties": {
+                "common": {
+                  "type": "object",
+                  "model": false,
+                  "widget": {
+                    "name": "container",
+                    "options": {
+                      "label": "Основные сведения о брони"
+                    },
+                    "kind": "container-form-group-with-h2-style"
+                  },
+                  "properties": {
+                    "eventLink": {
+                      "type": "string",
+                      "widget": {
+                        "name": "link",
+                        "options": {
+                          "target": "_blank",
+                          "routerLink": "/cabinet/event/view",
+                          "label": "Мероприятие",
+                          "visible": {
+                            "$active-user-has-permission": {
+                              "permission": "event.view"
+                            }
+                          },
+                          "queryParams": {
+                            "id": {
+                              "$from-context": {
+                                "path": "@preload.request.bookingMain.event._id"
+                              }
+                            }
+                          }
+                        },
+                        "kind": "link-form-item-text-view-style"
+                      },
+                      "value": {
+                        "$from-context": {
+                          "path": "@preload.request.bookingMain.event.name"
+                        }
+                      }
+                    },
+                    "eventText": {
+                      "type": "string",
+                      "value": {
+                        "$from-context": {
+                          "path": "@preload.request.bookingMain.event.name"
+                        }
+                      },
+                      "widget": {
+                        "name": "info",
+                        "options": {
+                          "label": "Мероприятие",
+                          "visible": {
+                            "$not": {
+                              "data": {
+                                "$active-user-has-permission": {
+                                  "permission": "event.view"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "kind": "info-form-item-text-view-style"
+                      }
+                    },
+                    "roomsView": {
+                      "type": "array",
+                      "widget": {
+                        "name": "info",
+                        "options": {
+                          "label": {
+                            "$if": {
+                              "condition": {
+                                "$from-context": {
+                                  "path": "@preload.request.bookingMain.configuration"
+                                }
+                              },
+                              "then": "Помещения",
+                              "else": "Помещение"
+                            }
+                          },
+                          "visible": {
+                            "$from-context": {
+                              "path": "@preload.request.bookingMain.configuration"
+                            }
+                          },
+                          "separator": "<br>",
+                          "asList": "true",
+                          "viewedValue": {
+                            "$array-map": {
+                              "array": {
+                                "$from-context": {
+                                  "path": "@preload.request.bookingMain.rooms"
+                                }
+                              },
+                              "map": {
+                                "$from-context": {
+                                  "path": "$data.room.name"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "kind": "info-form-item-text-view-style"
+                      },
+                      "items": {
+                        "type": "string",
+                        "widget": {
+                          "name": "info"
+                        }
+                      }
+                    },
+                    "roomType": {
+                      "type": "string",
+                      "value": {
+                        "$from-context": {
+                          "path": "@preload.request.bookingMain.rooms.0.room.roomType.name"
+                        }
+                      },
+                      "widget": {
+                        "name": "info",
+                        "options": {
+                          "label": "Тип помещения",
+                          "visible": {
+                            "$not": {
+                              "data": {
+                                "$from-context": {
+                                  "path": "@preload.request.bookingMain.configuration"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "kind": "info-form-item-text-view-style"
+                      }
+                    },
+                    "table": {
+                      "value": [
+                        {
+                          "name": {
+                            "$if": {
+                              "condition": {
+                                "$from-context": {
+                                  "path": "@preload.request.bookingOld.configuration"
+                                }
+                              },
+                              "then": "Наименование конфигурации",
+                              "else": "Наименование помещения"
+                            }
+                          },
+                          "oldValue": {
+                            "$from-context": {
+                              "path": "@preload.request.bookingOld.name"
+                            }
+                          },
+                          "newValue": {
+                            "$from-context": {
+                              "path": "@preload.request.bookingNew.name"
+                            }
+                          }
+                        },
+                        {
+                          "name": "Тип рассадки",
+                          "oldValue": {
+                            "$from-context": {
+                              "path": "@preload.request.bookingOld.seatingType.name"
+                            }
+                          },
+                          "newValue": {
+                            "$from-context": {
+                              "path": "@preload.request.bookingNew.seatingType.name"
+                            }
+                          }
+                        },
+                        {
+                          "name": "Количество человек",
+                          "oldValue": {
+                            "$from-context": {
+                              "path": "@preload.request.bookingOld.numberOfPeople"
+                            }
+                          },
+                          "newValue": {
+                            "$from-context": {
+                              "path": "@preload.request.bookingNew.numberOfPeople"
+                            }
+                          }
+                        },
+                        {
+                          "name": "Комментарий",
+                          "oldValue": {
+                            "$from-context": {
+                              "path": "@preload.request.bookingOld.comment"
+                            }
+                          },
+                          "newValue": {
+                            "$from-context": {
+                              "path": "@preload.request.bookingNew.comment"
+                            }
+                          }
+                        }
+                      ],
+                      "type": "array",
+                      "model": "#data",
+                      "widget": {
+                        "name": "table",
+                        "paginatorLeft": {
+                          "type": "string",
+                          "widget": "info",
+                          "value": {
+                            "$grid": {
+                              "action": "rows-per-page",
+                              "path": "#data"
+                            }
+                          }
+                        },
+                        "options": {
+                          "emptyMessage": "Данные не найдены",
+                          "responsive": false,
+                          "first": 0,
+                          "lazy": true,
+                          "paginator": false,
+                          "rows": 20,
+                          "rowsPerPageOptions": [
+                            10,
+                            20,
+                            50
+                          ],
+                          "routerOptions": [
+                            "first",
+                            "rows"
+                          ]
+                        },
+                        "events": {
+                          "lazyLoad": {
+                            "$element-option": {
+                              "path": "#data",
+                              "option": "loading",
+                              "value": true
+                            }
+                          }
+                        },
+                        "subscriptions": {
+                          "reload-table": {
+                            "$element-event": {
+                              "event": "reload",
+                              "value": true
+                            }
+                          }
+                        },
+                        "class": {
+                          "value": "p-col-4 data-table_table-fixed"
+                        }
+                      },
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "widget": {
+                              "name": "table-column",
+                              "options": {
+                                "label": "Наименование поля"
+                              }
+                            }
+                          },
+                          "oldValueView": {
+                            "type": "object",
+                            "model": false,
+                            "widget": {
+                              "name": "table-column",
+                              "options": {
+                                "label": "Старое значение"
+                              },
+                              "class": {
+                                "group": "p-col-4 data-table_table-fixed"
+                              }
+                            },
+                            "properties": {
+                              "oldValue": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "info",
+                                  "class": {
+                                    "value": {
+                                      "$if": {
+                                        "condition": {
+                                          "===": {
+                                            "operand1": {
+                                              "$from-context": {
+                                                "path": "$rowData.oldValue"
+                                              }
+                                            },
+                                            "operand2": {
+                                              "$from-context": {
+                                                "path": "$rowData.newValue"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": "",
+                                        "else": "text-color_blocked"
+                                      }
+                                    }
+                                  }
+                                },
+                                "value": {
+                                  "$if": {
+                                    "condition": {
+                                      "$not-empty": {
+                                        "data": {
+                                          "$from-context": {
+                                            "path": "$rowData.oldValue"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "then": {
+                                      "$from-context": {
+                                        "path": "$rowData.oldValue"
+                                      }
+                                    },
+                                    "else": "Не указано"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "newValueView": {
+                            "type": "object",
+                            "model": false,
+                            "widget": {
+                              "name": "table-column",
+                              "options": {
+                                "label": "Новое значение"
+                              },
+                              "class": {
+                                "group": "p-col-4 data-table_table-fixed"
+                              }
+                            },
+                            "properties": {
+                              "newValue": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "info",
+                                  "class": {
+                                    "value": {
+                                      "$if": {
+                                        "condition": {
+                                          "===": {
+                                            "operand1": {
+                                              "$from-context": {
+                                                "path": "$rowData.oldValue"
+                                              }
+                                            },
+                                            "operand2": {
+                                              "$from-context": {
+                                                "path": "$rowData.newValue"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": "",
+                                        "else": "text-color_blocked"
+                                      }
+                                    }
+                                  }
+                                },
+                                "value": {
+                                  "$if": {
+                                    "condition": {
+                                      "$not-empty": {
+                                        "data": {
+                                          "$from-context": {
+                                            "path": "$rowData.newValue"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "then": {
+                                      "$from-context": {
+                                        "path": "$rowData.newValue"
+                                      }
+                                    },
+                                    "else": "Не указано"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "dates_container": {
+                  "type": "object",
+                  "model": false,
+                  "widget": {
+                    "name": "container",
+                    "options": {
+                      "label": "Даты бронирования"
+                    },
+                    "kind": "container-form-group-with-h2-style"
+                  },
+                  "properties": {
+                    "table": {
+                      "value": {
+                        "$var": {
+                          "path": "#datesArray"
+                        }
+                      },
+                      "type": "array",
+                      "model": "#data.datesTable",
+                      "widget": {
+                        "name": "table",
+                        "options": {
+                          "emptyMessage": "Данные не найдены",
+                          "responsive": false,
+                          "first": 0,
+                          "lazy": true,
+                          "paginator": false,
+                          "rows": 20,
+                          "rowsPerPageOptions": [
+                            10,
+                            20,
+                            50
+                          ],
+                          "routerOptions": [
+                            "first",
+                            "rows"
+                          ]
+                        },
+                        "class": {
+                          "value": "p-col-4 data-table_table-fixed"
+                        },
+                        "events": {
+                          "lazyLoad": {
+                            "$element-option": {
+                              "path": "#data",
+                              "option": "loading",
+                              "value": true
+                            }
+                          }
+                        },
+                        "subscriptions": {
+                          "reload-table": {
+                            "$element-event": {
+                              "event": "reload",
+                              "value": true
+                            }
+                          }
+                        }
+                      },
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "stage": {
+                            "type": "string",
+                            "widget": {
+                              "name": "table-column",
+                              "options": {
+                                "label": "Этап"
+                              }
+                            }
+                          },
+                          "oldValueView": {
+                            "type": "object",
+                            "model": false,
+                            "widget": {
+                              "name": "table-column",
+                              "options": {
+                                "label": "Старое значение"
+                              }
+                            },
+                            "properties": {
+                              "oldValue": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "html",
+                                  "class": {
+                                    "value": {
+                                      "$if": {
+                                        "condition": {
+                                          "$in": {
+                                            "array": {
+                                              "$array-pluck": {
+                                                "array": {
+                                                  "$array-filter": {
+                                                    "array": {
+                                                      "$var": {
+                                                        "path": "#datesArray"
+                                                      }
+                                                    },
+                                                    "filter": {
+                                                      "===": {
+                                                        "operand1": {
+                                                          "$from-context": {
+                                                            "path": "$rowData.stage"
+                                                          }
+                                                        },
+                                                        "operand2": {
+                                                          "$from-context": {
+                                                            "path": "$data.stage"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "key": "newValue"
+                                              }
+                                            },
+                                            "value": {
+                                              "$from-context": {
+                                                "path": "$rowData.oldValue"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": "",
+                                        "else": "text-color_blocked"
+                                      }
+                                    }
+                                  }
+                                },
+                                "value": {
+                                  "$if": {
+                                    "condition": {
+                                      "$not-empty": {
+                                        "data": {
+                                          "$from-context": {
+                                            "path": "$rowData.oldValue"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "then": {
+                                      "$from-context": {
+                                        "path": "$rowData.oldValue"
+                                      }
+                                    },
+                                    "else": ""
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "newValueView": {
+                            "type": "object",
+                            "model": false,
+                            "widget": {
+                              "name": "table-column",
+                              "options": {
+                                "label": "Новое значение"
+                              }
+                            },
+                            "properties": {
+                              "newValue": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "html",
+                                  "class": {
+                                    "value": {
+                                      "$if": {
+                                        "condition": {
+                                          "$in": {
+                                            "array": {
+                                              "$array-pluck": {
+                                                "array": {
+                                                  "$array-filter": {
+                                                    "array": {
+                                                      "$var": {
+                                                        "path": "#datesArray"
+                                                      }
+                                                    },
+                                                    "filter": {
+                                                      "===": {
+                                                        "operand1": {
+                                                          "$from-context": {
+                                                            "path": "$rowData.stage"
+                                                          }
+                                                        },
+                                                        "operand2": {
+                                                          "$from-context": {
+                                                            "path": "$data.stage"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "key": "oldValue"
+                                              }
+                                            },
+                                            "value": {
+                                              "$from-context": {
+                                                "path": "$rowData.newValue"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": "",
+                                        "else": "text-color_accepted"
+                                      }
+                                    }
+                                  }
+                                },
+                                "value": {
+                                  "$if": {
+                                    "condition": {
+                                      "$not-empty": {
+                                        "data": {
+                                          "$from-context": {
+                                            "path": "$rowData.newValue"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "then": {
+                                      "$from-context": {
+                                        "path": "$rowData.newValue"
+                                      }
+                                    },
+                                    "else": ""
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "cost_of_rent_container": {
+                  "type": "object",
+                  "model": false,
+                  "widget": {
+                    "name": "container",
+                    "options": {
+                      "label": "Расчет стоимости аренды"
+                    },
+                    "class": {
+                      "label": "h2 mrg-b-md",
+                      "value": "mrg-b-xl"
+                    }
+                  },
+                  "properties": {
+                    "table": {
+                      "value": [
+                        {
+                          "name": "Забронировать часть помещения",
+                          "oldValue": {
+                            "$if": {
+                              "condition": {
+                                "$from-context": {
+                                  "path": "@preload.request.bookingOld.partial"
+                                }
+                              },
+                              "then": "Да",
+                              "else": "Нет"
+                            }
+                          },
+                          "newValue": {
+                            "$if": {
+                              "condition": {
+                                "$from-context": {
+                                  "path": "@preload.request.bookingNew.partial"
+                                }
+                              },
+                              "then": "Да",
+                              "else": "Нет"
+                            }
+                          }
+                        },
+                        {
+                          "name": "Часть помещения на карте",
+                          "oldValueView": {
+                            "oldValue": {
+                              "$if": {
+                                "condition": {
+                                  "$not-empty": {
+                                    "data": {
+                                      "$from-context": {
+                                        "path": "@preload.request.bookingOld.file._id"
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "$from-context": {
+                                    "path": "@preload.request.bookingOld.file._id"
+                                  }
+                                },
+                                "else": "Не указано"
+                              }
+                            },
+                            "oldFile": {
+                              "$from-context": {
+                                "path": "@preload.request.bookingOld.file"
+                              }
+                            }
+                          },
+                          "newValueView": {
+                            "newValue": {
+                              "$if": {
+                                "condition": {
+                                  "$not-empty": {
+                                    "data": {
+                                      "$from-context": {
+                                        "path": "@preload.request.bookingNew.file._id"
+                                      }
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "$from-context": {
+                                    "path": "@preload.request.bookingNew.file._id"
+                                  }
+                                },
+                                "else": "Не указано"
+                              }
+                            },
+                            "newFile": {
+                              "$from-context": {
+                                "path": "@preload.request.bookingNew.file"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "name": "Бронируемая площадь",
+                          "oldValue": {
+                            "$replace": {
+                              "template": "{{0}} м²",
+                              "data": [
+                                {
+                                  "$formatter": {
+                                    "format": "number:'0.2-2':'ru'",
+                                    "data": {
+                                      "$if": {
+                                        "condition": {
+                                          "$empty": {
+                                            "data": {
+                                              "$from-context": {
+                                                "path": "@preload.request.bookingOld.allSquare"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": {
+                                          "$from-context": {
+                                            "path": "@preload.request.bookingOld.rooms.0.room.square"
+                                          }
+                                        },
+                                        "else": {
+                                          "$from-context": {
+                                            "path": "@preload.request.bookingOld.allSquare"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          "newValue": {
+                            "$replace": {
+                              "template": "{{0}} м²",
+                              "data": [
+                                {
+                                  "$formatter": {
+                                    "format": "number:'0.2-2':'ru'",
+                                    "data": {
+                                      "$if": {
+                                        "condition": {
+                                          "$empty": {
+                                            "data": {
+                                              "$from-context": {
+                                                "path": "@preload.request.bookingNew.allSquare"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": {
+                                          "$from-context": {
+                                            "path": "@preload.request.bookingOld.rooms.0.room.square"
+                                          }
+                                        },
+                                        "else": {
+                                          "$from-context": {
+                                            "path": "@preload.request.bookingNew.allSquare"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "name": "Стоимость брони помещения за м²",
+                          "oldValue": {
+                            "$replace": {
+                              "template": "{{0}} руб.",
+                              "data": [
+                                {
+                                  "$formatter": {
+                                    "format": "number:'0.2-2':'ru'",
+                                    "data": {
+                                      "$if": {
+                                        "condition": {
+                                          "===": {
+                                            "operand1": {
+                                              "$from-context": {
+                                                "path": "@preload.request.bookingOld.discountOrMarkupFlag"
+                                              }
+                                            },
+                                            "operand2": "no"
+                                          }
+                                        },
+                                        "then": {
+                                          "$from-context": {
+                                            "path": "@preload.request.bookingOld.allPriceMeter"
+                                          }
+                                        },
+                                        "else": {
+                                          "$from-context": {
+                                            "path": "@preload.request.bookingOld.allPriceMeterWithDiscountOrMarkup"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          "newValue": {
+                            "$replace": {
+                              "template": "{{0}} руб.",
+                              "data": [
+                                {
+                                  "$formatter": {
+                                    "format": "number:'0.2-2':'ru'",
+                                    "data": {
+                                      "$if": {
+                                        "condition": {
+                                          "===": {
+                                            "operand1": {
+                                              "$from-context": {
+                                                "path": "@preload.request.bookingNew.discountOrMarkupFlag"
+                                              }
+                                            },
+                                            "operand2": "no"
+                                          }
+                                        },
+                                        "then": {
+                                          "$from-context": {
+                                            "path": "@preload.request.bookingNew.allPriceMeter"
+                                          }
+                                        },
+                                        "else": {
+                                          "$from-context": {
+                                            "path": "@preload.request.bookingNew.allPriceMeterWithDiscountOrMarkup"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "name": "Общая стоимость брони помещения",
+                          "oldValue": {
+                            "$replace": {
+                              "template": "{{0}} руб.",
+                              "data": [
+                                {
+                                  "$formatter": {
+                                    "format": "number:'0.2-2':'ru'",
+                                    "data": {
+                                      "$if": {
+                                        "condition": {
+                                          "===": {
+                                            "operand1": {
+                                              "$from-context": {
+                                                "path": "@preload.request.bookingOld.discountOrMarkupFlag"
+                                              }
+                                            },
+                                            "operand2": "no"
+                                          }
+                                        },
+                                        "then": {
+                                          "$from-context": {
+                                            "path": "@preload.request.bookingOld.allPrice"
+                                          }
+                                        },
+                                        "else": {
+                                          "$from-context": {
+                                            "path": "@preload.request.bookingOld.allPriceWithDiscountOrMarkup"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          "newValue": {
+                            "$replace": {
+                              "template": "{{0}} руб.",
+                              "data": [
+                                {
+                                  "$formatter": {
+                                    "format": "number:'0.2-2':'ru'",
+                                    "data": {
+                                      "$if": {
+                                        "condition": {
+                                          "===": {
+                                            "operand1": {
+                                              "$from-context": {
+                                                "path": "@preload.request.bookingNew.discountOrMarkupFlag"
+                                              }
+                                            },
+                                            "operand2": "no"
+                                          }
+                                        },
+                                        "then": {
+                                          "$from-context": {
+                                            "path": "@preload.request.bookingNew.allPrice"
+                                          }
+                                        },
+                                        "else": {
+                                          "$from-context": {
+                                            "path": "@preload.request.bookingNew.allPriceWithDiscountOrMarkup"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "name": "Скидка/наценка",
+                          "oldValue": {
+                            "$if": {
+                              "condition": {
+                                "!==": {
+                                  "operand1": {
+                                    "$from-context": {
+                                      "path": "@preload.request.bookingOld.discountOrMarkupFlag"
+                                    }
+                                  },
+                                  "operand2": "no"
+                                }
+                              },
+                              "then": {
+                                "$replace": {
+                                  "template": "{{0}} {{1}}%",
+                                  "data": [
+                                    {
+                                      "$switch": {
+                                        "condition": {
+                                          "$from-context": {
+                                            "path": "@preload.request.bookingOld.discountOrMarkupFlag"
+                                          }
+                                        },
+                                        "default": "",
+                                        "cases": [
+                                          {
+                                            "value": "discount",
+                                            "action": "Скидка"
+                                          },
+                                          {
+                                            "value": "markup",
+                                            "action": "Наценка"
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "$from-context": {
+                                        "path": "@preload.request.bookingOld.discountOrMarkup"
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              "else": "Нет"
+                            }
+                          },
+                          "newValue": {
+                            "$if": {
+                              "condition": {
+                                "!==": {
+                                  "operand1": {
+                                    "$from-context": {
+                                      "path": "@preload.request.bookingNew.discountOrMarkupFlag"
+                                    }
+                                  },
+                                  "operand2": "no"
+                                }
+                              },
+                              "then": {
+                                "$replace": {
+                                  "template": "{{0}} {{1}}%",
+                                  "data": [
+                                    {
+                                      "$switch": {
+                                        "condition": {
+                                          "$from-context": {
+                                            "path": "@preload.request.bookingNew.discountOrMarkupFlag"
+                                          }
+                                        },
+                                        "default": "",
+                                        "cases": [
+                                          {
+                                            "value": "discount",
+                                            "action": "Скидка"
+                                          },
+                                          {
+                                            "value": "markup",
+                                            "action": "Наценка"
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "$from-context": {
+                                        "path": "@preload.request.bookingNew.discountOrMarkup"
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              "else": "Нет"
+                            }
+                          }
+                        }
+                      ],
+                      "type": "array",
+                      "model": "#cost_of_rent_table",
+                      "widget": {
+                        "name": "table",
+                        "options": {
+                          "emptyMessage": "Данные не найдены",
+                          "responsive": false,
+                          "first": 0,
+                          "lazy": true,
+                          "paginator": false,
+                          "rows": 20,
+                          "rowsPerPageOptions": [
+                            10,
+                            20,
+                            50
+                          ],
+                          "routerOptions": [
+                            "first",
+                            "rows"
+                          ]
+                        },
+                        "class": {
+                          "value": "p-col-4 data-table_table-fixed"
+                        },
+                        "events": {
+                          "lazyLoad": {
+                            "$element-option": {
+                              "path": "#data",
+                              "option": "loading",
+                              "value": true
+                            }
+                          }
+                        },
+                        "subscriptions": {
+                          "reload-table": {
+                            "$element-event": {
+                              "event": "reload",
+                              "value": true
+                            }
+                          }
+                        }
+                      },
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "widget": {
+                              "name": "table-column",
+                              "options": {
+                                "label": "Наименование поля"
+                              }
+                            }
+                          },
+                          "oldValueView": {
+                            "type": "object",
+                            "model": false,
+                            "widget": {
+                              "name": "table-column",
+                              "options": {
+                                "label": "Старое значение"
+                              }
+                            },
+                            "properties": {
+                              "oldFile": {
+                                "type": "file",
+                                "widget": {
+                                  "name": "file",
+                                  "options": {
+                                    "visible": {
+                                      "$not-empty": {
+                                        "data": {
+                                          "$from-context": {
+                                            "path": "$rowData.oldValueView.oldFile._id"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "displayParams": {
+                                      "showSize": true,
+                                      "enableFilesDownload": true
+                                    },
+                                    "objectId": {
+                                      "$query-params": {
+                                        "name": "id"
+                                      }
+                                    }
+                                  },
+                                  "class": {
+                                    "value": "word-break-all word-break-normal-lg file_table-view",
+                                    "link": {
+                                      "$if": {
+                                        "condition": {
+                                          "!==": {
+                                            "operand1": {
+                                              "$from-context": {
+                                                "path": "$rowData.newValueView.newFile._id"
+                                              }
+                                            },
+                                            "operand2": {
+                                              "$from-context": {
+                                                "path": "$rowData.oldValueView.oldFile._id"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": "text-color_blocked",
+                                        "else": ""
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "oldValue": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "info",
+                                  "options": {
+                                    "visible": {
+                                      "$empty": {
+                                        "data": {
+                                          "$from-context": {
+                                            "path": "$rowData.oldValueView.oldFile._id"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "class": {
+                                    "value": {
+                                      "$if": {
+                                        "condition": {
+                                          "$if": {
+                                            "condition": {
+                                              "!==": {
+                                                "operand1": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.name"
+                                                  }
+                                                },
+                                                "operand2": "Часть помещения на карте"
+                                              }
+                                            },
+                                            "then": {
+                                              "===": {
+                                                "operand1": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.oldValue"
+                                                  }
+                                                },
+                                                "operand2": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.newValue"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "else": {
+                                              "===": {
+                                                "operand1": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.oldValueView.oldValue"
+                                                  }
+                                                },
+                                                "operand2": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.newValueView.newValue"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": "",
+                                        "else": "text-color_blocked"
+                                      }
+                                    }
+                                  }
+                                },
+                                "value": {
+                                  "$if": {
+                                    "condition": {
+                                      "$not-empty": {
+                                        "data": {
+                                          "$from-context": {
+                                            "path": "$rowData.oldValue"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "then": {
+                                      "$from-context": {
+                                        "path": "$rowData.oldValue"
+                                      }
+                                    },
+                                    "else": "Не указано"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "newValueView": {
+                            "type": "object",
+                            "model": false,
+                            "widget": {
+                              "name": "table-column",
+                              "options": {
+                                "label": "Новое значение"
+                              }
+                            },
+                            "properties": {
+                              "newFile": {
+                                "type": "file",
+                                "widget": {
+                                  "name": "file",
+                                  "options": {
+                                    "visible": {
+                                      "$not-empty": {
+                                        "data": {
+                                          "$from-context": {
+                                            "path": "$rowData.newValueView.newFile._id"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "displayParams": {
+                                      "showSize": true,
+                                      "enableFilesDownload": true
+                                    },
+                                    "objectId": {
+                                      "$query-params": {
+                                        "name": "id"
+                                      }
+                                    }
+                                  },
+                                  "class": {
+                                    "value": "word-break-all word-break-normal-lg file_table-view",
+                                    "link": "text-color_accepted"
+                                  }
+                                }
+                              },
+                              "newValue": {
+                                "type": "string",
+                                "widget": {
+                                  "name": "info",
+                                  "options": {
+                                    "visible": {
+                                      "$empty": {
+                                        "data": {
+                                          "$from-context": {
+                                            "path": "$rowData.newValueView.newFile._id"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "class": {
+                                    "value": {
+                                      "$if": {
+                                        "condition": {
+                                          "$if": {
+                                            "condition": {
+                                              "!==": {
+                                                "operand1": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.name"
+                                                  }
+                                                },
+                                                "operand2": "Часть помещения на карте"
+                                              }
+                                            },
+                                            "then": {
+                                              "===": {
+                                                "operand1": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.oldValue"
+                                                  }
+                                                },
+                                                "operand2": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.newValue"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "else": {
+                                              "===": {
+                                                "operand1": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.oldValueView.oldValue"
+                                                  }
+                                                },
+                                                "operand2": {
+                                                  "$from-context": {
+                                                    "path": "$rowData.newValueView.newValue"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "then": "",
+                                        "else": "text-color_blocked"
+                                      }
+                                    }
+                                  }
+                                },
+                                "value": {
+                                  "$if": {
+                                    "condition": {
+                                      "$not-empty": {
+                                        "data": {
+                                          "$from-context": {
+                                            "path": "$rowData.newValue"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "then": {
+                                      "$from-context": {
+                                        "path": "$rowData.newValue"
+                                      }
+                                    },
+                                    "else": "Не указано"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "approval": "$ref:fieldset:approval/view_process",
+        "history": "$ref:fieldset:approval/view_history"
+      }
+    },
+    "actions": {
+      "type": "object",
+      "model": false,
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "form-actions p-field p-grid mrg-t-lg",
+          "value": "p-xs-12 p-autolayout"
+        }
+      },
+      "properties": {
+        "back": {
+          "type": "string",
+          "value": "Вернуться к реестру заявок",
+          "widget": {
+            "name": "link",
+            "options": {
+              "routerLink": "/cabinet/request/list"
+            },
+            "class": {
+              "group": "mrg-t-0",
+              "link": "back-link"
+            }
+          }
+        }
+      }
+    }
+  }
+}

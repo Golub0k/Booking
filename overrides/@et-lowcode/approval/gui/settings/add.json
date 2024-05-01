@@ -1,0 +1,125 @@
+{
+  "@title": "Добавление системной настройки",
+  "type": "object",
+  "model": "#data",
+  "widget": {
+    "name": "form"
+  },
+  "properties": {
+    "breadcrumbs": {
+      "type": "object",
+      "widget": {
+        "name": "breadcrumb",
+        "mobileItems": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          }
+        ],
+        "items": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          },
+          {
+            "label": "Управление системными настройками",
+            "routerLink": "/cabinet/settings/list"
+          },
+          {
+            "label": "Добавление системной настройки"
+          }
+        ],
+        "kind": "breadcrumb-breadcrumbs-container-style"
+      }
+    },
+    "header": {
+      "type": "string",
+      "widget": {
+        "name": "info",
+        "options": {
+          "label": "Добавление системной настройки"
+        },
+        "class": {
+          "label": "h1 mrg-b-lg"
+        }
+      }
+    },
+    "object": "$ref:fieldset:settings/form",
+    "actions": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "form-actions p-field p-grid mrg-t-lg",
+          "value": "p-jc-xs-end p-autolayout"
+        }
+      },
+      "properties": {
+        "add": {
+          "widget": {
+            "name": "submit-button",
+            "options": {
+              "label": "Добавить",
+              "clientValidation": true,
+              "dataForClientValidation": "/",
+              "showClientValidationErrorsForElement": "form",
+              "showClientValidationErrorMessage": true,
+              "clientValidationErrorMessageSummary": "Ошибка",
+              "clientValidationErrorMessageDetail": "Одно или несколько полей заполнены некорректно",
+              "workflowAction": "settings.add",
+              "workflowObjectId": {
+                "$query-params": {
+                  "name": "id"
+                }
+              },
+              "dataForSubmit": {
+                "$filter-empty": {
+                  "data": {
+                    "$var": {
+                      "path": "#data.object"
+                    }
+                  },
+                  "mode": "clear"
+                }
+              },
+              "showSuccessMessage": true,
+              "successMessageSummary": "Добавление системной настройки",
+              "successMessageDetail": "Новая системная настройка успешно добавлена",
+              "urlInCaseOfSuccess": "/cabinet/settings/list-configurator",
+              "showServerValidationErrorMessage": true,
+              "serverValidationErrorMessageSummary": "Добавление системной настройки",
+              "serverValidationErrorMessageDetail": "Форма содержит ошибки",
+              "showOtherErrorMessageSummary": true,
+              "otherErrorMessageSummary": "Добавление системной настройки",
+              "otherErrorMessageDetail": "Непредвиденная ошибка",
+              "reloadTable": true,
+              "closePopup": true
+            },
+            "class": {
+              "value": "mrg-r-sm"
+            }
+          }
+        },
+        "cancel": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Отмена"
+            },
+            "events": {
+              "click": {
+                "$go": {
+                  "workflow": "settings",
+                  "action": "list-configurator"
+                }
+              }
+            },
+            "class": {
+              "value": "button_outline mrg-r-0 mrg-b-0 mrg-sm-t-md"
+            }
+          }
+        }
+      }
+    }
+  }
+}

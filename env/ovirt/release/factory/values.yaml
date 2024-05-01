@@ -1,0 +1,6 @@
+global:
+  hpa:
+    enabled: false
+    
+connector:
+  enabled: true

@@ -1,0 +1,38 @@
+# @title: Получить список пользователей
+
+query (
+  $first: Int
+  $rows: Int
+  $search: String
+  $sort: [FieldSortUserInput]
+  $id: [MongoID]
+  $roles: [String]
+) {
+  pagination: userPagination(
+    limit: $rows
+    offset: $first
+    sort: $sort
+    filter: {
+      AND: [
+        {
+          OR: [
+            { _regexp: { field: lastName, filter: $search } }
+            { _regexp: { field: firstName, filter: $search } }
+            { _regexp: { field: middleName, filter: $search } }
+          ]
+        }
+        { _operators: { _id: { in: $id } } }
+        { _operators: { roles: { id: { in: $roles } } } }
+        { state: "active" }
+      ]
+    }
+  ) {
+    count
+    items {
+      userId: _id
+      fullName
+      phoneView
+      state
+    }
+  }
+}

@@ -1,0 +1,32 @@
+query ($id: [MongoID!]) {
+  items: requestGet(_id: $id) {
+    id: _id
+    number
+    type
+    state
+    eventMain {
+      name
+    }
+    eventNew {
+      name
+    }
+    bookingMain {
+      name
+    }
+    bookingNew {
+      name
+    }
+    additionalFacilitiesMain {
+      type
+      additionalService {
+        name
+      }
+      equipment {
+        name
+      }
+      furniture {
+        name
+      }
+    }
+  }
+}

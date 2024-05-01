@@ -1,0 +1,175 @@
+{
+  "@title": "Подтверждение удаления помещения",
+  "@preload": {
+    "stopListNote": {
+      "$from-context": {
+        "path": "$response.body.data.items.0",
+        "data": {
+          "$api-data": {
+            "query": "stop_list_note/get",
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            },
+            "options": {
+              "observe": "response"
+            },
+            "variables": {
+              "id": {
+                "$query-params": {
+                  "name": "id"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "widget": {
+    "name": "container"
+  },
+  "model": "/",
+  "properties": {
+    "form": {
+      "type": "object",
+      "model": "#data",
+      "widget": {
+        "name": "form",
+        "options": {
+          "label": "Подтверждение удаления"
+        },
+        "kind": "form-popup-with-h1-style"
+      },
+      "properties": {
+        "text": {
+          "type": "string",
+          "widget": {
+            "name": "html",
+            "class": {
+              "value": "mrg-b-lg"
+            }
+          },
+          "value": {
+            "$replace": {
+              "template": "<p>Вы действительно хотите удалить запись стоп-листа №{{0}} для помещения \"{{1}}\"?</p>",
+              "data": [
+                {
+                  "$from-context": {
+                    "path": "@preload.stopListNote.number"
+                  }
+                },
+                {
+                  "$from-context": {
+                    "path": "@preload.stopListNote.room.name"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "textWarning": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "class": {
+              "value": "profile-info__organization"
+            }
+          },
+          "value": {
+            "$replace": {
+              "template": "После подтверждения действия помещение станет доступно для бронирования в период с {{0}} по {{1}}",
+              "data": [
+                {
+                  "$date-format": {
+                    "template": "DD.MM.YYYY HH:mm",
+                    "nameZone": "ETC/GMT+0",
+                    "value": {
+                      "$from-context": {
+                        "path": "@preload.stopListNote.dateTimeFrom"
+                      }
+                    }
+                  }
+                },
+                {
+                  "$date-format": {
+                    "template": "DD.MM.YYYY HH:mm",
+                    "nameZone": "ETC/GMT+0",
+                    "value": {
+                      "$from-context": {
+                        "path": "@preload.stopListNote.dateTimeTo"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "actions": {
+          "type": "object",
+          "widget": {
+            "name": "container",
+            "class": {
+              "group": "form-actions p-field p-grid mrg-t-lg",
+              "value": "p-jc-xs-end p-autolayout"
+            }
+          },
+          "properties": {
+            "delete": {
+              "widget": {
+                "name": "submit-button",
+                "options": {
+                  "label": "Удалить",
+                  "clientValidation": true,
+                  "dataForClientValidation": "/",
+                  "showClientValidationErrorsForElement": "form",
+                  "showClientValidationErrorMessage": true,
+                  "clientValidationErrorMessageSummary": "Ошибка",
+                  "clientValidationErrorMessageDetail": "Одно или несколько полей заполнены некорректно",
+                  "workflowAction": "stop_list_note.delete",
+                  "workflowObjectId": {
+                    "$query-params": {
+                      "name": "id"
+                    }
+                  },
+                  "showSuccessMessage": true,
+                  "successMessageSummary": "Удаление записи стоп-листа",
+                  "successMessageDetail": "Запись стоп-листа успешно удалена",
+                  "urlInCaseOfSuccess": "/cabinet/stop_list_note/list",
+                  "showServerValidationErrorMessage": true,
+                  "serverValidationErrorMessageSummary": "Удаление записи стоп-листа",
+                  "serverValidationErrorMessageDetail": "Форма содержит ошибки",
+                  "showOtherErrorMessageSummary": true,
+                  "otherErrorMessageSummary": "Удаление записи стоп-листа",
+                  "otherErrorMessageDetail": "Непредвиденная ошибка",
+                  "reloadTable": true,
+                  "closePopup": false
+                },
+                "class": {
+                  "value": "mrg-r-sm"
+                }
+              }
+            },
+            "cancel": {
+              "widget": {
+                "name": "button",
+                "options": {
+                  "label": "Отмена"
+                },
+                "events": {
+                  "click": {
+                    "$close-popup": null
+                  }
+                },
+                "kind": "button-btn-outline-last-style"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

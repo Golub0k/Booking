@@ -1,0 +1,135 @@
+{
+  "type": "object",
+  "title": "Заявка",
+  "properties": {
+    "number": {
+      "type": "number",
+      "trim": true,
+      "fieldDescription": "Номер заявки",
+      "iterable": true
+    },
+    "type": {
+      "type": "string",
+      "required": true,
+      "enum": [
+        "cancel",
+        "edit_event",
+        "edit_cost",
+        "edit_booking",
+        "edit_booking_cost",
+        "edit_facilities",
+        "edit_facilities_cost"
+      ]
+    },
+    "eventId": {
+      "type": "string",
+      "fieldDescription": "Мероприятие",
+      "required": false,
+      "ref": "Event",
+      "refAlias": "eventMain",
+      "inversedBy": "requests"
+    },
+    "oldDataEventId": {
+      "type": "string",
+      "fieldDescription": "Данные мероприятия на момент формирования заявки",
+      "required": false,
+      "ref": "EventRequestData",
+      "refAlias": "eventOld",
+      "inversedBy": "changes"
+    },
+    "changeEventId": {
+      "type": "string",
+      "fieldDescription": "Изменения",
+      "required": false,
+      "ref": "EventRequestData",
+      "refAlias": "eventNew",
+      "inversedBy": "changes"
+    },
+    "bookingId": {
+      "type": "string",
+      "fieldDescription": "Бронь помещения",
+      "required": false,
+      "ref": "Booking",
+      "refAlias": "bookingMain",
+      "inversedBy": "requests"
+    },
+    "oldDataBookingId": {
+      "type": "string",
+      "fieldDescription": "Данные брони помещения до рассмотрения заявки",
+      "required": false,
+      "ref": "BookingRequestData",
+      "refAlias": "bookingOld",
+      "inversedBy": "requests"
+    },
+    "changeBookingId": {
+      "type": "string",
+      "fieldDescription": "Изменения в брони помещения",
+      "required": false,
+      "ref": "BookingRequestData",
+      "refAlias": "bookingNew",
+      "inversedBy": "requests"
+    },
+    "facilitiesId": {
+      "type": "string",
+      "fieldDescription": "Бронь оснащения",
+      "required": false,
+      "ref": "AdditionalFacilities",
+      "refAlias": "additionalFacilitiesMain",
+      "inversedBy": "requests"
+    },
+    "oldDataFacilitiesId": {
+      "type": "string",
+      "fieldDescription": "Данные брони оснащения до рассмотрения заявки",
+      "required": false,
+      "ref": "AdditionalFacilitiesRequestData",
+      "refAlias": "additionalFacilitiesOld",
+      "inversedBy": "requests"
+    },
+    "changeFacilitiesId": {
+      "type": "string",
+      "fieldDescription": "Изменения в брони оснащения",
+      "required": false,
+      "ref": "AdditionalFacilitiesRequestData",
+      "refAlias": "additionalFacilitiesNew",
+      "inversedBy": "requests"
+    },
+    "creatorId": {
+      "type": "string",
+      "required": true,
+      "ref": "User",
+      "refAlias": "author",
+      "fieldDescription": "Пользователь создавший заявку",
+      "index": true
+    },
+    "createDate": {
+      "type": "datetime",
+      "fieldDescription": "Дата добавления",
+      "index": true
+    },
+    "agreementDate": {
+      "type": "datetime",
+      "fieldDescription": "Дата обработки",
+      "index": true
+    },
+    "cancelReason": {
+      "type": "string",
+      "fieldDescription": "Причина отмены",
+      "trim": true
+    },
+    "rejectReason": {
+      "type": "string",
+      "fieldDescription": "Причина отклонения заявки",
+      "trim": true
+    }
+  },
+  "additionalFields": {
+    "name": {
+      "type": "string",
+      "fieldDescription": "Наименование заявки",
+      "resolve": "Заявка №${object.number}"
+    }
+  },
+  "settings": {
+    "preview": "name"
+  }
+}

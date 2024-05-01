@@ -1,0 +1,78 @@
+query ($dateFrom: DateTime, $dateTo: DateTime, $state: [String]) {
+  items: eventGet(
+    filter: {
+      AND: [
+        { _operators: { state: { in: $state } } }
+        { _operators: { actual: { ne: false } } }
+        {
+          OR: [
+            {
+              AND: [
+                { _operators: { installationStart: { gte: $dateFrom } } }
+                { _operators: { installationStart: { lte: $dateTo } } }
+              ]
+            }
+            {
+              AND: [
+                { _operators: { eventStart: { gte: $dateFrom } } }
+                { _operators: { eventStart: { lte: $dateTo } } }
+              ]
+            }
+            {
+              AND: [
+                { _operators: { deinstallationStart: { gte: $dateFrom } } }
+                { _operators: { deinstallationStart: { lte: $dateTo } } }
+              ]
+            }
+            {
+              AND: [
+                { _operators: { installationEnd: { gte: $dateFrom } } }
+                { _operators: { installationEnd: { lte: $dateTo } } }
+              ]
+            }
+            {
+              AND: [
+                { _operators: { eventEnd: { gte: $dateFrom } } }
+                { _operators: { eventEnd: { lte: $dateTo } } }
+              ]
+            }
+            {
+              AND: [
+                { _operators: { deinstallationEnd: { gte: $dateFrom } } }
+                { _operators: { deinstallationEnd: { lte: $dateTo } } }
+              ]
+            }
+            {
+              AND: [
+                { _operators: { eventStart: { lte: $dateTo } } }
+                { _operators: { eventEnd: { gte: $dateFrom } } }
+              ]
+            }
+            {
+              AND: [
+                { _operators: { deinstallationStart: { lte: $dateTo } } }
+                { _operators: { deinstallationEnd: { gte: $dateFrom } } }
+              ]
+            }
+            {
+              AND: [
+                { _operators: { installationStart: { lte: $dateTo } } }
+                { _operators: { installationEnd: { gte: $dateFrom } } }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ) {
+    id: _id
+    name
+    installationStart
+    installationEnd
+    eventStart
+    eventEnd
+    deinstallationStart
+    deinstallationEnd
+    state
+  }
+}

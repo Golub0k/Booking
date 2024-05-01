@@ -1,0 +1,625 @@
+{
+  "@title": "Просмотр данных пользователя",
+  "@preload": {
+    "user": {
+      "$from-context": {
+        "path": "$response.body.data.user",
+        "data": {
+          "$api-data": {
+            "query": "user/get",
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            },
+            "options": {
+              "observe": "response"
+            },
+            "variables": {
+              "id": {
+                "$query-params": {
+                  "name": "id"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "model": "#data",
+  "widget": {
+    "name": "form"
+  },
+  "properties": {
+    "breadcrumbs": {
+      "type": "object",
+      "widget": {
+        "name": "breadcrumb",
+        "mobileItems": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          }
+        ],
+        "items": {
+          "$switch": {
+            "condition": {
+              "$session-storage-get": {
+                "key": "userBackLink"
+              }
+            },
+            "default": [
+              {
+                "label": "Главная",
+                "routerLink": "/cabinet/event/list"
+              },
+              {
+                "label": "Реестр пользователей",
+                "routerLink": "/cabinet/user/list"
+              },
+              {
+                "label": {
+                  "$from-context": {
+                    "path": "@preload.user.fullName"
+                  }
+                }
+              }
+            ],
+            "cases": [
+              {
+                "value": "list-organization-employees",
+                "action": [
+                  {
+                    "label": "Главная",
+                    "routerLink": "/cabinet/event/list"
+                  },
+                  {
+                    "label": "Реестр организаций",
+                    "routerLink": "/cabinet/organization/list"
+                  },
+                  {
+                    "label": {
+                      "$from-context": {
+                        "path": "@preload.user.organization.anyName"
+                      }
+                    },
+                    "routerLink": "/cabinet/organization/view",
+                    "queryParams": {
+                      "id": {
+                        "$from-context": {
+                          "path": "@preload.user.organizationId"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "label": "Реестр пользователей",
+                    "routerLink": "/cabinet/organization/list-employees",
+                    "queryParams": {
+                      "id": {
+                        "$from-context": {
+                          "path": "@preload.user.organizationId"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "label": {
+                      "$from-context": {
+                        "path": "@preload.user.fullName"
+                      }
+                    },
+                    "routerLink": "/cabinet/organization/view",
+                    "queryParams": {
+                      "id": {
+                        "$from-context": {
+                          "path": "@preload.user.organizationId"
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "value": "list",
+                "action": [
+                  {
+                    "label": "Главная",
+                    "routerLink": "/cabinet/event/list"
+                  },
+                  {
+                    "label": "Реестр пользователей",
+                    "routerLink": "/cabinet/user/list"
+                  },
+                  {
+                    "label": {
+                      "$from-context": {
+                        "path": "@preload.user.fullName"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "value": "list-my-organization-employees",
+                "action": [
+                  {
+                    "label": "Главная",
+                    "routerLink": "/cabinet/event/list"
+                  },
+                  {
+                    "label": "Реестр пользователей моей организации",
+                    "routerLink": "/cabinet/user/list-my-employees"
+                  },
+                  {
+                    "label": {
+                      "$from-context": {
+                        "path": "@preload.user.fullName"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "class": {
+          "group": "p-xs-auto mrg-lg-b-xl mrg-b-md"
+        }
+      }
+    },
+    "header-with-status": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "options": {
+          "label": {
+            "$from-context": {
+              "path": "@preload.user.fullName"
+            }
+          }
+        },
+        "class": {
+          "group": "header-badge-container mrg-b-lg",
+          "label": "h1 width-fit-content",
+          "value": "width-fit-content"
+        }
+      },
+      "properties": {
+        "badge": {
+          "type": "string",
+          "widget": "html",
+          "value": {
+            "$replace": {
+              "template": "<span class=\"badge badge_{{code}}\">{{name}}</span>",
+              "data": {
+                "$workflow-object-state": {
+                  "objectId": {
+                    "$query-params": {
+                      "name": "id"
+                    }
+                  },
+                  "workflow": "user"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "value": "$ref:operation-frontend:snippets/element/preload_delayed_value@@@preload.user",
+      "model": "#data",
+      "widget": {
+        "name": "container"
+      },
+      "properties": {
+        "lastName": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Фамилия"
+            },
+            "kind": "info-form-item-text-view-style"
+          }
+        },
+        "firstName": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Имя"
+            },
+            "kind": "info-form-item-text-view-style"
+          }
+        },
+        "middleName": {
+          "type": "string",
+          "value": {
+            "$if": {
+              "condition": {
+                "$not-empty": {
+                  "data": {
+                    "$var": {
+                      "path": "."
+                    }
+                  }
+                }
+              },
+              "then": {
+                "$var": {
+                  "path": "."
+                }
+              },
+              "else": "-"
+            }
+          },
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Отчество"
+            },
+            "kind": "info-form-item-text-view-style-empty_text_option"
+          }
+        },
+        "organization": {
+          "type": "string",
+          "value": {
+            "$from-context": {
+              "path": "@preload.user.organization.anyName"
+            }
+          },
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Организация",
+              "visible": false
+            },
+            "kind": "info-form-item-text-view-style-empty_text_option"
+          }
+        },
+        "position": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Должность"
+            },
+            "kind": "info-form-item-text-view-style-empty_text_option"
+          }
+        },
+        "email": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Адрес электронной почты"
+            },
+            "kind": "info-form-item-text-view-style"
+          }
+        },
+        "phone": {
+          "type": "object",
+          "widget": "hidden",
+          "properties": {
+            "ext": {
+              "type": "string",
+              "widget": "hidden"
+            },
+            "prefix": {
+              "type": "string",
+              "widget": "hidden"
+            },
+            "num": {
+              "type": "string",
+              "widget": "hidden"
+            }
+          }
+        },
+        "contacts": {
+          "type": "string",
+          "value": "$ref:operation-frontend:snippets/element/view/phone_view@@#data.phone",
+          "widget": {
+            "name": "html",
+            "options": {
+              "label": "Телефон"
+            },
+            "kind": "html-form-item-text-view-style"
+          }
+        },
+        "userSettings": {
+          "type": "object",
+          "widget": {
+            "name": "container"
+          },
+          "properties": {
+            "timezone": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "widget": "info"
+                }
+              },
+              "widget": {
+                "name": "container",
+                "options": {
+                  "label": "Временная зона",
+                  "visible": false
+                },
+                "kind": "container-form-item-text-view-style"
+              }
+            },
+            "emailNotification": {
+              "type": "boolean",
+              "widget": {
+                "name": "hidden"
+              }
+            },
+            "pushNotification": {
+              "type": "boolean",
+              "widget": {
+                "name": "hidden"
+              }
+            }
+          }
+        },
+        "login": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Логин"
+            },
+            "kind": "info-form-item-text-view-style"
+          }
+        },
+        "roles": {
+          "type": "array",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Роли",
+              "separator": "<br>",
+              "asList": true,
+              "viewedValue": {
+                "$array-map": {
+                  "array": {
+                    "$subs": {
+                      "path": "#data.roles"
+                    }
+                  },
+                  "map": {
+                    "$from-context": {
+                      "path": "$data.role.name"
+                    }
+                  }
+                }
+              }
+            },
+            "kind": "info-form-item-text-view-style"
+          },
+          "items": {
+            "type": "object",
+            "properties": {
+              "role": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "widget": "info"
+                  }
+                },
+                "widget": {
+                  "name": "fieldset"
+                }
+              }
+            },
+            "widget": {
+              "name": "fieldset"
+            }
+          }
+        },
+        "userAD_ru": {
+          "type": "string",
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Способ добавления"
+            },
+            "kind": "info-form-item-text-view-style"
+          },
+          "value": {
+            "$switch": {
+              "condition": {
+                "$from-context": {
+                  "path": "@preload.user.userAD"
+                }
+              },
+              "default": "Вручную",
+              "cases": [
+                {
+                  "value": true,
+                  "action": "Active Directory"
+                },
+                {
+                  "value": false,
+                  "action": "Вручную"
+                }
+              ]
+            }
+          }
+        },
+        "emailNotificationInfo": {
+          "type": "string",
+          "value": {
+            "$if": {
+              "condition": {
+                "==": {
+                  "operand1": {
+                    "$subs": {
+                      "path": "#data.userSettings.emailNotification"
+                    }
+                  },
+                  "operand2": true
+                }
+              },
+              "then": "Да",
+              "else": "Нет"
+            }
+          },
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Дублировать уведомления на e-mail",
+              "visible": false
+            },
+            "kind": "info-form-item-text-view-style"
+          }
+        },
+        "pushNotificationInfo": {
+          "type": "string",
+          "value": {
+            "$if": {
+              "condition": {
+                "==": {
+                  "operand1": {
+                    "$subs": {
+                      "path": "#data.userSettings.pushNotification"
+                    }
+                  },
+                  "operand2": true
+                }
+              },
+              "then": "Да",
+              "else": "Нет"
+            }
+          },
+          "widget": {
+            "name": "info",
+            "options": {
+              "label": "Показывать push-уведомления",
+              "visible": false
+            },
+            "kind": "info-form-item-text-view-style"
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "model": false,
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "form-actions p-field p-grid mrg-t-lg",
+          "value": "p-jc-xs-end p-autolayout"
+        }
+      },
+      "properties": {
+        "edit": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Редактировать",
+              "visible": {
+                "$api-workflow-check-action": {
+                  "workflow": "user",
+                  "action": "edit",
+                  "id": {
+                    "$query-params": {
+                      "name": "id"
+                    }
+                  }
+                }
+              }
+            },
+            "events": {
+              "click": {
+                "$go": {
+                  "workflow": "user",
+                  "action": "edit",
+                  "id": {
+                    "$query-params": {
+                      "name": "id"
+                    }
+                  }
+                }
+              }
+            },
+            "class": {
+              "value": "mrg-r-sm"
+            }
+          }
+        },
+        "back": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Вернуться в реестр"
+            },
+            "events": {
+              "click": {
+                "$switch": {
+                  "condition": {
+                    "$session-storage-get": {
+                      "key": "userBackLink"
+                    }
+                  },
+                  "default": {
+                    "$go": {
+                      "workflow": "user",
+                      "action": "index",
+                      "id": ""
+                    }
+                  },
+                  "cases": [
+                    {
+                      "value": "list-organization-employees",
+                      "action": {
+                        "$go": {
+                          "workflow": "organization",
+                          "action": "list-employees",
+                          "id": {
+                            "$from-context": {
+                              "path": "@preload.user.organizationId"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "value": "list",
+                      "action": {
+                        "$go": {
+                          "workflow": "user",
+                          "action": "list"
+                        }
+                      }
+                    },
+                    {
+                      "value": "list-my-organization-employees",
+                      "action": {
+                        "$go": {
+                          "workflow": "user",
+                          "action": "list-my-employees"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "class": {
+              "value": "button_outline mrg-r-0 mrg-b-0"
+            }
+          }
+        }
+      }
+    }
+  }
+}

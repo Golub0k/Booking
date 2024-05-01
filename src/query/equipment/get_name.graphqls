@@ -1,0 +1,8 @@
+# @title: Получить наименование оборудования
+
+query ($id: MongoID!) {
+  object: equipmentGet(filter: { _id: $id }) {
+    _id
+    name
+  }
+}

@@ -1,0 +1,5 @@
+query ($id: [MongoID]) {
+  items: stopListNoteGet(filter: { _operators: { _id: { in: $id } } }) {
+    id: _id
+  }
+}

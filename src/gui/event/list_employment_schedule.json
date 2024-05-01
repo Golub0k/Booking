@@ -1,0 +1,502 @@
+{
+  "@title": "График занятости",
+  "@preload": {
+    "rooms": {
+      "$from-context": {
+        "path": "$response.body.data.items",
+        "data": {
+          "$api-data": {
+            "workflow": "event",
+            "action": "list-employment-schedule",
+            "query": "room/get_for_employment_schedule",
+            "options": {
+              "observe": "response"
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "widget": "container",
+  "model": "#data",
+  "properties": {
+    "breadcrumbs": {
+      "type": "object",
+      "widget": {
+        "name": "breadcrumb",
+        "mobileItems": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          }
+        ],
+        "items": [
+          {
+            "label": "Главная",
+            "routerLink": "/cabinet/event/list"
+          },
+          {
+            "label": "График занятости"
+          }
+        ],
+        "class": {
+          "group": "p-xs-auto mrg-lg-b-xl mrg-b-md"
+        }
+      }
+    },
+    "header": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "options": {
+          "label": "График занятости"
+        },
+        "class": {
+          "group": "p-grid mrg-b-lg mrg-t-0",
+          "label": "h1 p-xs-12 p-xl-9 pdd-tb-0",
+          "value": "p-xs-12 p-xl-3 pdd-tb-0 p-jc-xl-end p-as-center p-autolayout"
+        }
+      }
+    },
+    "search": {
+      "model": "#search",
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "class": {
+          "value": "search-form search-form_expanded search-form_margin form-group_inline p-grid p-fluid"
+        },
+        "options": {
+          "displayNone": false,
+          "routerOptions": [
+            "displayNone"
+          ]
+        }
+      },
+      "properties": {
+        "search": {
+          "type": "string",
+          "validation": [
+            {
+              "type": "schema",
+              "params": {
+                "rule": {
+                  "<=": {
+                    "operand1": {
+                      "$length": {
+                        "data": {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$var": {
+                                    "path": "."
+                                  }
+                                }
+                              }
+                            },
+                            "then": {
+                              "$var": {
+                                "path": "."
+                              }
+                            },
+                            "else": ""
+                          }
+                        }
+                      }
+                    },
+                    "operand2": 255
+                  }
+                }
+              },
+              "events": [
+                "onBackend",
+                "onUpdate"
+              ]
+            }
+          ],
+          "widget": {
+            "name": "input",
+            "options": {
+              "label": "Наименование, номер помещения",
+              "placeholder": "Введите значение"
+            },
+            "class": {
+              "actionButtonGroup": "search-form-trigger search-form-trigger_expanded",
+              "group": "form-item  pdd-t-xxs pdd-b-0 p-xs-12 p-md-6 p-xl-4 p-xxl-4",
+              "value": "form-item-element search-form-input"
+            }
+          }
+        },
+        "partner": {
+          "type": "any",
+          "widget": {
+            "name": "multiselect",
+            "options": {
+              "label": "Контрагент",
+              "placeholder": "Выбрать",
+              "useEllipsisWhenDisplayFieldOverflows": false,
+              "filter": true,
+              "showClear": true,
+              "optionLabel": "name",
+              "valueKey": "_id",
+              "dataKey": "_id",
+              "valueOptions": {
+                "$fetch-object": {
+                  "path": "data.items",
+                  "data": {
+                    "$api-data": {
+                      "query": "partner/get_for_dropdown"
+                    }
+                  }
+                }
+              }
+            },
+            "class": {
+              "group": "form-item pdd-t-xxs pdd-tb-0 p-xs-12 p-md-6 p-xl-3",
+              "value": "form-item-element"
+            }
+          }
+        },
+        "event": {
+          "type": "any",
+          "widget": {
+            "name": "multiselect",
+            "options": {
+              "label": "Мероприятие",
+              "placeholder": "Выбрать",
+              "useEllipsisWhenDisplayFieldOverflows": false,
+              "filter": true,
+              "showClear": true,
+              "optionLabel": "name",
+              "valueKey": "id",
+              "dataKey": "id",
+              "valueOptions": {
+                "$fetch-object": {
+                  "path": "data.items",
+                  "data": {
+                    "$api-data": {
+                      "query": "event/get_name_actual"
+                    }
+                  }
+                }
+              }
+            },
+            "class": {
+              "group": "form-item pdd-t-xxs pdd-tb-0 p-xs-12 p-md-6 p-xl-3",
+              "value": "form-item-element"
+            }
+          }
+        },
+        "searchPush": {
+          "type": "string",
+          "widget": {
+            "name": "hidden"
+          }
+        },
+        "partnerPush": {
+          "type": "string",
+          "widget": {
+            "name": "hidden"
+          }
+        },
+        "eventPush": {
+          "type": "string",
+          "widget": {
+            "name": "hidden"
+          }
+        },
+        "clear-button": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Сбросить"
+            },
+            "events": {
+              "click": [
+                {
+                  "$populate": {
+                    "path": "#search",
+                    "data": {}
+                  }
+                },
+                {
+                  "$grid": {
+                    "action": "lazyLoad",
+                    "path": "#data",
+                    "filters": {
+                      "$var": {
+                        "path": "#search"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "class": {
+              "group": "form-item pdd-t-lg pdd-b-0 p-xs-6 p-md-3 p-xl-1 p-xxl-1",
+              "value": "button_pdd-lr-0 button_narrow button_outline button_clear"
+            }
+          }
+        },
+        "search-button": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Найти"
+            },
+            "events": {
+              "click": [
+                {
+                  "$populate": {
+                    "path": "#search.searchPush",
+                    "data": {
+                      "$var": {
+                        "path": "#search.search"
+                      }
+                    }
+                  }
+                },
+                {
+                  "$populate": {
+                    "path": "#search.partnerPush",
+                    "data": {
+                      "$var": {
+                        "path": "#search.partner"
+                      }
+                    }
+                  }
+                },
+                {
+                  "$populate": {
+                    "path": "#search.eventPush",
+                    "data": {
+                      "$var": {
+                        "path": "#search.event"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "class": {
+              "group": "form-item pdd-t-lg pdd-b-0 p-xs-6 p-md-3 p-xl-1 p-xxl-1",
+              "value": "button_pdd-lr-0"
+            }
+          }
+        }
+      }
+    },
+    "employment-schedule": {
+      "type": "array",
+      "model": "#data.employment-schedule",
+      "items": {
+        "type": "object",
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "widget": {
+              "name": "input"
+            }
+          },
+          "roomId": {
+            "type": "string",
+            "widget": {
+              "name": "input"
+            }
+          },
+          "start": {
+            "type": "string",
+            "widget": {
+              "name": "input"
+            }
+          },
+          "end": {
+            "type": "string",
+            "widget": {
+              "name": "input"
+            }
+          },
+          "stage": {
+            "type": "string",
+            "widget": {
+              "name": "input"
+            }
+          },
+          "booked": {
+            "type": "boolean"
+          }
+        },
+        "widget": {
+          "name": "fieldset"
+        }
+      },
+      "widget": {
+        "name": "expo-workload-schedule",
+        "options": {
+          "scrollHeight": "600px",
+          "emptyMessage": "Данные не найдены",
+          "roomList": {
+            "$apply-func": {
+              "func": "$ref:js:room/sort-rooms",
+              "args": {
+                "array": {
+                  "$fetch-object": {
+                    "path": "data.items",
+                    "data": {
+                      "$api-data": {
+                        "query": "room/get_for_employment_schedule",
+                        "variables": {
+                          "search": {
+                            "$subs": {
+                              "path": "#search.searchPush"
+                            }
+                          }
+                        },
+                        "errors": {
+                          "default": {
+                            "$message": {
+                              "severity": "error",
+                              "summary": "Ошибка",
+                              "detail": "При загрузке данных произошла ошибка, повторите попытку позднее"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "events": {
+          "lazyload": {
+            "$populate": {
+              "path": "#data.employment-schedule",
+              "data": {
+                "$fetch-object": {
+                  "path": "data.items",
+                  "data": {
+                    "$api-data": {
+                      "query": "booking/employment_schedule",
+                      "variables": {
+                        "start": {
+                          "$element-option": {
+                            "option": "start",
+                            "path": "#data.employment-schedule"
+                          }
+                        },
+                        "end": {
+                          "$element-option": {
+                            "option": "end",
+                            "path": "#data.employment-schedule"
+                          }
+                        },
+                        "partners": {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$subs": {
+                                    "path": "#search.partnerPush"
+                                  }
+                                }
+                              }
+                            },
+                            "then": {
+                              "$subs": {
+                                "path": "#search.partnerPush"
+                              }
+                            },
+                            "else": []
+                          }
+                        },
+                        "partnersSelect": {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$subs": {
+                                    "path": "#search.partnerPush"
+                                  }
+                                }
+                              }
+                            },
+                            "then": "selected",
+                            "else": "all"
+                          }
+                        },
+                        "events": {
+                          "$if": {
+                            "condition": {
+                              "$not-empty": {
+                                "data": {
+                                  "$subs": {
+                                    "path": "#search.eventPush"
+                                  }
+                                }
+                              }
+                            },
+                            "then": {
+                              "$subs": {
+                                "path": "#search.eventPush"
+                              }
+                            },
+                            "else": {
+                              "$array-pluck": {
+                                "array": {
+                                  "$fetch-object": {
+                                    "path": "data.items",
+                                    "data": {
+                                      "$api-data": {
+                                        "query": "event/get_name_actual"
+                                      }
+                                    }
+                                  }
+                                },
+                                "key": "id"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "errors": {
+                        "default": {
+                          "$message": {
+                            "severity": "error",
+                            "summary": "Ошибка",
+                            "detail": "При загрузке данных произошла ошибка, повторите попытку позднее"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selectData": {
+            "$open-popup": {
+              "workflow": "room",
+              "action": "view-daily-schedule",
+              "id": {
+                "$from-context": {
+                  "path": "$event.event.id"
+                }
+              },
+              "params": {
+                "date": {
+                  "$from-context": {
+                    "path": "$event.event.date"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

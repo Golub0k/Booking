@@ -1,0 +1,17 @@
+{
+  "type": "object",
+  "title": "Собственник",
+  "properties": {
+    "code": {
+      "type": "string",
+      "required": true,
+      "unique": true,
+      "fieldDescription": "Код собственника"
+    },
+    "name": {
+      "type": "string",
+      "required": true,
+      "fieldDescription": "Наименование собственника"
+    }
+  }
+}

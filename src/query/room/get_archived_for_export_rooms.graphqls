@@ -1,0 +1,12 @@
+# @title: Получить список архивных помещений для отчета
+
+query ($id: [MongoID]) {
+  items: roomGet(
+    filter: {
+      AND: [{ _operators: { _id: { in: $id } } }, { state: "archived" }]
+    }
+  ) {
+    id: _id
+    name
+  }
+}

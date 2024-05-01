@@ -1,0 +1,19 @@
+query ($id: String!, $type: EnumRequestType, $creatorId: String) {
+  items: requestGet(
+    filter: {
+      facilitiesId: $id
+      creatorId: $creatorId
+      type: $type
+      state: "new"
+    }
+    sort: { field: createdAt, type: DESC }
+  ) {
+    id: _id
+    number
+    type
+    state
+    facilitiesId
+    changeFacilitiesId
+    cancelReason
+  }
+}

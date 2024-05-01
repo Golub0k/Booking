@@ -1,0 +1,27 @@
+.button_secondary {
+    button.p-button,
+    p-confirmdialog &.p-button {
+      font-size: var(--text-font-size);
+      color: #000000;
+      letter-spacing: var(--button-label-letter-spacing);
+      font-weight: var(--button-outline-label-font-weight);
+      border-color: #e5e7ea;
+      background-color: var(--body-background-color);
+  
+      &:disabled {
+        color: #adb9c7;
+        border-color: var(--button-outline-border-color);
+        background-color: var(--body-background-color);
+      }
+    }
+  }
+  
+  .button_secondary button.p-button:enabled:hover,
+  a.button_secondary button.p-button:hover,
+  .button_secondary button.p-button:active,
+  .button_secondary .p-button:not(.p-button-icon-only):enabled:active,
+  p-confirmdialog .p-button.button_secondary:hover,
+  p-confirmdialog .p-button.button_secondary:active {
+    border-color: #e5e7ea;
+    background-color: var(--button-outline-background-color-hover);
+  }

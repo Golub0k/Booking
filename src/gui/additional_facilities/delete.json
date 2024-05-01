@@ -1,0 +1,171 @@
+{
+  "@title": "Удаление брони дополнительной услуги к мероприятию",
+  "@preload": {
+    "$from-context": {
+      "path": "$response.body.data.items.0",
+      "data": {
+        "$api-data": {
+          "workflow": "event",
+          "action": "add",
+          "query": "additional_facilities/get_name",
+          "id": {
+            "$query-params": {
+              "name": "id"
+            }
+          },
+          "options": {
+            "observe": "response"
+          },
+          "variables": {
+            "id": {
+              "$query-params": {
+                "name": "id"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "model": "#data",
+  "widget": {
+    "name": "form",
+    "options": {
+      "label": "Подтверждение удаления"
+    },
+    "kind": "form-popup-with-h1-no-form-collapsed-style"
+  },
+  "properties": {
+    "message": {
+      "type": "string",
+      "widget": {
+        "name": "html",
+        "options": {
+          "viewedValue": {
+            "$replace": {
+              "template": "Вы действительно хотите удалить бронь дополнительной услуги \"{{0}}\"?",
+              "data": [
+                {
+                  "$from-context": {
+                    "path": "@preload.additionalService.name"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "widget": {
+        "name": "container",
+        "class": {
+          "group": "form-actions p-field p-grid mrg-t-lg",
+          "value": "p-jc-xs-end p-autolayout"
+        }
+      },
+      "properties": {
+        "confirm": {
+          "type": "string",
+          "model": false,
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Удалить"
+            },
+            "events": {
+              "click": {
+                "$waterfall": {
+                  "arrayFunctions": [
+                    "$ref:operation-frontend:snippets/element/_loading/onclick-loading-enable",
+                    {
+                      "$http-code": {
+                        "200": [
+                          {
+                            "$waterfall": {
+                              "arrayFunctions": [
+                                {
+                                  "$message": {
+                                    "severity": "success",
+                                    "summary": "Удаление брони услуги",
+                                    "detail": "Бронь услуги к мероприятию успешно удалена"
+                                  }
+                                },
+                                {
+                                  "$close-popup": null
+                                },
+                                {
+                                  "$event-bus-publish": {
+                                    "type": "reload-service-table"
+                                  }
+                                },
+                                {
+                                  "$event-bus-publish": {
+                                    "type": "reload-totalEventCost"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ],
+                        "422": [
+                          "$ref:operation-frontend:snippets/element/_http_message/http-errors-from-response"
+                        ],
+                        "client": {
+                          "$api-workflow": {
+                            "options": {
+                              "observe": "response"
+                            },
+                            "workflow": "additional_facilities",
+                            "action": "delete",
+                            "type": "post",
+                            "id": {
+                              "$query-params": {
+                                "name": "id"
+                              }
+                            }
+                          }
+                        },
+                        "finalize": "$ref:operation-frontend:snippets/element/_loading/onclick-loading-disable",
+                        "default": [
+                          {
+                            "$message": {
+                              "severity": "error",
+                              "summary": "Удаление брони услуги",
+                              "detail": "Непредвиденная ошибка"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "class": {
+              "value": "mrg-r-sm"
+            }
+          }
+        },
+        "cancel": {
+          "widget": {
+            "name": "button",
+            "options": {
+              "label": "Отмена"
+            },
+            "events": {
+              "click": {
+                "$close-popup": null
+              }
+            },
+            "class": {
+              "value": "button_outline mrg-r-0 mrg-b-0"
+            }
+          }
+        }
+      }
+    }
+  }
+}

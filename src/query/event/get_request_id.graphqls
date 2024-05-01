@@ -1,0 +1,15 @@
+query ($eventId: String, $bookingId: String, $additionalFacilitiesId: String, $userId: String) {
+  object: requestGet(
+    filter: {
+      AND: [
+        { OR: [{ bookingId: $bookingId }, { facilitiesId: $additionalFacilitiesId }, { eventId: $eventId }] }
+        { creatorId: $userId }
+      ]
+    }
+  ) {
+    id: _id
+
+    createdAt
+    state
+  }
+}

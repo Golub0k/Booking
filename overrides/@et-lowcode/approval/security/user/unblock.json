@@ -1,0 +1,63 @@
+{
+  "access-control": [
+    {
+      "description": "Пользователь не может разблокировать самого себя",
+      "rules": "$ref:rule-security:snippets/rules/context_user/is_not_active_user",
+      "error": {
+        "status": 403,
+        "message": "Запрещено"
+      },
+      "states": [
+        "blocked"
+      ]
+    },
+    {
+      "description": "Пользователь создан не из Active Directory",
+      "rules": {
+        "!==": {
+          "operand1": {
+            "$fetch-object": {
+              "path": "data.user.userAD",
+              "throwable": false,
+              "data": {
+                "$api-data": {
+                  "query": "user/is_ad_user",
+                  "variables": {
+                    "id": {
+                      "$from-context": {
+                        "path": "$actionContext.id"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "operand2": true
+        }
+      },
+      "error": {
+        "status": 403,
+        "message": "Запрещено"
+      },
+      "states": [
+        "active"
+      ]
+    }
+  ],
+  "backend-validation": {
+    "enabled": true,
+    "options": {
+      "schema": "user/unblock",
+      "data": {
+        "$post-params": {
+          "name": null
+        }
+      },
+      "path": "#user"
+    },
+    "states": [
+      "blocked"
+    ]
+  }
+}

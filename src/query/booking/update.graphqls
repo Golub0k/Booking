@@ -1,0 +1,7 @@
+# @title: Обновить данные экземпляров объекта "Бронь помещения"
+
+mutation ($id: MongoID!, $data: UpdateByIdBookingInput!) {
+  object: bookingUpdateById(_id: $id, record: $data) {
+    id: _id
+  }
+}

@@ -1,0 +1,11 @@
+query ($name: String!, $except: MongoID) {
+  count: eventGroupCount(
+    filter: {
+      AND: [
+        { name: $name }
+        { _operators: { _id: { ne: $except } } }
+        { state: "active" }
+      ]
+    }
+  )
+}

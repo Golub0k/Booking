@@ -1,0 +1,518 @@
+{
+  "remotes": [
+    {
+      "remoteName": "uiremote"
+    }
+  ],
+  "widget-kinds": {
+    "form": {
+      "form-popup-with-h1-no-form-collapsed-style": {
+        "class": {
+          "group": "popup",
+          "label": "h1 mrg-b-lg"
+        },
+        "title": "Стилизация виджета \"Форма\""
+      },
+      "form-popup-with-h1-style": {
+        "class": {
+          "group": "popup",
+          "label": "h1 mrg-b-lg",
+          "value": "form-group_popup-collapse"
+        },
+        "title": "Стилизация виджета \"Форма\""
+      },
+      "form-form-group-with-h1-style": {
+        "class": {
+          "label": "h1 mrg-b-lg d-block",
+          "value": "mrg-b-xl d-block"
+        },
+        "title": "Стилизация виджета \"Форма\""
+      },
+      "form-form-group-with-h2-style": {
+        "class": {
+          "label": "h2 mrg-b-md",
+          "value": "mrg-b-xl"
+        },
+        "title": "Стилизация виджета \"Форма\""
+      }
+    },
+    "container": {
+      "container-popup-with-h1-no-form-collapsed-style": {
+        "class": {
+          "group": "popup",
+          "label": "h1 mrg-b-lg"
+        },
+        "title": "Стилизация виджета \"Контейнер\""
+      },
+      "container-search-form-collapsed-container-style": {
+        "class": {
+          "value": "search-form search-form_collapsed search-form_margin form-group_inline p-grid p-fluid pdd-b-10"
+        },
+        "title": "Стилизация виджета \"Контейнер\""
+      },
+      "container-form-group-with-h2-style": {
+        "class": {
+          "label": "h2 mrg-b-md",
+          "value": "mrg-b-xl"
+        },
+        "title": "Стилизация виджета \"Контейнер\""
+      },
+      "container-form-group-with-h3-style": {
+        "class": {
+          "label": "h3 mrg-b-md d-block",
+          "value": "mrg-b-xl d-block"
+        },
+        "title": "Стилизация виджета \"Контейнер\""
+      },
+      "container-h1-style": {
+        "class": {
+          "label": "h1 mrg-b-xl"
+        },
+        "title": "Стилизация виджета \"Контейнер\""
+      },
+      "container-search-form-expanded-input-quarter-style": {
+        "class": {
+          "group": "form-item pdd-tb-0 p-xs-12 p-md-3 p-xl-3",
+          "label": "form-label form-label_top",
+          "value": "form-item-element"
+        },
+        "title": "Стилизация виджета \"Контейнер\""
+      },
+      "container-search-form-expanded-input-full-style": {
+        "class": {
+          "group": "form-item pdd-b-0 p-col-12",
+          "label": "form-label form-label_top",
+          "value": "form-item-element search-form-input"
+        },
+        "title": "Стилизация виджета \"Контейнер\""
+      },
+      "container-search-form-panel-buttons-center-style": {
+        "class": {
+          "value": "p-autolayout row p-jc-center"
+        },
+        "title": "Стилизация виджета \"Контейнер\""
+      },
+      "container-search-form-expanded-container-style": {
+        "class": {
+          "value": "search-form search-form_expanded search-form_margin form-group_inline p-grid p-fluid"
+        },
+        "title": "Стилизация виджета \"Контейнер\""
+      },
+      "container-header-with-button-container-style": {
+        "class": {
+          "group": "p-grid mrg-b-lg mrg-t-0",
+          "label": "h1 p-xs-12 p-xl-9 pdd-tb-0",
+          "value": "p-xs-12 p-xl-3 pdd-tb-0 p-jc-xl-end p-as-center p-autolayout"
+        },
+        "title": "Стилизация виджета \"Контейнер\""
+      },
+      "container-text-input-style": {
+        "class": {
+          "group": "form-item p-field p-grid p-fluid",
+          "label": "form-label p-xs-12 p-md-4 p-xl-3",
+          "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+        },
+        "title": "Стилизация виджета \"Контейнер\""
+      },
+      "container-form-item-text-view-style": {
+        "class": {
+          "group": "form-item p-field p-grid",
+          "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+          "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+        },
+        "title": "Стилизация виджета \"Контейнер\""
+      }
+    },
+    "calendar": {
+      "calendar-active-user-timezone-offset": {
+        "options": {
+          "timeZone": {
+            "$if": {
+              "condition": {
+                "$not-empty": {
+                  "data": {
+                    "$active-user": {
+                      "field": "timezone.offset"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "$fetch-object": {
+                  "path": "1",
+                  "data": {
+                    "$string-split": {
+                      "string": {
+                        "$active-user": {
+                          "field": "timezone.offset"
+                        }
+                      },
+                      "separator": "UTC"
+                    }
+                  }
+                }
+              },
+              "else": ""
+            }
+          }
+        },
+        "title": "Виджет \"Календарь\" с заполнением опции \"Часовой пояс\""
+      },
+      "calendar-dropdown-input-style-active-user-timezone-offset": {
+        "class": {
+          "group": "form-item p-field p-grid p-fluid",
+          "label": "form-label p-xs-12 p-md-4 p-xl-3",
+          "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+        },
+        "options": {
+          "timeZone": {
+            "$if": {
+              "condition": {
+                "$not-empty": {
+                  "data": {
+                    "$active-user": {
+                      "field": "timezone.offset"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "$fetch-object": {
+                  "path": "1",
+                  "data": {
+                    "$string-split": {
+                      "string": {
+                        "$active-user": {
+                          "field": "timezone.offset"
+                        }
+                      },
+                      "separator": "UTC"
+                    }
+                  }
+                }
+              },
+              "else": ""
+            }
+          }
+        },
+        "title": "Стилизация виджета \"Календарь\" с заполнением опции \"Часовой пояс\""
+      },
+      "calendar-dropdown-input-required-style-active-user-timezone-offset": {
+        "class": {
+          "group": "form-item p-field p-grid p-fluid",
+          "label": "form-label form-label_required p-xs-12 p-md-4 p-xl-3",
+          "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+        },
+        "options": {
+          "timeZone": {
+            "$if": {
+              "condition": {
+                "$not-empty": {
+                  "data": {
+                    "$active-user": {
+                      "field": "timezone.offset"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "$fetch-object": {
+                  "path": "1",
+                  "data": {
+                    "$string-split": {
+                      "string": {
+                        "$active-user": {
+                          "field": "timezone.offset"
+                        }
+                      },
+                      "separator": "UTC"
+                    }
+                  }
+                }
+              },
+              "else": ""
+            }
+          }
+        },
+        "title": "Стилизация виджета \"Календарь\" с заполнением опции \"Часовой пояс\""
+      },
+      "calendar-dropdown-input-style": {
+        "class": {
+          "group": "form-item p-field p-grid p-fluid",
+          "label": "form-label p-xs-12 p-md-4 p-xl-3",
+          "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+        },
+        "title": "Стилизация виджета \"Календарь\""
+      },
+      "calendar-dropdown-input-required-style": {
+        "class": {
+          "group": "form-item p-field p-grid p-fluid",
+          "label": "form-label form-label_required p-xs-12 p-md-4 p-xl-3",
+          "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+        },
+        "title": "Стилизация виджета \"Календарь\""
+      }
+    },
+    "button": {
+      "button-search-form-clear-button-right-style": {
+        "class": {
+          "group": "form-item pdd-b-0 p-xs-6 p-md-3 p-xl-2 p-d-flex p-ai-end",
+          "value": "button_outline "
+        },
+        "title": "Стилизация виджета \"Кнопка\""
+      },
+      "button-search-form-clear-button-style": {
+        "class": {
+          "group": "form-item pdd-b-0 p-xs-6 p-md-3 p-xl-2 p-xxl-1",
+          "value": "button_narrow button_outline button_clear"
+        },
+        "title": "Стилизация виджета \"Кнопка\""
+      },
+      "button-search-form-action-button-fill-style": {
+        "class": {
+          "group": "form-item pdd-b-0 p-xs-6 p-md-3 p-xl-2 p-xxl-1",
+          "value": "button_pdd-lr-0"
+        },
+        "title": "Стилизация виджета \"Кнопка\""
+      },
+      "button-btn-outline-last-style": {
+        "class": {
+          "value": "button_outline mrg-r-0 mrg-b-0"
+        },
+        "title": "Стилизация виджета \"Кнопка\""
+      }
+    },
+    "info": {
+      "info-form-item-text-view-style": {
+        "class": {
+          "group": "form-item p-field p-grid",
+          "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+          "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+        },
+        "title": "Стилизация виджета \"Информационное поле\""
+      },
+      "info-form-item-text-view-style-empty_text_option": {
+        "class": {
+          "group": "form-item p-field p-grid",
+          "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+          "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+        },
+        "options": {
+          "emptyText": "Не указано"
+        },
+        "title": "Стилизация виджета \"Информационное поле\" с заполнением опции \"Текст при отсутствии значения\""
+      }
+    },
+    "dropdown": {
+      "dropdown-dropdown-input-style": {
+        "class": {
+          "group": "form-item p-field p-grid p-fluid",
+          "label": "form-label p-xs-12 p-md-4 p-xl-3",
+          "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+        },
+        "title": "Стилизация виджета \"Выпадающий список\""
+      },
+      "dropdown-dropdown-input-required-style": {
+        "class": {
+          "group": "form-item p-field p-grid p-fluid",
+          "label": "form-label form-label_required p-xs-12 p-md-4 p-xl-3",
+          "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+        },
+        "title": "Стилизация виджета \"Выпадающий список\""
+      }
+    },
+    "input": {
+      "input-text-input-style": {
+        "class": {
+          "group": "form-item p-field p-grid p-fluid",
+          "label": "form-label p-xs-12 p-md-4 p-xl-3",
+          "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+        },
+        "title": "Стилизация виджета \"Поле ввода\""
+      },
+      "input-search-form-expanded-search-input-style": {
+        "class": {
+          "actionButtonGroup": "search-form-trigger search-form-trigger_expanded",
+          "group": "form-item pdd-b-0 p-xs-12 p-md-6 p-xl-8 p-xxl-10",
+          "value": "form-item-element search-form-input"
+        },
+        "title": "Стилизация виджета \"Поле ввода\""
+      },
+      "input-search-form-expanded-input-full-line-style": {
+        "class": {
+          "group": "form-item pdd-b-0 p-col-12",
+          "label": "form-label form-label_top",
+          "value": "form-item-element"
+        },
+        "title": "Стилизация виджета \"Поле ввода\""
+      },
+      "input-text-input-required-style": {
+        "class": {
+          "group": "form-item p-field p-grid p-fluid",
+          "label": "form-label form-label_required p-xs-12 p-md-4 p-xl-3",
+          "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+        },
+        "title": "Стилизация виджета \"Поле ввода\""
+      }
+    },
+    "multiselect": {
+      "multiselect-search-form-expanded-input-half-style": {
+        "class": {
+          "group": "form-item pdd-tb-0 p-xs-12 p-md-6 p-xl-6",
+          "label": "form-label form-label_top",
+          "value": "form-item-element"
+        },
+        "title": "Стилизация виджета \"Мультивыбор\""
+      },
+      "multiselect-search-form-expanded-input-quarter-style": {
+        "class": {
+          "group": "form-item pdd-tb-0 p-xs-12 p-md-3 p-xl-3",
+          "label": "form-label form-label_top",
+          "value": "form-item-element"
+        },
+        "title": "Стилизация виджета \"Мультивыбор\""
+      },
+      "multiselect-search-form-expanded-input-third-style": {
+        "class": {
+          "group": "form-item pdd-tb-0 p-xs-12 p-md-6 p-xl-4",
+          "label": "form-label form-label_top",
+          "value": "form-item-element"
+        },
+        "title": "Стилизация виджета \"Мультивыбор\""
+      },
+      "multiselect-search-form-expanded-input-full-line-style": {
+        "class": {
+          "group": "form-item pdd-b-0 p-col-12",
+          "label": "form-label form-label_top",
+          "value": "form-item-element"
+        },
+        "title": "Стилизация виджета \"Мультивыбор\""
+      },
+      "multiselect-dropdown-input-style": {
+        "class": {
+          "group": "form-item p-field p-grid p-fluid",
+          "label": "form-label p-xs-12 p-md-4 p-xl-3",
+          "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+        },
+        "title": "Стилизация виджета \"Мультивыбор\""
+      },
+      "multiselect-dropdown-input-required-style": {
+        "class": {
+          "group": "form-item p-field p-grid p-fluid",
+          "label": "form-label form-label_required p-xs-12 p-md-4 p-xl-3",
+          "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+        },
+        "title": "Стилизация виджета \"Мультивыбор\""
+      }
+    },
+    "table-old": {
+      "table-old-data-table-default-options": {
+        "options": {
+          "lazy": true,
+          "paginator": true,
+          "first": 0,
+          "rows": 10,
+          "rowsPerPageOptions": [
+            10,
+            20,
+            50
+          ],
+          "routerOptions": [
+            "first",
+            "rows"
+          ]
+        },
+        "title": "Виджет \"Таблица\" с заполнением опций \"Включает ленивую загрузку (event:lazyLoad)\", \"Включает нумерацию страниц\", \"Номер первой записи загрузки данных\", \"Количество строк для отображения на странице\", \"Настройка количества отображаемых строк\", \"Список названий опций которые записываются в роут\""
+      }
+    },
+    "textarea": {
+      "textarea-text-input-style": {
+        "class": {
+          "group": "form-item p-field p-grid p-fluid",
+          "label": "form-label p-xs-12 p-md-4 p-xl-3",
+          "value": "form-item-element p-xs-12 p-md-6 p-xl-4"
+        },
+        "title": "Стилизация виджета \"Многострочное поле ввода\""
+      }
+    },
+    "breadcrumb": {
+      "breadcrumb-breadcrumbs-container-style": {
+        "class": {
+          "group": "p-xs-auto mrg-lg-b-xl mrg-b-md"
+        },
+        "title": "Стилизация виджета \"Хлебные крошки\""
+      }
+    },
+    "html": {
+      "html-form-item-text-view-style": {
+        "class": {
+          "group": "form-item p-field p-grid",
+          "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+          "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+        },
+        "title": "Стилизация виджета \"HTML отображение\""
+      },
+      "html-mobile_tooltip_event": {
+        "options": {
+          "tooltipEvent": {
+            "$if": {
+              "condition": {
+                "!==": {
+                  "operand1": {
+                    "$device": {
+                      "infoType": "type"
+                    }
+                  },
+                  "operand2": "desktop"
+                }
+              },
+              "then": "focus",
+              "else": "hover"
+            }
+          }
+        },
+        "title": "Виджет \"HTML отображение\" с заполнением опции \"Событие для отображения всплывающей подсказки\""
+      }
+    },
+    "radio-button": {
+      "radio-button-radio-vertical-list-required-style": {
+        "class": {
+          "group": "form-item form-item_radio p-field p-grid p-fluid",
+          "label": "form-label form-label_required mrg-t-0 p-xs-12 p-md-4 p-xl-3",
+          "value": "form-item-element p-xs-12 p-md-6 p-xl-4 d-block",
+          "item": "form-item_radio__item width-100"
+        },
+        "title": "Стилизация виджета \"Переключатель\""
+      }
+    },
+    "link": {
+      "link-form-item-text-view-style": {
+        "class": {
+          "group": "form-item p-field p-grid",
+          "label": "form-label form-label_view p-xs-12 p-md-4 p-xl-3",
+          "value": "form-item-element form-item-element_view p-xs-12 p-md-6 p-xl-4 d-block"
+        },
+        "title": "Стилизация виджета \"Ссылка\""
+      }
+    },
+    "file": {
+      "file-form-item-file-upload-style": {
+        "class": {
+          "group": "form-item p-field p-grid p-fluid",
+          "label": "form-label p-xs-12 p-md-4 p-xl-3 pdd-r-xs",
+          "value": "form-item-element file-upload p-xs-12 p-md-6 p-xl-4"
+        },
+        "title": "Стилизация виджета \"Загрузка/выгрузка файла\""
+      }
+    },
+    "checkbox": {
+      "checkbox-checkbox-group-without-label-style": {
+        "class": {
+          "group": "mrg-b-sm form-item_checkbox p-field p-grid",
+          "value": "form-item-element form-item-element_checkbox p-xs-12 p-md-6 p-xl-4 p-md-offset-4 p-xl-offset-3 p-xs-offset-0"
+        },
+        "title": "Стилизация виджета \"Чекбокс\""
+      }
+    }
+  }
+}

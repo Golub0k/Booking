@@ -1,0 +1,63 @@
+# @title: Получить список экземпляров объекта "Бронь оснащения"
+
+query (
+  $eventId: String
+  $bookingId: String
+  $facilityType: EnumAdditionalFacilitiesType
+  $sort: [FieldSortAdditionalFacilitiesInput]
+) {
+  items: additionalFacilitiesGet(
+    sort: $sort
+    filter: {
+      AND: [
+        { _operators: { state: { ne: "deleted" } } }
+        { eventId: $eventId }
+        { bookingId: $bookingId }
+        { type: $facilityType }
+        { state: "not_filled" }
+      ]
+    }
+  ) {
+    id: _id
+    eventId
+    additionalService {
+      id: _id
+      name
+      unit
+      unitPrice
+      serviceTypeId
+      servicesType {
+        name
+      }
+      comment
+    }
+    equipment {
+      id: _id
+      name
+      nomenclatureNumber
+      comment
+      unitPrice
+    }
+    furniture {
+      id: _id
+      name
+      nomenclatureNumber
+      comment
+      unitPrice
+    }
+    type
+    serviceId
+    equipmentId
+    furnitureId
+    bookingPeriod
+    bookingComment
+    quantity
+    discountOrMarkupFlag
+    discountOrMarkup
+    unitPrice
+    unitPriceWithDiscountOrMarkup
+    totalPrice
+    totalPriceWithDiscountOrMarkup
+    state
+  }
+}

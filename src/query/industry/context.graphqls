@@ -1,0 +1,7 @@
+# @title: Получить контекст для объекта "Отрасль"
+
+query ($id: [MongoID!]) {
+  items: industryGet(_id: $id) {
+    id: _id
+  }
+}

@@ -1,0 +1,8 @@
+# @title: Получить контекст для объекта "Бронь помещения"
+
+query ($id: [MongoID]) {
+  items: bookingGet(filter: { _operators: { _id: { in: $id } } }) {
+    id: _id
+    state
+  }
+}

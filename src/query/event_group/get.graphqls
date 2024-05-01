@@ -1,0 +1,24 @@
+# @title: Получить данные экземпляра объекта "Группа мероприятий"
+
+query ($id: MongoID!) {
+  items: eventGroupGet(filter: { _id: $id }) {
+    _id
+    name
+    comment
+    number
+    events {
+      eventId
+      event {
+        name
+        number
+        organizers {
+          partner {
+            partnerId: _id
+            name
+          }
+        }
+        state
+      }
+    }
+  }
+}

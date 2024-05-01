@@ -1,0 +1,63 @@
+# @title: Получить бронь помещения
+
+query ($dateNow: DateTime, $dateStart: DateTime, $dateEnd: DateTime) {
+  items: bookingGet(
+    filter: {
+      AND: [
+        { state: "filled" }
+        {
+          _filterRef: {
+            eventId: {
+              AND: [
+                { _operators: { state: { nin: ["new", "draft", "check_out", "canceled", "deleted"] } } }
+                { _operators: { actual: { ne: false } } }
+              ]
+            }
+          }
+        }
+        {
+          OR: [
+            { _operators: { maxDate: { gte: $dateNow } } }
+            {
+              OR: [
+                {
+                  AND: [
+                    { _operators: { minDate: { gte: $dateStart } } }
+                    { _operators: { minDate: { lte: $dateEnd } } }
+                  ]
+                }
+                {
+                  AND: [
+                    { _operators: { maxDate: { gte: $dateStart } } }
+                    { _operators: { maxDate: { lte: $dateEnd } } }
+                  ]
+                }
+                {
+                  AND: [
+                    { _operators: { maxDate: { gte: $dateEnd } } }
+                    { _operators: { minDate: { lte: $dateStart } } }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ) {
+    id: _id
+    eventId
+    event {
+      name
+      state
+    }
+    rooms {
+      roomId
+      room {
+        name
+      }
+    }
+    minDate
+    maxDate
+  }
+}
